@@ -1,0 +1,44 @@
+package ast
+
+import (
+	"fmt"
+
+	"github.com/schahriar/captn/pkg/knownerr"
+)
+
+type ASTSymbol struct {
+	*ASTNodeContainer
+	Name string
+}
+
+func NewASTSymbol(cont *ASTNodeContainer, name string) *ASTSymbol {
+	return &ASTSymbol{
+		ASTNodeContainer: cont,
+		Name:             name,
+	}
+}
+
+func (node *ASTSymbol) GetContainer() *ASTNodeContainer {
+	return node.ASTNodeContainer
+}
+
+func (node *ASTSymbol) Children() []ASTNode {
+	return []ASTNode{}
+}
+
+func (node *ASTSymbol) AppendChild(n ASTNode) {
+	panic(knownerr.DoesNotAcceptChildren(node))
+}
+
+func (node *ASTSymbol) String() string {
+	return fmt.Sprintf("Symbol:%v", node.Name)
+}
+
+func (node *ASTSymbol) Accept(visitor ASTVisitor) interface{} {
+	return ASTPanicBoundary(node, func() interface{} {
+		return visitor.VisitSymbol(node)
+	})
+}
+
+// Conformance checks
+var _ ASTNode = &ASTSymbol{}
