@@ -15,9 +15,7 @@ type ASTNodeContainer struct {
 
 type ASTParserNode interface {
 	GetSource() *common.Source
-	GetStart() ASTRealizedPoint
-	GetStop() ASTRealizedPoint
-	GetRange() [2]int
+	GetPosition() common.FileRange
 }
 
 type ASTNodeSourcePosition struct {
@@ -26,33 +24,35 @@ type ASTNodeSourcePosition struct {
 }
 
 func (cont *ASTNodeContainer) GetRawSource() []byte {
-	nr := cont.Node.GetRange()
+	nr := cont.Node.GetPosition().GetByteRange()
 	return cont.Node.GetSource().Buffer[nr[0]:nr[1]]
 }
 
-func (cont *ASTNodeContainer) GetPosition() ASTNodeSourcePosition {
-	start := cont.Node.GetStart()
-	stop := cont.Node.GetStop()
+func (cont *ASTNodeContainer) GetPosition() common.FileRange {
+	return cont.Node.GetPosition()
+}
 
-	startLine, startCol := start.Line, start.Column
-	endLine, endCol := stop.Line, stop.Column
+func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
+	pos := cont.Node.GetPosition()
+	start := pos.Start
+	end := pos.End
 
 	hash := crc32.ChecksumIEEE(cont.GetRawSource())
 
 	src := cont.GetParserNode().GetSource()
 
 	return ASTNodeSourcePosition{
-		Position:   fmt.Sprintf("%v:%v:%v-%v:%v", src.Path, startLine, startCol, endLine, endCol),
+		Position:   fmt.Sprintf("%v:%v:%v-%v:%v", src.Path, start.Line, start.Column, end.Line, end.Column),
 		SourceHash: string(fmt.Sprintf("%08x\n", hash)),
 	}
 }
 
 func (cont *ASTNodeContainer) MarshalYAML() ([]byte, error) {
-	return yaml.Marshal(cont.GetPosition())
+	return yaml.Marshal(cont.DebugPosition())
 }
 
 func (cont *ASTNodeContainer) MarshalJSON() ([]byte, error) {
-	return json.Marshal(cont.GetPosition())
+	return json.Marshal(cont.DebugPosition())
 }
 
 func NewASTNodeContainer(node ASTParserNode) *ASTNodeContainer {
@@ -66,7 +66,8 @@ func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
 }
 
 type ASTNode interface {
-	GetPosition() ASTNodeSourcePosition
+	GetPosition() common.FileRange
+	DebugPosition() ASTNodeSourcePosition
 	GetRawSource() []byte
 	GetParserNode() ASTParserNode
 	GetContainer() *ASTNodeContainer

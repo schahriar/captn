@@ -1,8 +1,15 @@
 package languages_golang
 
 import (
+	"context"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/lsp"
 	"github.com/schahriar/captn/pkg/parsers"
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 )
@@ -10,20 +17,20 @@ import (
 // TODO: Support parsing go embeds as references
 // TODO: Support comments
 
-func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) error {
+func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node parsers.ParserNode) error {
 	switch node.Kind {
 	case "package_clause":
 		child, ok := node.GetNthChildByKind("package_identifier", 0)
 
 		if ok {
 			packageName := child.GetTextContent()
-			ctx.Root.Name = packageName
+			trx.Root.Name = packageName
 		}
 
 		return nil
 
 	case "import_spec":
-		impExpr := ast.ASTImportStatement{}
+		impExpr := ast.NewASTImportStatement(ast.NewASTNodeContainer(node))
 		if nameNode, ok := node.ChildByFieldName("name"); ok {
 			name := nameNode.GetTextContent()
 			impExpr.Namespace = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), name)
@@ -37,7 +44,7 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 		}
 
 		if impExpr.Reference != nil {
-			if err := ctx.Emit(&impExpr); err != nil {
+			if err := trx.Emit(impExpr); err != nil {
 				return err
 			}
 		}
@@ -59,7 +66,7 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			}
 		}
 
-		if err := ctx.Emit(fn); err != nil {
+		if err := trx.Emit(fn); err != nil {
 			return err
 		}
 
@@ -68,7 +75,7 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			fn.Block = ast.NewASTBlock(ast.NewASTNodeContainer(blockNode))
 		}
 
-		return ctx.WalkChildrenInto(fn)
+		return trx.WalkChildrenInto(ctx, fn)
 
 	case "func_literal":
 		fn := ast.NewASTFuncExpression(ast.NewASTNodeContainer(node))
@@ -83,14 +90,14 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			fn.Block = ast.NewASTBlock(ast.NewASTNodeContainer(blockNode))
 		}
 
-		if err := ctx.Emit(fn); err != nil {
+		if err := trx.Emit(fn); err != nil {
 			return err
 		}
 
-		return ctx.WalkChildrenInto(fn)
+		return trx.WalkChildrenInto(ctx, fn)
 
 	case "parameter_list":
-		if fn, ok := ctx.Parent.(*ast.ASTFuncExpression); ok {
+		if fn, ok := trx.Parent.(*ast.ASTFuncExpression); ok {
 			node.IterateChildren(func(pn parsers.ParserNode) (bool, error) {
 				if pn.Kind != "parameter_declaration" {
 					return true, nil // Continue
@@ -125,11 +132,11 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			return true, nil
 		})
 
-		if err := ctx.Emit(decl); err != nil {
+		if err := trx.Emit(decl); err != nil {
 			return err
 		}
 		// RHS: walk into decl so call expressions on the right-hand side land in Virtual
-		return ctx.WalkChildrenInto(decl)
+		return trx.WalkChildrenInto(ctx, decl)
 
 	case "var_spec":
 		decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(node))
@@ -138,26 +145,10 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			decl.Names = append(decl.Names, ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent()))
 		}
 
-		if err := ctx.Emit(decl); err != nil {
+		if err := trx.Emit(decl); err != nil {
 			return err
 		}
-		return ctx.WalkChildrenInto(decl)
-
-	case "range_clause":
-		decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(node))
-
-		// LHS: repeating "left" field names per declared/assigned identifier
-		node.IterateChildrenByFieldName("left", func(pn parsers.ParserNode) (bool, error) {
-			if pn.Kind == "identifier" {
-				decl.Names = append(decl.Names, ast.NewASTSymbol(ast.NewASTNodeContainer(pn), pn.GetTextContent()))
-			}
-			return true, nil
-		})
-
-		if err := ctx.Emit(decl); err != nil {
-			return err
-		}
-		return ctx.WalkChildrenInto(decl)
+		return trx.WalkChildrenInto(ctx, decl)
 
 	case "call_expression":
 		callExpr := ast.NewASTCallExpression(ast.NewASTNodeContainer(node))
@@ -203,11 +194,11 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			})
 		}
 
-		if err := ctx.Emit(callExpr); err != nil {
+		if err := trx.Emit(callExpr); err != nil {
 			return err
 		}
 		// Handles chained operands
-		return ctx.WalkChildrenInto(callExpr)
+		return trx.WalkChildrenInto(ctx, callExpr)
 
 	case "return_statement":
 		ret := ast.NewReturnStatement(ast.NewASTNodeContainer(node))
@@ -220,11 +211,11 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 			return true, nil
 		})
 
-		if err := ctx.Emit(ret); err != nil {
+		if err := trx.Emit(ret); err != nil {
 			return err
 		}
 
-		return ctx.WalkChildrenInto(ret)
+		return trx.WalkChildrenInto(ctx, ret)
 
 	case "comment":
 		// Comments are a bit tough, they both need to be block scoped and also
@@ -233,18 +224,56 @@ func GolangTransformer(ctx *parsers.TransformContext, node parsers.ParserNode) e
 
 	default:
 		// fmt.Println("Skip", node.Kind)
-		return ctx.WalkChildren()
+		return trx.WalkChildren(ctx)
 	}
 }
 
 type GolangLanguageSupportDefinition struct{}
 
-func (glsd *GolangLanguageSupportDefinition) Parse(src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error) {
+func (glsd *GolangLanguageSupportDefinition) NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error) {
+	gpcmd := exec.Command("go", "env", "GOPATH")
+	gopathraw, err := gpcmd.Output()
+
+	if err != nil {
+		return nil, err
+	}
+
+	gopath := strings.TrimSpace(string(gopathraw))
+	execPath := filepath.Join(string(gopath), "./bin/gopls")
+
+	cmd := exec.CommandContext(ctx, execPath)
+	cmd.Stderr = os.Stderr
+
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	return &lsp.ServerProcess{
+		Reader: stdout,
+		Writer: stdin,
+		Wait:   cmd.Wait,
+		Kill: func() error {
+			return cmd.Process.Kill()
+		},
+	}, nil
+}
+
+func (glsd *GolangLanguageSupportDefinition) Parse(ctx context.Context, src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error) {
 	root := ast.NewASTModule(ast.NewASTNodeContainer(
 		parsers.NewParserNode(src, tree.RootNode()),
 	), src.Path)
 
-	if err := parsers.WalkTransformTree(src, tree, root, GolangTransformer); err != nil {
+	if err := parsers.WalkTransformTree(ctx, src, tree, root, GolangTransformer); err != nil {
 		return nil, err
 	}
 

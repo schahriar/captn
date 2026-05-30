@@ -52,6 +52,12 @@ type ASTImportStatement struct {
 	Reference *ASTSymbol // Doesn't have to be a file system path, anything LSP considers valid
 }
 
+func NewASTImportStatement(cont *ASTNodeContainer) *ASTImportStatement {
+	return &ASTImportStatement{
+		ASTNodeContainer: cont,
+	}
+}
+
 func (node *ASTImportStatement) GetContainer() *ASTNodeContainer {
 	return node.ASTNodeContainer
 }

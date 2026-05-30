@@ -1,6 +1,10 @@
 package parsers
 
 import (
+	"context"
+	"fmt"
+	"runtime/trace"
+
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
@@ -22,11 +26,22 @@ func (apn ParserNode) Debug() string {
 	return apn.raw.ToSexp()
 }
 
-func (apn ParserNode) GetStart() ast.ASTRealizedPoint {
-	return ast.ASTRealizedPoint{
-		Line:   int(apn.Range.StartPoint.Row) + 1,
-		Column: int(apn.Range.StartPoint.Column) + 1,
-	}
+func (apn ParserNode) GetPosition() common.FileRange {
+	return common.NewFileRange(
+		apn.Source,
+		common.NewFilePosition(
+			apn.Source,
+			int(apn.Range.StartPoint.Row),
+			int(apn.Range.StartPoint.Column),
+			int(apn.Range.StartByte),
+		),
+		common.NewFilePosition(
+			apn.Source,
+			int(apn.Range.EndPoint.Row),
+			int(apn.Range.EndPoint.Column),
+			int(apn.Range.EndByte),
+		),
+	)
 }
 
 func (apn ParserNode) IterateChildren(iterator func(ParserNode) (bool, error)) error {
@@ -105,20 +120,6 @@ func (apn ParserNode) GetTextContent() string {
 	return apn.raw.Utf8Text(apn.Source.Buffer)
 }
 
-func (apn ParserNode) GetStop() ast.ASTRealizedPoint {
-	return ast.ASTRealizedPoint{
-		Line:   int(apn.Range.EndPoint.Row) + 1,
-		Column: int(apn.Range.EndPoint.Column) + 1,
-	}
-}
-
-func (apn ParserNode) GetRange() [2]int {
-	return [2]int{
-		int(apn.Range.StartByte),
-		int(apn.Range.EndByte),
-	}
-}
-
 var _ ast.ASTParserNode = &ParserNode{}
 
 func NewParserNode(src *common.Source, node *tree_sitter.Node) ParserNode {
@@ -132,26 +133,26 @@ func NewParserNode(src *common.Source, node *tree_sitter.Node) ParserNode {
 
 type AttachNode func(parent ast.ASTNode, child ast.ASTNode) error
 
-type TransformNode func(ctx *TransformContext, node ParserNode) error
+type TransformNode func(ctx context.Context, trx *TransformContext, node ParserNode) error
 
 type TransformContext struct {
 	cursor *tree_sitter.TreeCursor
 	Root   *ast.ASTModule
 	Parent ast.ASTNode
 	attach AttachNode
-	walk   func(parent ast.ASTNode) error
+	walk   func(ctx context.Context, parent ast.ASTNode) error
 }
 
-func (ctx *TransformContext) Emit(child ast.ASTNode) error {
-	return ctx.attach(ctx.Parent, child)
+func (trx *TransformContext) Emit(child ast.ASTNode) error {
+	return trx.attach(trx.Parent, child)
 }
 
-func (ctx *TransformContext) WalkChildren() error {
-	return ctx.walk(ctx.Parent)
+func (trx *TransformContext) WalkChildren(ctx context.Context) error {
+	return trx.walk(ctx, trx.Parent)
 }
 
-func (ctx *TransformContext) WalkChildrenInto(parent ast.ASTNode) error {
-	return ctx.walk(parent)
+func (trx *TransformContext) WalkChildrenInto(ctx context.Context, parent ast.ASTNode) error {
+	return trx.walk(ctx, parent)
 }
 
 func attach(parent ast.ASTNode, child ast.ASTNode) error {
@@ -160,6 +161,7 @@ func attach(parent ast.ASTNode, child ast.ASTNode) error {
 }
 
 func WalkTransformTree(
+	ctx context.Context,
 	src *common.Source,
 	tree *tree_sitter.Tree,
 	root *ast.ASTModule,
@@ -168,31 +170,37 @@ func WalkTransformTree(
 	cursor := tree.Walk()
 	defer cursor.Close()
 
-	ctx := &TransformContext{
+	trx := &TransformContext{
 		Root:   root,
 		cursor: cursor,
 		attach: attach,
 	}
 
-	var walk func(parent ast.ASTNode) error
+	var walk func(ctx context.Context, parent ast.ASTNode) error
 
-	walk = func(parent ast.ASTNode) error {
+	walk = func(ctx context.Context, parent ast.ASTNode) error {
 		if !cursor.GotoFirstChild() {
 			return nil
 		}
 
 		defer cursor.GotoParent()
 
-		previousParent := ctx.Parent
-		ctx.Parent = parent
+		previousParent := trx.Parent
+		trx.Parent = parent
 		defer func() {
-			ctx.Parent = previousParent
+			trx.Parent = previousParent
 		}()
 
 		for {
 			node := NewParserNode(src, cursor.Node())
 
-			if err := transform(ctx, node); err != nil {
+			var err error
+
+			trace.WithRegion(ctx, fmt.Sprintf("transform(%v)", node.Kind), func() {
+				err = transform(ctx, trx, node)
+			})
+
+			if err != nil {
 				return err
 			}
 
@@ -200,11 +208,14 @@ func WalkTransformTree(
 				return nil
 			}
 
-			ctx.Parent = parent
+			trx.Parent = parent
 		}
 	}
 
-	ctx.walk = walk
+	trx.walk = walk
 
-	return walk(root)
+	ctx, task := trace.NewTask(ctx, "walkTree")
+	defer task.End()
+
+	return walk(ctx, root)
 }

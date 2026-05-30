@@ -26,7 +26,7 @@ func (estack ASTErrorStack) String() string {
 		pos := node.GetPosition()
 		prefix := strings.Repeat(" ", i)
 
-		res += fmt.Sprintf("%v> %v[%v]\n", prefix, node.String(), pos.Position)
+		res += fmt.Sprintf("%v> %v[%v]\n", prefix, node.String(), pos)
 
 		if i == len(estack.Stack)-1 || i == 1 { // Print source n=1 and last node
 			res += fmt.Sprintf("%v\n", formatSource(string(node.GetRawSource()), i+2))

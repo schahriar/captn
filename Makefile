@@ -9,7 +9,7 @@ GO_ENV = PATH="$(GOBIN_DIR):$$PATH" \
 
 .PHONY: mod build test generate coverage
 
-all: mod build generate
+all: mod build generate init debug
 
 mod:
 	go mod tidy
@@ -35,3 +35,10 @@ coverage:
 		-coverprofile=coverage.out \
 		./pkg/tests
 	@$(GO_ENV) go tool cover -html=coverage.out
+
+trace:
+	go tool trace trace.out
+
+# Install delve first -> go install github.com/go-delve/delve/cmd/dlv@latest
+debug: build
+	@$(GO_ENV) dlv exec ./bin/captn -- run ./cmd/main.go
