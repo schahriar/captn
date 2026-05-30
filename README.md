@@ -5,6 +5,7 @@
 - [x] Build tree from treeparser
 - [x] Make Symbols nodes so we can get location
 - [x] Support returns
+- [ ] Add LSP and AST tests
 - [ ] Add snapshot tests per language
 - [ ] Add language server client
   - [ ] Resolve imports and symbols
