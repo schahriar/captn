@@ -12,6 +12,7 @@ import (
 	"github.com/schahriar/captn/pkg/lsp"
 	"github.com/schahriar/captn/pkg/parsers"
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
+	tree_sitter_golang "github.com/tree-sitter/tree-sitter-go/bindings/go"
 )
 
 // TODO: Support parsing go embeds as references
@@ -278,4 +279,8 @@ func (glsd *GolangLanguageSupportDefinition) Parse(ctx context.Context, src *com
 	}
 
 	return root, nil
+}
+
+func (glsd *GolangLanguageSupportDefinition) GetTreeSitterLanguage() *tree_sitter.Language {
+	return tree_sitter.NewLanguage(tree_sitter_golang.Language())
 }

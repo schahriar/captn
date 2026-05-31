@@ -12,8 +12,9 @@ import (
 
 type LanguageSupport interface {
 	// TODO: Add LSP installer
-	NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error)
 	Parse(ctx context.Context, src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error)
+	NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error)
+	GetTreeSitterLanguage() *tree_sitter.Language
 }
 
 var Golang LanguageSupport = &languages_golang.GolangLanguageSupportDefinition{}

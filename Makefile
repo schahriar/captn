@@ -39,6 +39,11 @@ coverage:
 trace:
 	go tool trace trace.out
 
+# Keep -count=1 static as snapshot tests shouldn't be cached
+# TODO: Separate snapshot testing from unit tests
+test:
+	@$(GO_ENV) go test -count=1 -v -failfast ./tests
+
 # Install delve first -> go install github.com/go-delve/delve/cmd/dlv@latest
 debug: build
 	@$(GO_ENV) dlv exec ./bin/captn -- run ./cmd/main.go

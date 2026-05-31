@@ -11,7 +11,7 @@ type FilePosition struct {
 }
 
 func (fp FilePosition) String() string {
-	return fmt.Sprintf("%v:%v", fp.Line, fp.Column)
+	return fmt.Sprintf("%v:%v", fp.Line+1, fp.Column+1)
 }
 
 func NewFilePosition(src *Source, line int, col int, bp int) FilePosition {

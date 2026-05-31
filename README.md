@@ -5,12 +5,10 @@
 - [x] Build tree from treeparser
 - [x] Make Symbols nodes so we can get location
 - [x] Support returns
-- [ ] Add LSP and AST tests
+- [x] Add language server client
 - [ ] Add snapshot tests per language
-- [ ] Add language server client
+- [ ] Add LSP and AST tests
   - [ ] Resolve imports and symbols
-- [ ] Support Comments
-- [ ] Create a list of ASTs per module
 - [ ] Interval tree for fast lookups https://github.com/rdleal/intervalst
 - [ ] Populate "Semantic Graph" from ASTNodes
   - [ ] https://github.com/dominikbraun/graph
@@ -18,6 +16,7 @@
 - [ ] Persist graph
 - [ ] Assign meaning to edges and cache
 - [ ] Restore graph
+- [ ] Support Comments
 - [ ] MCP Server
 - [ ] Integrate with Claude Code as COG Frontend and Backend
 - [ ] Add support for python, typescript, TSX

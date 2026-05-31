@@ -1,13 +1,21 @@
 package common
 
-import "os"
+import (
+	"context"
+	"os"
+	"runtime/trace"
+)
 
 type Source struct {
 	Path   string
 	Buffer []byte `json:"-"`
 }
 
-func NewSourceFromFile(path string) (*Source, error) {
+func NewSourceFromFile(ctx context.Context, path string) (*Source, error) {
+	_, task := trace.NewTask(ctx, "loadFile")
+
+	defer task.End()
+
 	buf, err := os.ReadFile(path)
 
 	if err != nil {
