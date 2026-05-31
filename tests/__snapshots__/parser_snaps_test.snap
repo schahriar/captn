@@ -18,7 +18,12 @@
                         sourcehash: |
                           6587d36e
                   - Name:
-                      - x
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:6-3:7
+                              sourcehash: |
+                                8cdc1683
+                        - Name:
+                            - x
                   - Arguments:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:7-3:14
@@ -74,6 +79,118 @@
                                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:21
                                                         sourcehash: |
                                                           780bfb58
+                                            - Virtual: []
+
+---
+
+[TestParserMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:1:1-12:1
+        sourcehash: |
+          575cd03b
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:1:1-12:1
+              sourcehash: |
+                575cd03b
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:4:2-4:7
+                        sourcehash: |
+                          bd5286c3
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:4:2-4:7
+                              sourcehash: |
+                                bd5286c3
+                        - Name:
+                            - fmt
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:2-6:83
+                        sourcehash: |
+                          80de7d78
+                  - Namespace:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:2-6:14
+                              sourcehash: |
+                                267678d9
+                        - Name:
+                            - fixture_dep1
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:15-6:83
+                              sourcehash: |
+                                0c43606b
+                        - Name:
+                            - github.com/schahriar/captn/tests/fixtures/golang/multidep/pkg/dep1
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:1-11:2
+                        sourcehash: |
+                          20ec1cc4
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:6-9:10
+                              sourcehash: |
+                                bf28cd64
+                        - Name:
+                            - main
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:13-11:2
+                              sourcehash: |
+                                5e8dc867
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:2-10:44
+                                        sourcehash: |
+                                          87c35165
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:2-10:5
+                                              sourcehash: |
+                                                3420ce4f
+                                        - Name:
+                                            - fmt
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:6-10:13
+                                              sourcehash: |
+                                                8732a777
+                                        - Name:
+                                            - Println
+                                  - Arguments:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:43
+                                              sourcehash: |
+                                                66529abe
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:43
+                                                  sourcehash: |
+                                                    66529abe
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
+                                                        sourcehash: |
+                                                          267678d9
+                                                  - Name:
+                                                      - fixture_dep1
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:27-10:41
+                                                        sourcehash: |
+                                                          fb5997ae
+                                                  - Name:
+                                                      - GetExampleText
+                                            - Arguments: []
                                             - Virtual: []
 
 ---

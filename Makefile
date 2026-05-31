@@ -30,6 +30,9 @@ build: mod
 test:
 	@$(GO_ENV) go test -count=1 -v -failfast ./pkg/tests
 
+accept_snapshots:
+	UPDATE_SNAPS=true $(MAKE) test
+
 coverage:
 	@$(GO_ENV) go test -count=1 -v -failfast \
 		-coverpkg=./pkg/... \

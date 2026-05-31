@@ -49,7 +49,7 @@ func (node *ASTFuncArgument) Accept(visitor ASTVisitor) interface{} {
 type ASTFuncExpression struct {
 	*ASTNodeContainer
 	// Assigned as a pointer to force support for null type (anonymous / unnamed functions)
-	Name       *string
+	Name       *ASTSymbol
 	Arguments  []*ASTFuncArgument
 	ReturnType *ASTSymbol
 	Block      *ASTBlock

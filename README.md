@@ -2,10 +2,10 @@
 
 ## TODO:
 
+- [x] Modify function names to be a symbol to track position
 - [ ] Add LSP and AST tests
   - [ ] Resolve imports and symbols
   - [ ] Best to add snapshot testing with some unit tests on the tree structure
-- [ ] Modify function names to be a symbol to track position
 - [ ] Interval tree for each symbol for fast lookups https://github.com/rdleal/intervalst
 - [ ] Populate "Semantic Graph" from ASTNodes
   - [ ] https://github.com/dominikbraun/graph

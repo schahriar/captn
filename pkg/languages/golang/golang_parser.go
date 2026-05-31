@@ -57,7 +57,7 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 
 		if nameNode, ok := node.ChildByFieldName("name"); ok {
 			name := nameNode.GetTextContent()
-			fn.Name = &name
+			fn.Name = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), name)
 		}
 
 		if resultNode, ok := node.ChildByFieldName("result"); ok {
