@@ -13,6 +13,8 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 type SpawnFunc func(ctx context.Context) (*ServerProcess, error)
@@ -74,16 +76,6 @@ type LocationLink struct {
 	TargetSelectionRange Range  `json:"targetSelectionRange"`
 }
 
-type SourcePoint struct {
-	Row    int
-	Column int
-}
-
-type SourceRange struct {
-	Start SourcePoint
-	End   SourcePoint
-}
-
 type TextDocumentIdentifier struct {
 	URI string `json:"uri"`
 }
@@ -97,13 +89,13 @@ type TextDocumentItem struct {
 
 type ReferenceRequest struct {
 	TextDocument       TextDocumentItem
-	Range              SourceRange
+	Range              common.FileRange
 	IncludeDeclaration bool
 }
 
 type DefinitionRequest struct {
 	TextDocument TextDocumentItem
-	Range        SourceRange
+	Range        common.FileRange
 }
 
 func Start(ctx context.Context, opts StartOptions) (*Client, error) {
@@ -159,25 +151,29 @@ func Start(ctx context.Context, opts StartOptions) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) validateAndOpen(doc TextDocumentItem) error {
+	if doc.URI == "" {
+		return fmt.Errorf("missing text document URI")
+	}
+
+	if doc.LanguageID == "" {
+		return fmt.Errorf("missing text document language ID")
+	}
+
+	if doc.Text == "" {
+		return fmt.Errorf("missing text document text")
+	}
+
+	return c.OpenDocument(doc)
+}
+
 func (c *Client) References(ctx context.Context, req ReferenceRequest) ([]Location, error) {
-	if req.TextDocument.URI == "" {
-		return nil, fmt.Errorf("missing text document URI")
-	}
-
-	if req.TextDocument.LanguageID == "" {
-		return nil, fmt.Errorf("missing text document language ID")
-	}
-
-	if req.TextDocument.Text == "" {
-		return nil, fmt.Errorf("missing text document text")
+	if err := c.validateAndOpen(req.TextDocument); err != nil {
+		return nil, err
 	}
 
 	position, err := PositionInsideRange(req.TextDocument.Text, req.Range)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := c.OpenDocument(req.TextDocument); err != nil {
 		return nil, err
 	}
 
@@ -200,24 +196,12 @@ func (c *Client) References(ctx context.Context, req ReferenceRequest) ([]Locati
 }
 
 func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Location, error) {
-	if req.TextDocument.URI == "" {
-		return nil, fmt.Errorf("missing text document URI")
-	}
-
-	if req.TextDocument.LanguageID == "" {
-		return nil, fmt.Errorf("missing text document language ID")
-	}
-
-	if req.TextDocument.Text == "" {
-		return nil, fmt.Errorf("missing text document text")
+	if err := c.validateAndOpen(req.TextDocument); err != nil {
+		return nil, err
 	}
 
 	position, err := PositionInsideRange(req.TextDocument.Text, req.Range)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := c.OpenDocument(req.TextDocument); err != nil {
 		return nil, err
 	}
 
@@ -236,35 +220,35 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 	return decodeDefinitionResult(raw)
 }
 
-func PositionInsideRange(text string, r SourceRange) (Position, error) {
-	if r.Start.Row < 0 || r.Start.Column < 0 || r.End.Row < 0 || r.End.Column < 0 {
+func PositionInsideRange(text string, r common.FileRange) (Position, error) {
+	if r.Start.Line < 0 || r.Start.Column < 0 || r.End.Line < 0 || r.End.Column < 0 {
 		return Position{}, fmt.Errorf("range cannot contain negative row or column")
 	}
 
-	if r.End.Row < r.Start.Row || r.End.Row == r.Start.Row && r.End.Column < r.Start.Column {
+	if r.End.Line < r.Start.Line || r.End.Line == r.Start.Line && r.End.Column < r.Start.Column {
 		return Position{}, fmt.Errorf("range end is before range start")
 	}
 
 	lines := strings.Split(text, "\n")
 
-	if r.Start.Row >= len(lines) {
+	if r.Start.Line >= len(lines) {
 		return Position{}, fmt.Errorf("range start row out of bounds")
 	}
 
-	if r.End.Row >= len(lines) {
+	if r.End.Line >= len(lines) {
 		return Position{}, fmt.Errorf("range end row out of bounds")
 	}
 
-	for row := r.Start.Row; row <= r.End.Row; row++ {
+	for row := r.Start.Line; row <= r.End.Line; row++ {
 		line := strings.TrimSuffix(lines[row], "\r")
 
 		startColumn := 0
-		if row == r.Start.Row {
+		if row == r.Start.Line {
 			startColumn = r.Start.Column
 		}
 
 		endColumn := utf16Len(line)
-		if row == r.End.Row {
+		if row == r.End.Line {
 			endColumn = r.End.Column
 		}
 
@@ -304,7 +288,7 @@ func PositionInsideRange(text string, r SourceRange) (Position, error) {
 	}
 
 	return Position{
-		Line:      r.Start.Row,
+		Line:      r.Start.Line,
 		Character: r.Start.Column,
 	}, nil
 }
@@ -609,19 +593,7 @@ type DocumentLinkRequest struct {
 }
 
 func (c *Client) DocumentLinks(ctx context.Context, req DocumentLinkRequest) ([]DocumentLink, error) {
-	if req.TextDocument.URI == "" {
-		return nil, fmt.Errorf("missing text document URI")
-	}
-
-	if req.TextDocument.LanguageID == "" {
-		return nil, fmt.Errorf("missing text document language ID")
-	}
-
-	if req.TextDocument.Text == "" {
-		return nil, fmt.Errorf("missing text document text")
-	}
-
-	if err := c.OpenDocument(req.TextDocument); err != nil {
+	if err := c.validateAndOpen(req.TextDocument); err != nil {
 		return nil, err
 	}
 
@@ -656,31 +628,19 @@ func (c *Client) ImportTarget(ctx context.Context, doc TextDocumentItem, r Range
 	return "", nil
 }
 
-func (c *Client) ImportDefinition(ctx context.Context, doc TextDocumentItem, importRange Range) ([]Location, error) {
-	if doc.URI == "" {
-		return nil, fmt.Errorf("missing text document URI")
-	}
-
-	if doc.LanguageID == "" {
-		return nil, fmt.Errorf("missing text document language ID")
-	}
-
-	if doc.Text == "" {
-		return nil, fmt.Errorf("missing text document text")
-	}
-
-	if err := c.OpenDocument(doc); err != nil {
+func (c *Client) ImportDefinition(ctx context.Context, doc TextDocumentItem, importRange common.FileRange) ([]Location, error) {
+	if err := c.validateAndOpen(doc); err != nil {
 		return nil, err
 	}
 
-	position := Position{
-		Line:      importRange.Start.Line,
-		Character: importRange.Start.Character + 1,
+	position, err := PositionInsideRange(doc.Text, importRange)
+	if err != nil {
+		return nil, err
 	}
 
 	var raw json.RawMessage
 
-	err := c.Request(ctx, "textDocument/definition", map[string]any{
+	err = c.Request(ctx, "textDocument/definition", map[string]any{
 		"textDocument": TextDocumentIdentifier{
 			URI: doc.URI,
 		},

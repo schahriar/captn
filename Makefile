@@ -30,10 +30,10 @@ test:
 	@$(GO_ENV) go test -count=1 -v -failfast ./pkg/tests
 
 coverage:
-	@$(GO_ENV) go test -v -failfast \
+	@$(GO_ENV) go test -count=1 -v -failfast \
 		-coverpkg=./pkg/... \
 		-coverprofile=coverage.out \
-		./pkg/tests
+		./tests
 	@$(GO_ENV) go tool cover -html=coverage.out
 
 trace:

@@ -34,16 +34,11 @@ func (cont *ASTNodeContainer) GetPosition() common.FileRange {
 
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
-	start := pos.Start
-	end := pos.End
-
 	hash := crc32.ChecksumIEEE(cont.GetRawSource())
 
-	src := cont.GetParserNode().GetSource()
-
 	return ASTNodeSourcePosition{
-		Position:   fmt.Sprintf("%v:%v:%v-%v:%v", src.Path, start.Line, start.Column, end.Line, end.Column),
-		SourceHash: string(fmt.Sprintf("%08x\n", hash)),
+		Position:   pos.String(),
+		SourceHash: fmt.Sprintf("%08x\n", hash),
 	}
 }
 
@@ -81,11 +76,6 @@ type ASTSingularNode interface {
 	GetParserNode() ASTParserNode
 	Child() ASTNode
 	Accept(visitor ASTVisitor) interface{}
-}
-
-type ASTRealizedPoint struct {
-	Column int
-	Line   int
 }
 
 // Conformance checks

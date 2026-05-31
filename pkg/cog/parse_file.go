@@ -14,13 +14,12 @@ import (
 )
 
 type ParsedFile struct {
-	Workspace string
-	Source    *common.Source
-	Module    *ast.ASTModule
-	Language  languages.LanguageSupport
+	Source   *common.Source
+	Module   *ast.ASTModule
+	Language languages.LanguageSupport
 }
 
-func ParseSource(ctx context.Context, workspace string, src *common.Source) (ParsedFile, error) {
+func ParseSource(ctx context.Context, src *common.Source) (ParsedFile, error) {
 	ctx, task := trace.NewTask(ctx, "treeSitterParse")
 
 	ext := filepath.Ext(src.Path)
@@ -53,10 +52,9 @@ func ParseSource(ctx context.Context, workspace string, src *common.Source) (Par
 	task.End()
 
 	return ParsedFile{
-		Workspace: workspace,
-		Source:    src,
-		Module:    root,
-		Language:  lang,
+		Source:   src,
+		Module:   root,
+		Language: lang,
 	}, nil
 }
 
@@ -65,7 +63,7 @@ func ParseFile(ctx context.Context, workspace string, file string) (ParsedFile, 
 
 	path := filepath.Join(workspace, file)
 
-	src, err := common.NewSourceFromFile(ctx, path)
+	src, err := common.NewSourceFromFile(ctx, workspace, path)
 
 	if err != nil {
 		panic(fmt.Errorf("Failed to read main file", err))
@@ -73,5 +71,5 @@ func ParseFile(ctx context.Context, workspace string, file string) (ParsedFile, 
 
 	task.End()
 
-	return ParseSource(ctx, workspace, src)
+	return ParseSource(ctx, src)
 }

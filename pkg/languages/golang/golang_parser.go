@@ -281,6 +281,10 @@ func (glsd *GolangLanguageSupportDefinition) Parse(ctx context.Context, src *com
 	return root, nil
 }
 
+func (glsd *GolangLanguageSupportDefinition) GetLanguageID() string {
+	return "go"
+}
+
 func (glsd *GolangLanguageSupportDefinition) GetTreeSitterLanguage() *tree_sitter.Language {
 	return tree_sitter.NewLanguage(tree_sitter_golang.Language())
 }

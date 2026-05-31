@@ -7,11 +7,12 @@ import (
 )
 
 type Source struct {
-	Path   string
-	Buffer []byte `json:"-"`
+	Workspace string
+	Path      string
+	Buffer    []byte `json:"-"`
 }
 
-func NewSourceFromFile(ctx context.Context, path string) (*Source, error) {
+func NewSourceFromFile(ctx context.Context, workspace string, path string) (*Source, error) {
 	_, task := trace.NewTask(ctx, "loadFile")
 
 	defer task.End()
@@ -23,7 +24,8 @@ func NewSourceFromFile(ctx context.Context, path string) (*Source, error) {
 	}
 
 	return &Source{
-		Path:   path,
-		Buffer: buf,
+		Workspace: workspace,
+		Path:      path,
+		Buffer:    buf,
 	}, nil
 }

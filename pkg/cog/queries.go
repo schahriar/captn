@@ -12,7 +12,7 @@ func (pf ParsedFile) ListImports(ctx context.Context) ([]lsp.Location, error) {
 	reg := trace.StartRegion(ctx, "ListImports:LSPServerLoad")
 
 	client, err := lsp.Start(ctx, lsp.StartOptions{
-		WorkspaceRoot: pf.Workspace,
+		WorkspaceRoot: pf.Source.Workspace,
 		ClientName:    "captn-lsp-client",
 		ClientVersion: "0.1.0",
 		Spawn:         pf.Language.NewLSPServer,
@@ -39,13 +39,10 @@ func (pf ParsedFile) ListImports(ctx context.Context) ([]lsp.Location, error) {
 
 		refs, err := client.ImportDefinition(ctx, lsp.TextDocumentItem{
 			URI:        lsp.FileURI(pf.Source.Path),
-			LanguageID: "go",
+			LanguageID: pf.Language.GetLanguageID(),
 			Version:    1,
 			Text:       string(pf.Source.Buffer),
-		}, lsp.Range{
-			Start: lsp.Position{Line: pos.Start.Line, Character: pos.Start.Column},
-			End:   lsp.Position{Line: pos.End.Line, Character: pos.End.Column},
-		})
+		}, pos)
 
 		if err != nil {
 			panic(err)
