@@ -52,7 +52,7 @@ func TestASTNodeContainerDebugPosition(t *testing.T) {
 	src := &common.Source{Path: "test.go", Buffer: []byte("hello")}
 	cont := newTestContainer(src, 0, 5)
 	dbg := cont.DebugPosition()
-	assert.Equal(t, "test.go:0:0-0:5", dbg.Position)
+	assert.Equal(t, "test.go:1:1-1:6", dbg.Position)
 	assert.NotEmpty(t, dbg.SourceHash)
 }
 
@@ -63,7 +63,7 @@ func TestASTNodeContainerMarshalJSON(t *testing.T) {
 	assert.NoError(t, err)
 	var result map[string]string
 	assert.NoError(t, json.Unmarshal(b, &result))
-	assert.Equal(t, "test.go:0:0-0:5", result["Position"])
+	assert.Equal(t, "test.go:1:1-1:6", result["Position"])
 	assert.NotEmpty(t, result["SourceHash"])
 }
 
@@ -72,7 +72,7 @@ func TestASTNodeContainerMarshalYAML(t *testing.T) {
 	cont := newTestContainer(src, 0, 5)
 	b, err := cont.MarshalYAML()
 	assert.NoError(t, err)
-	assert.Contains(t, string(b), "test.go:0:0-0:5")
+	assert.Contains(t, string(b), "test.go:1:1-1:6")
 }
 
 func TestASTSymbolFields(t *testing.T) {

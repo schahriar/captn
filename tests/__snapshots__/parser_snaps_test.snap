@@ -1,0 +1,79 @@
+
+[TestParserSimpleFuncParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:1:1-6:1
+        sourcehash: |
+          2fe3aa18
+  - Name:
+      - fixture_main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:1:1-6:1
+              sourcehash: |
+                2fe3aa18
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:1-5:2
+                        sourcehash: |
+                          6587d36e
+                  - Name:
+                      - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:7-3:14
+                              sourcehash: |
+                                70021360
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:8-3:9
+                                    sourcehash: |
+                                      6b643b84
+                              - Name:
+                                  - v
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:10-3:13
+                                    sourcehash: |
+                                      1451dab1
+                              - Name:
+                                  - int
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:15-3:21
+                              sourcehash: |
+                                9ebeb2a9
+                        - Name:
+                            - string
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:22-5:2
+                              sourcehash: |
+                                ce047ba9
+                        - Virtual:
+                            - ASTReturnStatement:
+                                - - ASTNodeContainer:
+                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:2-4:22
+                                        sourcehash: |
+                                          6a439d63
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:9-4:22
+                                                  sourcehash: |
+                                                    52dda8db
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:9-4:15
+                                                        sourcehash: |
+                                                          9ebeb2a9
+                                                  - Name:
+                                                      - string
+                                            - Arguments:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:21
+                                                        sourcehash: |
+                                                          780bfb58
+                                            - Virtual: []
+
+---

@@ -14,6 +14,7 @@ all: mod build generate init debug
 mod:
 	go mod tidy
 	go mod vendor
+	bash scripts/vendor-cgo.sh
 
 sign:
 	@OS=$$(uname -s); \

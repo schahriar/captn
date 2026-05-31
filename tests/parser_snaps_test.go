@@ -15,7 +15,7 @@ func TestParserSimpleFuncParse(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	pf, err := cog.ParseFile(ctx, cwd, "./fixtures/baseproj/simple.go")
+	pf, err := cog.ParseFile(ctx, cwd, "./fixtures/golang/baseproj/simple.go")
 
 	assert.NoError(t, err)
 

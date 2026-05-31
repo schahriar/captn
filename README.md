@@ -2,18 +2,17 @@
 
 ## TODO:
 
-- [x] Build tree from treeparser
-- [x] Make Symbols nodes so we can get location
-- [x] Support returns
-- [x] Add language server client
-- [ ] Add snapshot tests per language
 - [ ] Add LSP and AST tests
   - [ ] Resolve imports and symbols
-- [ ] Interval tree for fast lookups https://github.com/rdleal/intervalst
+  - [ ] Best to add snapshot testing with some unit tests on the tree structure
+- [ ] Modify function names to be a symbol to track position
+- [ ] Interval tree for each symbol for fast lookups https://github.com/rdleal/intervalst
 - [ ] Populate "Semantic Graph" from ASTNodes
   - [ ] https://github.com/dominikbraun/graph
 - [ ] Assign hashes to each node and layered hashes to each edge
-- [ ] Persist graph
+- [ ] Add observation backend
+  - [ ] Claude Code will be the first provider
+- [ ] Persist graph observations as inline log
 - [ ] Assign meaning to edges and cache
 - [ ] Restore graph
 - [ ] Support Comments
