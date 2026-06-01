@@ -33,7 +33,14 @@ func (node *ASTFuncArgument) String() string {
 }
 
 func (node *ASTFuncArgument) Children() []ASTNode {
-	return []ASTNode{}
+	list := []ASTNode{}
+	if node.Identifier != nil {
+		list = append(list, node.Identifier)
+	}
+	if node.Type != nil {
+		list = append(list, node.Type)
+	}
+	return list
 }
 
 func (node *ASTFuncArgument) AppendChild(n ASTNode) {
@@ -76,10 +83,15 @@ func (node *ASTFuncExpression) String() string {
 func (node *ASTFuncExpression) Children() []ASTNode {
 	list := []ASTNode{}
 
+	if node.Name != nil {
+		list = append(list, node.Name)
+	}
 	for _, arg := range node.Arguments {
 		list = append(list, arg)
 	}
-
+	if node.ReturnType != nil {
+		list = append(list, node.ReturnType)
+	}
 	list = append(list, node.Block)
 
 	return list

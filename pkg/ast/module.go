@@ -63,7 +63,14 @@ func (node *ASTImportStatement) GetContainer() *ASTNodeContainer {
 }
 
 func (node *ASTImportStatement) Children() []ASTNode {
-	return []ASTNode{}
+	list := []ASTNode{}
+	if node.Namespace != nil {
+		list = append(list, node.Namespace)
+	}
+	if node.Reference != nil {
+		list = append(list, node.Reference)
+	}
+	return list
 }
 
 func (node *ASTImportStatement) AppendChild(n ASTNode) {

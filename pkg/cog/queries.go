@@ -5,10 +5,11 @@ import (
 	"runtime/trace"
 
 	"github.com/schahriar/captn/pkg/ast"
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/lsp"
 )
 
-func (pf ParsedFile) ListImports(ctx context.Context) ([]lsp.Location, error) {
+func (pf *COGNode) ListImports(ctx context.Context) ([]lsp.Location, error) {
 	reg := trace.StartRegion(ctx, "ListImports:LSPServerLoad")
 
 	client, err := lsp.Start(ctx, lsp.StartOptions{
@@ -56,4 +57,27 @@ func (pf ParsedFile) ListImports(ctx context.Context) ([]lsp.Location, error) {
 	reg.End()
 
 	return impLoc, nil
+}
+
+func (pf *COGNode) QueryNodesWithinRange(r common.FileRange) []ast.ASTNode {
+	hashes, ok := pf.intervals.AllIntersections(r.Start, r.End)
+
+	if !ok {
+		return []ast.ASTNode{}
+	}
+
+	nodes := make([]ast.ASTNode, 0, len(hashes))
+
+	for _, hash := range hashes {
+		node, ok := pf.lookupTable[hash]
+		if !ok {
+			continue
+		}
+
+		if node.GetPosition().ContainedBy(r) {
+			nodes = append(nodes, node)
+		}
+	}
+
+	return nodes
 }

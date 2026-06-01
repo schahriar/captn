@@ -6,6 +6,7 @@ require (
 	github.com/alecthomas/kong v1.15.0
 	github.com/gkampitakis/go-snaps v0.5.22
 	github.com/goccy/go-yaml v1.19.2
+	github.com/rdleal/intervalst v1.5.0
 	github.com/stretchr/testify v1.11.1
 	github.com/tree-sitter/go-tree-sitter v0.25.0
 	github.com/tree-sitter/tree-sitter-go v0.25.0

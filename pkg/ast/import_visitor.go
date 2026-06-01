@@ -5,7 +5,7 @@ type ImportVisitor struct {
 }
 
 func (vis *ImportVisitor) VisitModule(node *ASTModule) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitImport(node *ASTImportStatement) interface{} {
@@ -14,23 +14,23 @@ func (vis *ImportVisitor) VisitImport(node *ASTImportStatement) interface{} {
 }
 
 func (vis *ImportVisitor) VisitBlock(node *ASTBlock) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitCallExpression(node *ASTCallExpression) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitFuncExpression(node *ASTFuncExpression) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitFuncArgument(node *ASTFuncArgument) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitDeclaration(node *ASTDeclaration) interface{} {
-	return autoVisit(vis, node)
+	return AutoVisit(vis, node)
 }
 
 func (vis *ImportVisitor) VisitReturn(node *ASTReturnStatement) interface{} {
@@ -41,5 +41,5 @@ func (vis *ImportVisitor) VisitSymbol(node *ASTSymbol) interface{} {
 	return nil
 }
 
-// Conformance change
+// Conformance check
 var _ ASTVisitor = &ImportVisitor{}

@@ -161,7 +161,6 @@ func TestASTFuncArgumentFields(t *testing.T) {
 	arg := ast.NewASTFuncArgument(cont, id, tp)
 	assert.Equal(t, id, arg.Identifier)
 	assert.Equal(t, tp, arg.Type)
-	assert.Len(t, arg.Children(), 0)
 }
 
 func TestASTFuncArgumentAppendChildPanics(t *testing.T) {

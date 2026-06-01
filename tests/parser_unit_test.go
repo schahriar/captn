@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func parseSimple(t *testing.T) cog.ParsedFile {
+func parseSimple(t *testing.T) *cog.COGNode {
 	t.Helper()
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)

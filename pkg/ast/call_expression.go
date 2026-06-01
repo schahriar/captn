@@ -35,6 +35,12 @@ func (node *ASTCallExpression) String() string {
 func (node *ASTCallExpression) Children() []ASTNode {
 	list := []ASTNode{}
 
+	if node.Namespace != nil {
+		list = append(list, node.Namespace)
+	}
+	if node.Symbol != nil {
+		list = append(list, node.Symbol)
+	}
 	for _, arg := range node.Arguments {
 		list = append(list, arg)
 	}

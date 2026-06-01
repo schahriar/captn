@@ -32,9 +32,13 @@ func (cont *ASTNodeContainer) GetPosition() common.FileRange {
 	return cont.Node.GetPosition()
 }
 
+func (cont *ASTNodeContainer) GetSourceHash() uint32 {
+	return crc32.ChecksumIEEE(cont.GetRawSource())
+}
+
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
-	hash := crc32.ChecksumIEEE(cont.GetRawSource())
+	hash := cont.GetSourceHash()
 
 	return ASTNodeSourcePosition{
 		Position:   pos.String(),
@@ -62,6 +66,7 @@ func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
 
 type ASTNode interface {
 	GetPosition() common.FileRange
+	GetSourceHash() uint32
 	DebugPosition() ASTNodeSourcePosition
 	GetRawSource() []byte
 	GetParserNode() ASTParserNode

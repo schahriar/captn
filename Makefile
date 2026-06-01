@@ -12,6 +12,7 @@ GO_ENV = PATH="$(GOBIN_DIR):$$PATH" \
 all: mod build generate init debug
 
 mod:
+	chmod -R u+w vendor/ 2>/dev/null || true
 	go mod tidy
 	go mod vendor
 	bash scripts/vendor-cgo.sh

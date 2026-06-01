@@ -7,21 +7,25 @@ import (
 	"path/filepath"
 	"runtime/trace"
 
+	"github.com/rdleal/intervalst/interval"
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/languages"
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-type ParsedFile struct {
+type COGNode struct {
+	isIndexed   bool
+	lookupTable map[uint32]ast.ASTNode
+	intervals   *interval.SearchTree[uint32, common.FilePosition]
+
 	Source   *common.Source
 	Module   *ast.ASTModule
 	Language languages.LanguageSupport
 }
 
-func ParseSource(ctx context.Context, src *common.Source) (ParsedFile, error) {
+func ParseSource(ctx context.Context, src *common.Source) (*COGNode, error) {
 	ctx, task := trace.NewTask(ctx, "treeSitterParse")
-
 	ext := filepath.Ext(src.Path)
 
 	var lang languages.LanguageSupport
@@ -29,7 +33,7 @@ func ParseSource(ctx context.Context, src *common.Source) (ParsedFile, error) {
 	if ext == ".go" {
 		lang = languages.Golang
 	} else {
-		return ParsedFile{}, errors.New("Unsupported file type") // TODO: Use knownerrors
+		return &COGNode{}, errors.New("Unsupported file type") // TODO: Use knownerrors
 	}
 
 	tsp := tree_sitter.NewParser()
@@ -46,19 +50,23 @@ func ParseSource(ctx context.Context, src *common.Source) (ParsedFile, error) {
 	root, err := lang.Parse(ctx, src, tree)
 
 	if err != nil {
-		return ParsedFile{}, fmt.Errorf("Failed to parse Go code: %w", err)
+		return nil, fmt.Errorf("Failed to parse Go code: %w", err)
 	}
 
-	task.End()
-
-	return ParsedFile{
+	pf := COGNode{
 		Source:   src,
 		Module:   root,
 		Language: lang,
-	}, nil
+	}
+
+	pf.IndexNodes()
+
+	task.End()
+
+	return &pf, nil
 }
 
-func ParseFile(ctx context.Context, workspace string, file string) (ParsedFile, error) {
+func ParseFile(ctx context.Context, workspace string, file string) (*COGNode, error) {
 	ctx, task := trace.NewTask(ctx, "loadFile")
 
 	path := filepath.Join(workspace, file)
@@ -66,7 +74,7 @@ func ParseFile(ctx context.Context, workspace string, file string) (ParsedFile, 
 	src, err := common.NewSourceFromFile(ctx, workspace, path)
 
 	if err != nil {
-		panic(fmt.Errorf("Failed to read main file", err))
+		return nil, fmt.Errorf("Failed to read main file %w", err)
 	}
 
 	task.End()

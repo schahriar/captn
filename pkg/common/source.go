@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"runtime/trace"
 )
@@ -10,6 +11,62 @@ type Source struct {
 	Workspace string
 	Path      string
 	Buffer    []byte `json:"-"`
+}
+
+func (src *Source) BytePositionForLineColumn(line int, col int) (int, error) {
+	if src == nil {
+		return 0, fmt.Errorf("source is nil")
+	}
+
+	if line < 0 {
+		return 0, fmt.Errorf("line cannot be negative")
+	}
+
+	if col < 0 {
+		return 0, fmt.Errorf("column cannot be negative")
+	}
+
+	currentLine := 0
+	lineStart := 0
+
+	for i, b := range src.Buffer {
+		if currentLine == line {
+			lineEnd := len(src.Buffer)
+
+			for j := i; j < len(src.Buffer); j++ {
+				if src.Buffer[j] == '\n' {
+					lineEnd = j
+
+					if lineEnd > lineStart && src.Buffer[lineEnd-1] == '\r' {
+						lineEnd--
+					}
+
+					break
+				}
+			}
+
+			if lineStart+col > lineEnd {
+				return 0, fmt.Errorf("column %d is out of range for line %d", col, line)
+			}
+
+			return lineStart + col, nil
+		}
+
+		if b == '\n' {
+			currentLine++
+			lineStart = i + 1
+		}
+	}
+
+	if currentLine == line {
+		if lineStart+col > len(src.Buffer) {
+			return 0, fmt.Errorf("column %d is out of range for line %d", col, line)
+		}
+
+		return lineStart + col, nil
+	}
+
+	return 0, fmt.Errorf("line %d is out of range", line)
 }
 
 func NewSourceFromFile(ctx context.Context, workspace string, path string) (*Source, error) {
