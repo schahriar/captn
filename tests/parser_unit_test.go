@@ -9,13 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func parseSimple(t *testing.T) *cog.COGNode {
+func parseTestFile(t *testing.T, f string) *cog.COGNode {
 	t.Helper()
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)
-	pf, err := cog.ParseFile(t.Context(), cwd, "./fixtures/golang/baseproj/simple.go")
+	pf, err := cog.ParseFile(t.Context(), cwd, f)
 	assert.NoError(t, err)
 	return pf
+}
+
+func parseSimple(t *testing.T) *cog.COGNode {
+	t.Helper()
+	return parseTestFile(t, "./fixtures/golang/baseproj/simple.go")
 }
 
 func TestParserModule(t *testing.T) {
@@ -83,8 +88,5 @@ func TestParserCallExpression(t *testing.T) {
 	assert.Nil(t, call.Namespace)
 	if assert.NotNil(t, call.Symbol) {
 		assert.Equal(t, "string", call.Symbol.Name)
-	}
-	if assert.Len(t, call.Arguments, 1) {
-		assert.Nil(t, call.Arguments[0].Identifier)
 	}
 }

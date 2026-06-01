@@ -74,6 +74,7 @@ type ASTNode interface {
 	Children() []ASTNode
 	AppendChild(ASTNode)
 	String() string
+	Kind() string
 	Accept(visitor ASTVisitor) interface{}
 }
 
@@ -90,6 +91,7 @@ var _ ASTNode = &ASTFuncExpression{}
 var _ ASTNode = &ASTFuncArgument{}
 var _ ASTNode = &ASTBlock{}
 var _ ASTNode = &ASTReturnStatement{}
+var _ ASTNode = &ASTCallExpression{}
 var _ ASTNode = &ASTDeclaration{}
 var _ ASTNode = &ASTSymbol{}
 

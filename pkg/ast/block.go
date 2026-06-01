@@ -9,6 +9,10 @@ type ASTBlock struct {
 	Virtual []ASTNode
 }
 
+func (node *ASTBlock) Kind() string {
+	return "Block"
+}
+
 func (node *ASTBlock) GetContainer() *ASTNodeContainer {
 	return node.ASTNodeContainer
 }

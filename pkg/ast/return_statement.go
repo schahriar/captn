@@ -10,6 +10,10 @@ type ASTReturnStatement struct {
 	Virtual []ASTNode
 }
 
+func (node *ASTReturnStatement) Kind() string {
+	return "Return"
+}
+
 func NewReturnStatement(cont *ASTNodeContainer) *ASTReturnStatement {
 	return &ASTReturnStatement{
 		ASTNodeContainer: cont,

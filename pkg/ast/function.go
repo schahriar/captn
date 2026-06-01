@@ -16,6 +16,10 @@ type ASTFuncArgument struct {
 	Type       *ASTSymbol
 }
 
+func (node *ASTFuncArgument) Kind() string {
+	return "FuncArgument"
+}
+
 func NewASTFuncArgument(cont *ASTNodeContainer, nid *ASTSymbol, nt *ASTSymbol) *ASTFuncArgument {
 	return &ASTFuncArgument{
 		ASTNodeContainer: cont,
@@ -60,6 +64,10 @@ type ASTFuncExpression struct {
 	Arguments  []*ASTFuncArgument
 	ReturnType *ASTSymbol
 	Block      *ASTBlock
+}
+
+func (node *ASTFuncExpression) Kind() string {
+	return "FuncExpression"
 }
 
 func NewASTFuncExpression(cont *ASTNodeContainer) *ASTFuncExpression {

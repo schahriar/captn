@@ -1,12 +1,7 @@
 # captn
 
 ## TODO:
-
-- [x] Modify function names to be a symbol to track position
-- [x] Interval tree for each symbol for fast lookups https://github.com/rdleal/intervalst
-  - [x] Implement parser visitor
-  - [x] Assign hashes to each node
-  - [ ] Implement query
+- [ ] Add a new type for import resolutions
 - [ ] Add LSP and AST tests
   - [ ] Resolve imports and symbols
   - [ ] Best to add snapshot testing with some unit tests on the tree structure

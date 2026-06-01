@@ -25,6 +25,10 @@ func (node *ASTModule) String() string {
 	return "Module"
 }
 
+func (node *ASTModule) Kind() string {
+	return "Module"
+}
+
 func (node *ASTModule) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitModule(node)
@@ -60,6 +64,10 @@ func NewASTImportStatement(cont *ASTNodeContainer) *ASTImportStatement {
 
 func (node *ASTImportStatement) GetContainer() *ASTNodeContainer {
 	return node.ASTNodeContainer
+}
+
+func (node *ASTImportStatement) Kind() string {
+	return "Import"
 }
 
 func (node *ASTImportStatement) Children() []ASTNode {

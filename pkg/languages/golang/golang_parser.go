@@ -18,6 +18,18 @@ import (
 // TODO: Support parsing go embeds as references
 // TODO: Support comments
 
+func collectIdentifiers(node parsers.ParserNode) []*ast.ASTSymbol {
+	if node.Kind == "identifier" {
+		return []*ast.ASTSymbol{ast.NewASTSymbol(ast.NewASTNodeContainer(node), node.GetTextContent())}
+	}
+	var syms []*ast.ASTSymbol
+	node.IterateChildren(func(child parsers.ParserNode) (bool, error) {
+		syms = append(syms, collectIdentifiers(child)...)
+		return true, nil
+	})
+	return syms
+}
+
 func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node parsers.ParserNode) error {
 	switch node.Kind {
 	case "package_clause":
@@ -173,24 +185,14 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 
 		if argList, ok := node.GetNthChildByKind("argument_list", 0); ok {
 			argList.IterateChildren(func(pn parsers.ParserNode) (bool, error) {
-				var sym *ast.ASTSymbol
-				switch pn.Kind {
-				case "identifier":
-					sym = ast.NewASTSymbol(ast.NewASTNodeContainer(pn), pn.GetTextContent())
-				case "unary_expression":
-					// e.g. &X - extract the operand identifier
-					if operand, ok := pn.GetNthChildByKind("identifier", 0); ok {
-						sym = ast.NewASTSymbol(ast.NewASTNodeContainer(operand), operand.GetTextContent())
-					}
-				case "selector_expression":
-					// e.g. src.Buffer - the operand variable is the reference
-					if operand, ok := pn.ChildByFieldName("operand"); ok {
-						if operand.Kind == "identifier" {
-							sym = ast.NewASTSymbol(ast.NewASTNodeContainer(operand), operand.GetTextContent())
-						}
+				syms := collectIdentifiers(pn)
+				if len(syms) == 0 {
+					callExpr.Arguments = append(callExpr.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), nil, nil))
+				} else {
+					for _, sym := range syms {
+						callExpr.Arguments = append(callExpr.Arguments, ast.NewASTFuncArgument(sym.GetContainer(), sym, nil))
 					}
 				}
-				callExpr.Arguments = append(callExpr.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), sym, nil))
 				return true, nil
 			})
 		}

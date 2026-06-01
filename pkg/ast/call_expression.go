@@ -14,6 +14,10 @@ type ASTCallExpression struct {
 	Virtual   []ASTNode
 }
 
+func (node *ASTCallExpression) Kind() string {
+	return "CallExpression"
+}
+
 func NewASTCallExpression(cont *ASTNodeContainer) *ASTCallExpression {
 	return &ASTCallExpression{
 		ASTNodeContainer: cont,
@@ -29,7 +33,11 @@ func (node *ASTCallExpression) GetContainer() *ASTNodeContainer {
 }
 
 func (node *ASTCallExpression) String() string {
-	return fmt.Sprintf("CallExpression  %v.%v(%v)", node.Namespace, node.Symbol, len(node.Arguments))
+	if node.Namespace == nil {
+		return fmt.Sprintf("CallExpression %v(%v)", node.Symbol, len(node.Arguments))
+	}
+
+	return fmt.Sprintf("CallExpression %v.%v(%v)", node.Namespace, node.Symbol, len(node.Arguments))
 }
 
 func (node *ASTCallExpression) Children() []ASTNode {

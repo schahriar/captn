@@ -13,6 +13,10 @@ type ASTDeclaration struct {
 	Virtual []ASTNode // RHS expressions
 }
 
+func (node *ASTDeclaration) Kind() string {
+	return "Declaration"
+}
+
 func NewASTDeclaration(cont *ASTNodeContainer) *ASTDeclaration {
 	return &ASTDeclaration{
 		ASTNodeContainer: cont,

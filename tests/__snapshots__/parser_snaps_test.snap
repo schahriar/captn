@@ -76,9 +76,16 @@
                                                       - string
                                             - Arguments:
                                                 - - ASTNodeContainer:
-                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:21
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:17
                                                         sourcehash: |
-                                                          780bfb58
+                                                          6b643b84
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:17
+                                                              sourcehash: |
+                                                                6b643b84
+                                                        - Name:
+                                                            - v
                                             - Virtual: []
 
 ---
@@ -167,9 +174,16 @@
                                             - Println
                                   - Arguments:
                                       - - ASTNodeContainer:
-                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:43
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
                                               sourcehash: |
-                                                66529abe
+                                                267678d9
+                                        - Identifier:
+                                            - - ASTNodeContainer:
+                                                  - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
+                                                    sourcehash: |
+                                                      267678d9
+                                              - Name:
+                                                  - fixture_dep1
                                   - Virtual:
                                       - ASTCallExpression:
                                           - - ASTNodeContainer:

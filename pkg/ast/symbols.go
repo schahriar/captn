@@ -11,6 +11,10 @@ type ASTSymbol struct {
 	Name string
 }
 
+func (node *ASTSymbol) Kind() string {
+	return "Symbol"
+}
+
 func NewASTSymbol(cont *ASTNodeContainer, name string) *ASTSymbol {
 	return &ASTSymbol{
 		ASTNodeContainer: cont,
