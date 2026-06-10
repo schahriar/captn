@@ -26,7 +26,7 @@ func (apn ParserNode) Debug() string {
 	return apn.raw.ToSexp()
 }
 
-func (apn ParserNode) GetPosition() common.FileRange {
+func (apn ParserNode) GetPosition() *common.FileRange {
 	return common.NewFileRange(
 		apn.Source,
 		common.NewFilePosition(

@@ -1,9 +1,9 @@
 package tests_test
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
 	"github.com/stretchr/testify/assert"
@@ -54,9 +54,9 @@ func TestCOGRangeQueryModule(t *testing.T) {
 func TestCOGResolveImports(t *testing.T) {
 	pf := parseTestFile(t, "./fixtures/golang/multidep/cmd/main.go")
 
-	locs, err := pf.ListImports(t.Context())
+	imps, err := pf.ListImports(t.Context())
 
 	assert.NoError(t, err)
 
-	fmt.Println(locs)
+	snaps.MatchYAML(t, imps)
 }

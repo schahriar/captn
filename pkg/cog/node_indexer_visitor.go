@@ -7,7 +7,7 @@ import (
 )
 
 type nodeIndexerVisitor struct {
-	pf *COGNode
+	pf *COGFile
 }
 
 func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
@@ -59,7 +59,7 @@ func (vis *nodeIndexerVisitor) VisitSymbol(node *ast.ASTSymbol) interface{} {
 // Conformance check
 var _ ast.ASTVisitor = &nodeIndexerVisitor{}
 
-func (pf *COGNode) IndexNodes() {
+func (pf *COGFile) IndexNodes() {
 	vis := nodeIndexerVisitor{pf: pf}
 
 	pf.lookupTable = map[uint32]ast.ASTNode{}

@@ -18,10 +18,6 @@ var CLI struct {
 	} `cmd:"" help:"Evaluate from main file"`
 }
 
-func x(v string) int {
-	return 0
-}
-
 func main() {
 	cli := kong.Parse(&CLI)
 	switch cli.Command() {
@@ -48,18 +44,17 @@ func main() {
 		cwd, err := os.Getwd()
 
 		if err != nil {
-			panic(fmt.Errorf("Invalid CWD (current working directory) %w", err))
+			panic(fmt.Errorf("invalid CWD (current working directory) %w", err))
 		}
 
-		file, err := cog.ParseFile(ctx, cwd, cli.Args[1])
+		g := cog.NewCOG(cwd)
 
+		file, err := g.LoadFile(ctx, cli.Args[1])
 		if err != nil {
-			panic(fmt.Errorf("Failed to parse file (%v) %w", file, err))
+			panic(err)
 		}
 
 		task.End()
-
-		file.ListImports(ctx)
 
 		dbg := file.Module.Debug()
 		ser, _ := yaml.Marshal(dbg)

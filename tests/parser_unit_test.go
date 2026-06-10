@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func parseTestFile(t *testing.T, f string) *cog.COGNode {
+func parseTestFile(t *testing.T, f string) *cog.COGFile {
 	t.Helper()
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)
@@ -18,7 +18,7 @@ func parseTestFile(t *testing.T, f string) *cog.COGNode {
 	return pf
 }
 
-func parseSimple(t *testing.T) *cog.COGNode {
+func parseSimple(t *testing.T) *cog.COGFile {
 	t.Helper()
 	return parseTestFile(t, "./fixtures/golang/baseproj/simple.go")
 }

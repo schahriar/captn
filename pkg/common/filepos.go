@@ -23,15 +23,15 @@ func NewFilePosition(src *Source, line int, col int, bp int) FilePosition {
 	}
 }
 
-func NewFileRangeAutoBytePosition(src *Source, sl int, sc int, el int, ec int) (FileRange, error) {
+func NewFileRangeAutoBytePosition(src *Source, sl int, sc int, el int, ec int) (*FileRange, error) {
 	startBP, err := src.BytePositionForLineColumn(sl, sc)
 	if err != nil {
-		return FileRange{}, err
+		return nil, err
 	}
 
 	endBP, err := src.BytePositionForLineColumn(el, ec)
 	if err != nil {
-		return FileRange{}, err
+		return nil, err
 	}
 
 	start := NewFilePosition(src, sl, sc, startBP)
@@ -67,6 +67,10 @@ type FileRange struct {
 	Source *Source
 	Start  FilePosition
 	End    FilePosition
+}
+
+func (fr FileRange) GetBytes() []byte {
+	return fr.Source.Buffer[fr.Start.BytePosition:fr.End.BytePosition]
 }
 
 func (fr FileRange) Before(cr FileRange) bool {
@@ -105,8 +109,8 @@ func (fr FileRange) GetByteRange() [2]int {
 	return [2]int{fr.Start.BytePosition, fr.End.BytePosition}
 }
 
-func NewFileRange(src *Source, start FilePosition, end FilePosition) FileRange {
-	return FileRange{
+func NewFileRange(src *Source, start FilePosition, end FilePosition) *FileRange {
+	return &FileRange{
 		Source: src,
 		Start:  start,
 		End:    end,

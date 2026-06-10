@@ -14,7 +14,7 @@ import (
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-type COGNode struct {
+type COGFile struct {
 	isIndexed   bool
 	lookupTable map[uint32]ast.ASTNode
 	intervals   *interval.SearchTree[uint32, common.FilePosition]
@@ -24,7 +24,11 @@ type COGNode struct {
 	Language languages.LanguageSupport
 }
 
-func ParseSource(ctx context.Context, src *common.Source) (*COGNode, error) {
+func (f COGFile) GetHash() string {
+	return "TODO"
+}
+
+func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	ctx, task := trace.NewTask(ctx, "treeSitterParse")
 	ext := filepath.Ext(src.Path)
 
@@ -33,7 +37,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGNode, error) {
 	if ext == ".go" {
 		lang = languages.Golang
 	} else {
-		return &COGNode{}, errors.New("Unsupported file type") // TODO: Use knownerrors
+		return &COGFile{}, errors.New("Unsupported file type") // TODO: Use knownerrors
 	}
 
 	tsp := tree_sitter.NewParser()
@@ -53,7 +57,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGNode, error) {
 		return nil, fmt.Errorf("Failed to parse Go code: %w", err)
 	}
 
-	pf := COGNode{
+	pf := COGFile{
 		Source:   src,
 		Module:   root,
 		Language: lang,
@@ -66,7 +70,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGNode, error) {
 	return &pf, nil
 }
 
-func ParseFile(ctx context.Context, workspace string, file string) (*COGNode, error) {
+func ParseFile(ctx context.Context, workspace string, file string) (*COGFile, error) {
 	ctx, task := trace.NewTask(ctx, "loadFile")
 
 	path := filepath.Join(workspace, file)

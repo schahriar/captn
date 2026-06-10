@@ -12,11 +12,11 @@ import (
 
 type mockParserNode struct {
 	source   *common.Source
-	position common.FileRange
+	position *common.FileRange
 }
 
-func (m *mockParserNode) GetSource() *common.Source     { return m.source }
-func (m *mockParserNode) GetPosition() common.FileRange { return m.position }
+func (m *mockParserNode) GetSource() *common.Source      { return m.source }
+func (m *mockParserNode) GetPosition() *common.FileRange { return m.position }
 
 func newTestContainer(src *common.Source, startByte, endByte int) *ast.ASTNodeContainer {
 	fpStart := common.NewFilePosition(src, 0, 0, startByte)

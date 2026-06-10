@@ -1,12 +1,8 @@
 # captn
 
 ## TODO:
-- [ ] Add a new type for import resolutions
-- [ ] Add LSP and AST tests
-  - [ ] Resolve imports and symbols
-  - [ ] Best to add snapshot testing with some unit tests on the tree structure
 - [ ] Populate "Semantic Graph" from ASTNodes
-  - [ ] https://github.com/dominikbraun/graph
+  - [ ] Resolve imports to final path
   - [ ] Subgraphs for symbol relationships?
   - [ ] Assign layered hashes to each edge
 - [ ] Add observation backend
@@ -18,6 +14,8 @@
     - [ ] Start with 10 shards
 - [ ] Assign meaning to edges and cache
 - [ ] Restore graph
+- [ ] Add a per language import to package name and path resolver
+  - [ ] Possibly in AST?
 - [ ] Support Comments
 - [ ] MCP Server
 - [ ] Integrate with Claude Code as COG Frontend and Backend

@@ -15,7 +15,7 @@ type ASTNodeContainer struct {
 
 type ASTParserNode interface {
 	GetSource() *common.Source
-	GetPosition() common.FileRange
+	GetPosition() *common.FileRange
 }
 
 type ASTNodeSourcePosition struct {
@@ -28,7 +28,7 @@ func (cont *ASTNodeContainer) GetRawSource() []byte {
 	return cont.Node.GetSource().Buffer[nr[0]:nr[1]]
 }
 
-func (cont *ASTNodeContainer) GetPosition() common.FileRange {
+func (cont *ASTNodeContainer) GetPosition() *common.FileRange {
 	return cont.Node.GetPosition()
 }
 
@@ -65,7 +65,7 @@ func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
 }
 
 type ASTNode interface {
-	GetPosition() common.FileRange
+	GetPosition() *common.FileRange
 	GetSourceHash() uint32
 	DebugPosition() ASTNodeSourcePosition
 	GetRawSource() []byte
