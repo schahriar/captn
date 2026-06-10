@@ -25,7 +25,7 @@ type COGFile struct {
 }
 
 func (f COGFile) GetHash() string {
-	return "TODO"
+	return f.Source.Path
 }
 
 func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {

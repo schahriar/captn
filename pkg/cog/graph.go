@@ -9,7 +9,7 @@ import (
 )
 
 type COG struct {
-	graph       graph.Graph[string, COGNode]
+	Graph       graph.Graph[string, COGNode]
 	mux         sync.Mutex
 	loadedFiles map[string]*COGFile
 	Workspace   string
@@ -23,7 +23,7 @@ type COGNode interface {
 
 func NewCOG(workspace string) *COG {
 	return &COG{
-		graph: graph.New(func(cogn COGNode) string {
+		Graph: graph.New(func(cogn COGNode) string {
 			return cogn.GetHash()
 		}),
 		mux:         sync.Mutex{},
@@ -65,9 +65,9 @@ func (cog *COG) loadImports(
 	var wg sync.WaitGroup
 
 	for _, imp := range imports {
-		imp := imp // important for goroutine capture safety
+		innerimp := imp // important for goroutine capture safety
 
-		path := imp.External.Source.Path
+		path := innerimp.External.Source.Path
 		if path == "" {
 			continue
 		}
@@ -92,6 +92,13 @@ func (cog *COG) loadImports(
 			}
 
 			nodes := []COGNode{fileNode}
+
+			cog.mux.Lock()
+
+			cog.Graph.AddVertex(fileNode)
+			cog.Graph.AddEdge(node.GetHash(), fileNode.GetHash())
+
+			cog.mux.Unlock()
 
 			children, err := cog.loadImports(ctx, fileNode, depth-1, visited, visitedMux)
 			if err != nil {
@@ -139,6 +146,8 @@ func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
 	}
 
 	cog.loadedFiles[file] = f
+
+	cog.Graph.AddVertex(f)
 
 	return f, nil
 }

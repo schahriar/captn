@@ -8,6 +8,7 @@ import (
 	"runtime/trace"
 
 	"github.com/alecthomas/kong"
+	"github.com/dominikbraun/graph/draw"
 	"github.com/goccy/go-yaml"
 	"github.com/schahriar/captn/pkg/cog"
 )
@@ -55,6 +56,11 @@ func main() {
 		}
 
 		task.End()
+
+		g.LoadImports(ctx, file, 1)
+
+		gfile, _ := os.Create("./viz.gv")
+		_ = draw.DOT(g.Graph, gfile)
 
 		dbg := file.Module.Debug()
 		ser, _ := yaml.Marshal(dbg)
