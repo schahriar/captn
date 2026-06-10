@@ -57,7 +57,7 @@ func main() {
 
 		task.End()
 
-		g.LoadImports(ctx, file, 1)
+		g.LoadImports(ctx, file, 3)
 
 		gfile, _ := os.Create("./viz.gv")
 		_ = draw.DOT(g.Graph, gfile)

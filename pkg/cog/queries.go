@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"runtime/trace"
+	"strings"
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
@@ -66,8 +67,12 @@ func (pf *COGFile) ListImports(ctx context.Context) (ResolvedImports, error) {
 			Text:       string(pf.Source.Buffer),
 		}, *pos)
 
+		if err != nil && strings.Contains(err.Error(), "has no readable files") {
+			continue
+		}
+
 		if err != nil {
-			panic(err)
+			return []ResolvedImport{}, fmt.Errorf("Failed to resolve imports for %+v: %w", imp, err)
 		}
 
 		for _, ref := range refs {

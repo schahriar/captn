@@ -145,9 +145,11 @@ func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
 		return nil, fmt.Errorf("failed to parse file (%v) %w", file, err)
 	}
 
+	cog.mux.Lock()
 	cog.loadedFiles[file] = f
 
 	cog.Graph.AddVertex(f)
+	cog.mux.Unlock()
 
 	return f, nil
 }
