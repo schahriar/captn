@@ -12,22 +12,7 @@ import (
 	"github.com/schahriar/captn/pkg/lsp"
 )
 
-type ResolvedImport struct {
-	Internal *common.FileRange
-	External *common.FileRange
-}
-
-type ResolvedImports []ResolvedImport
-
-func (ri ResolvedImports) GroupByPackage() map[*common.FileRange]ResolvedImports {
-	groups := make(map[*common.FileRange]ResolvedImports)
-	for _, imp := range ri {
-		groups[imp.Internal] = append(groups[imp.Internal], imp)
-	}
-	return groups
-}
-
-func (pf *COGFile) ListImports(ctx context.Context) (ResolvedImports, error) {
+func (pf *COGFile) ListImports(ctx context.Context) (common.ResolvedImports, error) {
 	reg := trace.StartRegion(ctx, "ListImports:LSPServerLoad")
 
 	client, err := lsp.Start(ctx, lsp.StartOptions{
@@ -38,7 +23,7 @@ func (pf *COGFile) ListImports(ctx context.Context) (ResolvedImports, error) {
 	})
 
 	if err != nil {
-		return []ResolvedImport{}, err
+		return []common.ResolvedImport{}, err
 	}
 
 	reg.End()
@@ -51,13 +36,13 @@ func (pf *COGFile) ListImports(ctx context.Context) (ResolvedImports, error) {
 
 	pf.Module.Accept(impVis)
 
-	impLoc := []ResolvedImport{}
+	impLoc := []common.ResolvedImport{}
 
 	for _, imp := range impVis.Imports {
 		pos := imp.GetPosition()
 
 		if pos == nil {
-			return []ResolvedImport{}, fmt.Errorf("Position was nil for import node %+v\n", imp)
+			return []common.ResolvedImport{}, fmt.Errorf("Position was nil for import node %+v\n", imp)
 		}
 
 		refs, err := client.ImportDefinition(ctx, lsp.TextDocumentItem{
@@ -72,38 +57,35 @@ func (pf *COGFile) ListImports(ctx context.Context) (ResolvedImports, error) {
 		}
 
 		if err != nil {
-			return []ResolvedImport{}, fmt.Errorf("Failed to resolve imports for %+v: %w", imp, err)
+			return []common.ResolvedImport{}, fmt.Errorf("Failed to resolve imports for %+v: %w", imp, err)
 		}
 
 		for _, ref := range refs {
 			refp, err := lsp.AbsolutePathFromURI(ref.URI)
 
 			if err != nil {
-				return []ResolvedImport{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
+				return []common.ResolvedImport{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
 			}
 
 			rel, err := filepath.Rel(pf.Source.Workspace, refp)
 
 			if err != nil {
-				return []ResolvedImport{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
+				return []common.ResolvedImport{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
 			}
 
 			esrc, err := common.NewSourceFromFile(ctx, pf.Source.Workspace, rel)
 
 			if err != nil {
-				return []ResolvedImport{}, err
+				return []common.ResolvedImport{}, err
 			}
 
 			erange, err := common.NewFileRangeAutoBytePosition(esrc, ref.Range.Start.Line, ref.Range.Start.Character, ref.Range.End.Line, ref.Range.End.Character)
 
 			if err != nil {
-				return []ResolvedImport{}, err
+				return []common.ResolvedImport{}, err
 			}
 
-			ri := ResolvedImport{
-				Internal: pos,
-				External: erange,
-			}
+			ri := common.NewResolvedImport(pf.Language.ClassifyImportType(erange.Source), pos, erange)
 			impLoc = append(impLoc, ri)
 		}
 	}

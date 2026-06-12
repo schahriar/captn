@@ -9,7 +9,7 @@ GO_ENV = PATH="$(GOBIN_DIR):$$PATH" \
 
 .PHONY: mod build test generate coverage
 
-all: mod build generate init debug
+all: mod build generate init debug graphviz
 
 mod:
 	chmod -R u+w vendor/ 2>/dev/null || true
@@ -48,6 +48,9 @@ trace:
 # TODO: Separate snapshot testing from unit tests
 test:
 	@$(GO_ENV) go test -count=1 -v -failfast ./tests
+
+graphviz:
+	cd ./viz && npm start
 
 # Install delve first -> go install github.com/go-delve/delve/cmd/dlv@latest
 debug: build

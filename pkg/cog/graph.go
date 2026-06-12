@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/dominikbraun/graph"
+	"github.com/schahriar/captn/pkg/common"
 )
 
 type COG struct {
@@ -18,7 +19,7 @@ type COG struct {
 // COGNode - COG has polymorphic nodes as long as they conform to this interface
 type COGNode interface {
 	GetHash() string
-	ListImports(ctx context.Context) (ResolvedImports, error)
+	ListImports(ctx context.Context) (common.ResolvedImports, error)
 }
 
 func NewCOG(workspace string) *COG {
@@ -95,7 +96,7 @@ func (cog *COG) loadImports(
 
 			cog.mux.Lock()
 
-			cog.Graph.AddVertex(fileNode)
+			cog.Graph.AddVertex(fileNode, graph.VertexAttribute("import_type", string(fileNode.Language.ClassifyImportType(fileNode.Source))))
 			cog.Graph.AddEdge(node.GetHash(), fileNode.GetHash())
 
 			cog.mux.Unlock()
@@ -148,7 +149,7 @@ func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
 	cog.mux.Lock()
 	cog.loadedFiles[file] = f
 
-	cog.Graph.AddVertex(f)
+	cog.Graph.AddVertex(f, graph.VertexAttribute("import_type", string(f.Language.ClassifyImportType(f.Source))))
 	cog.mux.Unlock()
 
 	return f, nil

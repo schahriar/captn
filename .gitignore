@@ -38,3 +38,8 @@ bin
 .DS_Store
 Why.md
 out.yaml
+
+# For graphviz
+node_modules
+viz/dist
+viz.gv

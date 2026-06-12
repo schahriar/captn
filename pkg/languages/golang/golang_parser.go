@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/schahriar/captn/pkg/ast"
@@ -232,6 +233,26 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 }
 
 type GolangLanguageSupportDefinition struct{}
+
+var (
+	toolchainStdlibRE = regexp.MustCompile(`/pkg/mod/golang\.org/toolchain@[^/]+/src/`)
+	gomodcacheRE      = regexp.MustCompile(`/pkg/mod/`)
+	vendorRE          = regexp.MustCompile(`(^|/)vendor(/|$)`)
+)
+
+func (glsd *GolangLanguageSupportDefinition) ClassifyImportType(s *common.Source) common.ImportType {
+	p := filepath.ToSlash(filepath.Clean(s.Path))
+
+	if toolchainStdlibRE.MatchString(p) {
+		return common.ImportStandardLibrary
+	}
+
+	if vendorRE.MatchString(p) || gomodcacheRE.MatchString(p) {
+		return common.ImportDependency
+	}
+
+	return common.ImportLocal
+}
 
 func (glsd *GolangLanguageSupportDefinition) NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error) {
 	gpcmd := exec.Command("go", "env", "GOPATH")
