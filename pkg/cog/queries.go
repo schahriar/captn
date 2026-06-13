@@ -9,26 +9,45 @@ import (
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/languages"
 	"github.com/schahriar/captn/pkg/lsp"
 )
+
+// TODO: Convert to LRU
+var lspServerCache map[string]*lsp.Client = map[string]*lsp.Client{}
+
+func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) (*lsp.Client, error) {
+	serkey := fmt.Sprintf("%v:%v", lang.GetLanguageID(), workspace)
+	if server, ok := lspServerCache[serkey]; ok {
+		return server, nil
+	}
+
+	client, err := lsp.Start(context.Background(), lsp.StartOptions{
+		WorkspaceRoot: workspace,
+		ClientName:    "captn-lsp-client",
+		ClientVersion: "0.1.0",
+		Spawn:         lang.NewLSPServer,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	lspServerCache[serkey] = client
+
+	return client, nil
+}
 
 func (pf *COGFile) ListImports(ctx context.Context) (common.ResolvedImports, error) {
 	reg := trace.StartRegion(ctx, "ListImports:LSPServerLoad")
 
-	client, err := lsp.Start(ctx, lsp.StartOptions{
-		WorkspaceRoot: pf.Source.Workspace,
-		ClientName:    "captn-lsp-client",
-		ClientVersion: "0.1.0",
-		Spawn:         pf.Language.NewLSPServer,
-	})
+	client, err := loadLSPServerForLanguage(pf.Language, pf.Source.Workspace)
 
 	if err != nil {
 		return []common.ResolvedImport{}, err
 	}
 
 	reg.End()
-
-	defer client.Close(ctx)
 
 	reg = trace.StartRegion(ctx, "LSPImportsQuery")
 

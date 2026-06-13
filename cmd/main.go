@@ -8,7 +8,6 @@ import (
 	"runtime/trace"
 
 	"github.com/alecthomas/kong"
-	"github.com/dominikbraun/graph/draw"
 	"github.com/goccy/go-yaml"
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/providers"
@@ -60,15 +59,11 @@ func main() {
 
 		prov := providers.ClaudeCodeProvider{}
 
-		exp, err := g.ExplainWithDepth(ctx, file, &prov, 1)
+		_, err = g.ExplainWithDepth(ctx, file, &prov, 1)
+
 		if err != nil {
 			panic(err)
 		}
-
-		fmt.Printf("%+v\n", exp)
-
-		gfile, _ := os.Create("./viz.gv")
-		_ = draw.DOT(g.Graph, gfile)
 
 		dbg := file.Module.Debug()
 		ser, _ := yaml.Marshal(dbg)

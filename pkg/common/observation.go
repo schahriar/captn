@@ -8,17 +8,9 @@ type ObservationSchemaType interface {
 	Serialize() (string, error)
 }
 
-type Risk struct {
-	Severity     string `json:"severity"`
-	Issue        string `json:"issue"`
-	WhyItMatters string `json:"why_it_matters"`
-	PossibleFix  string `json:"possible_fix"`
-}
-
 type ObservationSchema struct {
 	Behavior  string   `json:"behavior" jsonschema:"minLength=40,description=Behavior of the code described in concise reasoning format. Prefer bullet-points"`
 	EdgeCases []string `json:"edge_cases" jsonschema:"description=Important edge cases, if any with a concise description"`
-	Risks     []Risk   `json:"risks"`
 }
 
 func (o ObservationSchema) GetSchema() *jsonschema.Schema {

@@ -62,10 +62,20 @@ func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
 	return f, nil
 }
 
-func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNode], n COGNode, depth int) error {
+func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNode], n COGNode, depth int, mux *sync.Mutex, visited map[string]bool) error {
+	if depth <= 0 || visited[n.GetHash()] {
+		return nil
+	}
+
+	visited[n.GetHash()] = true
+
 	switch v := n.(type) {
 	// TODO: Support querying other sub nodes
 	case *COGFile:
+		mux.Lock()
+		g.AddVertex(n, graph.VertexAttribute("import_type", string(v.Language.ClassifyImportType(v.Source))))
+		mux.Unlock()
+
 		imps, err := v.ListImports(ctx)
 
 		if err != nil {
@@ -73,7 +83,6 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 		}
 
 		var wg sync.WaitGroup
-		mux := sync.Mutex{}
 		errs := []error{}
 
 		for _, imp := range imps {
@@ -87,7 +96,22 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 					return
 				}
 
-				if err := cog.queryWithDepth(ctx, g, f, depth-1); err != nil {
+				t := f.Language.ClassifyImportType(f.Source)
+
+				if t == common.ImportStandardLibrary || t == common.ImportDependency {
+					return
+				}
+
+				mux.Lock()
+				g.AddVertex(f, graph.VertexAttribute("import_type", string(t)))
+				if err := g.AddEdge(n.GetHash(), f.GetHash()); err != nil {
+					errs = append(errs, err)
+					mux.Unlock()
+					return
+				}
+				mux.Unlock()
+
+				if err := cog.queryWithDepth(ctx, g, f, depth-1, mux, visited); err != nil {
 					mux.Lock()
 					errs = append(errs, err)
 					mux.Unlock()
@@ -109,13 +133,13 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 
 func (cog *COG) QueryWithDepth(ctx context.Context, n COGNode, depth int) (graph.Graph[string, COGNode], error) {
 	g := graph.New(NodeHasher)
-	return g, cog.queryWithDepth(ctx, g, n, depth)
+	return g, cog.queryWithDepth(ctx, g, n, depth, &sync.Mutex{}, map[string]bool{})
 }
 
 func (cog *COG) ExplainWithDepth(ctx context.Context, n COGNode, prov ObservationProvider, depth int) (string, error) {
 	g := graph.New(NodeHasher)
 
-	if err := cog.queryWithDepth(ctx, g, n, depth); err != nil {
+	if err := cog.queryWithDepth(ctx, g, n, depth, &sync.Mutex{}, map[string]bool{}); err != nil {
 		return "", err
 	}
 

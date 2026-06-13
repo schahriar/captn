@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/dominikbraun/graph"
+	"github.com/dominikbraun/graph/draw"
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/common"
 )
@@ -150,12 +152,10 @@ type claudeBatchObservationInput struct {
 }
 
 func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g cog.ObservationGraph, root cog.COGNode) error {
-	var innerErr error = nil
-	parent := root
+	var innerErr error
 
 	// Resolves relevant vertices and edges in a subgraph
 	vertices := []cog.COGNode{}
-	edges := []graph.Edge[cog.COGNode]{}
 
 	err := graph.BFS(g, root.GetHash(), func(h string) bool {
 		if err := ctx.Err(); err != nil {
@@ -164,27 +164,12 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 		}
 
 		n, err := g.Vertex(h)
-
 		if err != nil {
 			innerErr = err
 			return true
 		}
 
-		// Attach edge relationships
-		if n != parent {
-			sedge, dedge := parent.GetHash(), h
-			edge, err := g.Edge(sedge, dedge)
-
-			if err != nil {
-				innerErr = err
-				return true
-			}
-
-			edges = append(edges, edge)
-		}
-
 		vertices = append(vertices, n)
-
 		return false
 	})
 
@@ -194,6 +179,20 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 
 	if err != nil {
 		return err
+	}
+
+	edgeKeys, err := g.Edges()
+	if err != nil {
+		return err
+	}
+
+	edges := make([]graph.Edge[cog.COGNode], 0, len(edgeKeys))
+	for _, ek := range edgeKeys {
+		e, err := g.Edge(ek.Source, ek.Target)
+		if err != nil {
+			return err
+		}
+		edges = append(edges, e)
 	}
 
 	// Build a batch call
@@ -207,8 +206,8 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 	}
 
 	for _, e := range edges {
-		ekey := fmt.Sprint("edge:%v:%v", e.Source, e.Target)
-		in.Connections[ekey] = fmt.Sprintf("%v loads %v", e.Source, e.Target)
+		ekey := fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash())
+		in.Connections[ekey] = fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash())
 	}
 
 	// Codechange prompt is just added redundancy, the real change guardrail is in --tools below
@@ -234,7 +233,16 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 		return err
 	}
 
-	fmt.Printf("%+v\n", res)
+	encres, err := json.Marshal(res)
+
+	if err != nil {
+		return err
+	}
+
+	gfile, _ := os.Create("./viz.gv")
+	_ = draw.DOT(g, gfile)
+
+	fmt.Printf("%s\n", encres)
 
 	return nil
 }
