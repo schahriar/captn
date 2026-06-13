@@ -1,17 +1,21 @@
 # captn
 
 ## TODO:
-- [ ] Populate "Semantic Graph" from ASTNodes
-  - [ ] Resolve imports to final path
-  - [ ] Subgraphs for symbol relationships?
-  - [ ] Assign layered hashes to each edge
 - [ ] Add observation backend
   - [ ] Claude Code will be the first provider
+  - [ ] Add caching to ResolveObservationsToGraph
+  - [ ] Explain subgraphs as a batch including relationships etc
+  - [ ] Subgraphs for symbol relationships?
+  - [ ] Block-based observations
+- [ ] Hash questions too to ensure queries stay consistent
+- [ ] Implement LSP server re-use rather than spawn
+- [ ] Assign layered hashes to each edge
 - [ ] Persist graph observations as inline log
   - [ ] Allow for growing write sharding, reads all logs
   - [ ] Use file location to decide which shard to write to
     - [ ] Reduces conflicts
     - [ ] Start with 10 shards
+  - [ ] Add tests for freshness checks
 - [ ] Assign meaning to edges and cache
 - [ ] Restore graph
 - [ ] Add a per language import to package name and path resolver

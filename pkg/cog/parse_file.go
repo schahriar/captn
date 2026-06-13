@@ -28,6 +28,10 @@ func (f COGFile) GetHash() string {
 	return f.Source.Path
 }
 
+func (f COGFile) GetSource() string {
+	return string(f.Source.Buffer)
+}
+
 func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	ctx, task := trace.NewTask(ctx, "treeSitterParse")
 	ext := filepath.Ext(src.Path)
