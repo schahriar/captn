@@ -50,7 +50,7 @@ test:
 	@$(GO_ENV) go test -count=1 -v -failfast ./tests
 
 graphviz:
-	cd ./viz && npm start
+	cd ./tools/viz && npm start
 
 # Install delve first -> go install github.com/go-delve/delve/cmd/dlv@latest
 debug: build

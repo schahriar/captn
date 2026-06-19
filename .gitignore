@@ -41,5 +41,5 @@ out.yaml
 
 # For graphviz
 node_modules
-viz/dist
+dist
 *.gv
