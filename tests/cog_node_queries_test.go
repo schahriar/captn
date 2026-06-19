@@ -54,7 +54,7 @@ func TestCOGRangeQueryModule(t *testing.T) {
 func TestCOGResolveImports(t *testing.T) {
 	pf := parseTestFile(t, "./fixtures/golang/multidep/cmd/main.go")
 
-	imps, err := pf.ListImports(t.Context())
+	imps, err := pf.ListDependencies(t.Context())
 
 	assert.NoError(t, err)
 

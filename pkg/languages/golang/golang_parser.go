@@ -240,18 +240,18 @@ var (
 	vendorRE          = regexp.MustCompile(`(^|/)vendor(/|$)`)
 )
 
-func (glsd *GolangLanguageSupportDefinition) ClassifyImportType(s *common.Source) common.ImportType {
+func (glsd *GolangLanguageSupportDefinition) ClassifyImportType(s *common.Source) common.DependencyType {
 	p := filepath.ToSlash(filepath.Clean(s.Path))
 
 	if toolchainStdlibRE.MatchString(p) {
-		return common.ImportStandardLibrary
+		return common.StandardLibraryDependency
 	}
 
 	if vendorRE.MatchString(p) || gomodcacheRE.MatchString(p) {
-		return common.ImportDependency
+		return common.PackageDependency
 	}
 
-	return common.ImportLocal
+	return common.LocalDependency
 }
 
 func (glsd *GolangLanguageSupportDefinition) NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error) {

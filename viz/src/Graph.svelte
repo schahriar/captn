@@ -43,6 +43,8 @@
     key: string;
     label: string;
     sub: string;
+    behavior?: string;
+    edgeCases?: string;
     deg?: number;
     pathToRoot?: string[] | null;
   }
@@ -193,7 +195,7 @@
       const pathToRoot = rootId && d.id !== rootId ? bfsPath(d.id, rootId) : null;
       selectionList = [...selectionList, {
         kind: 'node', key: d.id, label: d.label, sub: d.type,
-        deg: degree.get(d.id), pathToRoot,
+        behavior: d.behavior, edgeCases: d.edgeCases, deg: degree.get(d.id), pathToRoot,
       }];
     }
     selectedNodeIds = next;
@@ -211,6 +213,7 @@
         kind: 'edge', key,
         label: `${sid.split('/').pop()} → ${tid.split('/').pop()}`,
         sub: `${linkEndType(l.source)} / ${linkEndType(l.target)}`,
+        behavior: l.behavior, edgeCases: l.edgeCases,
       }];
     }
     selectedEdgeKeys = next;
@@ -572,6 +575,12 @@
         </div>
       {/if}
       <div class="tip-deg">{hoveredNode.deg} connection{hoveredNode.deg !== 1 ? 's' : ''}</div>
+      {#if hoveredNode.behavior}
+        <div class="tip-observation">{hoveredNode.behavior}</div>
+      {/if}
+      {#if hoveredNode.edgeCases}
+        <div class="tip-edgecases"><span class="tip-edgecases-label">edge cases</span>{hoveredNode.edgeCases}</div>
+      {/if}
     </div>
   {/if}
 
@@ -596,6 +605,12 @@
             <div class="sel-path">
               {[...item.pathToRoot].reverse().map(id => id.split('/').pop()).join(' → ')}
             </div>
+          {/if}
+          {#if item.behavior}
+            <div class="sel-observation">{item.behavior}</div>
+          {/if}
+          {#if item.edgeCases}
+            <div class="sel-edgecases"><span class="sel-edgecases-label">edge cases</span>{item.edgeCases}</div>
           {/if}
         </div>
       {/each}
@@ -680,11 +695,24 @@
   .tooltip {
     top: 16px; right: 16px; max-width: 340px; word-break: break-all; line-height: 1.6;
   }
-  .tip-label { font-size: 13px; font-weight: 600; color: var(--text-strong); }
-  .tip-type  { margin-top: 2px; color: var(--text-muted); }
-  .tip-path  { margin-top: 6px; font-size: 10px; color: var(--text-dim); }
-  .tip-chain { margin-top: 6px; font-size: 10px; color: var(--accent); word-break: break-word; line-height: 1.5; }
-  .tip-deg   { margin-top: 4px; color: var(--text-muted); }
+  .tip-label   { font-size: 13px; font-weight: 600; color: var(--text-strong); }
+  .tip-type    { margin-top: 2px; color: var(--text-muted); }
+  .tip-path    { margin-top: 6px; font-size: 10px; color: var(--text-dim); }
+  .tip-chain   { margin-top: 6px; font-size: 10px; color: var(--accent); word-break: break-word; line-height: 1.5; }
+  .tip-deg     { margin-top: 4px; color: var(--text-muted); }
+  .tip-observation {
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text); white-space: pre-wrap; word-break: break-word;
+    max-height: 160px; overflow-y: auto; line-height: 1.55;
+  }
+  .tip-edgecases {
+    margin-top: 6px; font-size: 10px; color: var(--text-muted);
+    white-space: pre-wrap; word-break: break-word; max-height: 100px; overflow-y: auto; line-height: 1.5;
+  }
+  .tip-edgecases-label {
+    display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-dim); margin-bottom: 2px;
+  }
 
   .selection-panel {
     bottom: 60px; right: 16px; max-width: 300px; max-height: 45vh;
@@ -715,9 +743,21 @@
     font-size: 14px; line-height: 1; padding: 0; flex-shrink: 0;
   }
   .sel-remove:hover { color: var(--text); }
-  .sel-sub    { font-size: 10px; color: var(--text-muted); }
-  .sel-detail { font-size: 10px; color: var(--text-muted); }
-  .sel-path   { font-size: 10px; color: var(--accent); word-break: break-word; }
+  .sel-sub          { font-size: 10px; color: var(--text-muted); }
+  .sel-detail       { font-size: 10px; color: var(--text-muted); }
+  .sel-path         { font-size: 10px; color: var(--accent); word-break: break-word; }
+  .sel-observation  {
+    font-size: 10px; color: var(--text); white-space: pre-wrap; word-break: break-word;
+    margin-top: 4px; max-height: 100px; overflow-y: auto; line-height: 1.5;
+  }
+  .sel-edgecases {
+    font-size: 10px; color: var(--text-muted); white-space: pre-wrap; word-break: break-word;
+    margin-top: 3px; max-height: 80px; overflow-y: auto; line-height: 1.5;
+  }
+  .sel-edgecases-label {
+    display: inline; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-dim); margin-right: 4px;
+  }
 
   .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 

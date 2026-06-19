@@ -35,7 +35,7 @@ func TestParserMultiDepParse(t *testing.T) {
 func TestCOGSimpleImportsSnap(t *testing.T) {
 	pf := parseTestFile(t, "./fixtures/golang/multidep/cmd/main.go")
 
-	imps, err := pf.ListImports(t.Context())
+	imps, err := pf.ListDependencies(t.Context())
 
 	assert.NoError(t, err)
 

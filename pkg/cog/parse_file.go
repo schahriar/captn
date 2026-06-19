@@ -1,6 +1,7 @@
 package cog
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -24,12 +25,71 @@ type COGFile struct {
 	Language languages.LanguageSupport
 }
 
+var ErrSnippetNotFound = errors.New("snippet not found")
+
+func offsetToPosition(buf []byte, offset int) common.FilePosition {
+	if offset < 0 {
+		offset = 0
+	}
+	if offset > len(buf) {
+		offset = len(buf)
+	}
+
+	row := 0
+	col := 0
+
+	for i := 0; i < offset; i++ {
+		if buf[i] == '\n' {
+			row++
+			col = 0
+		} else {
+			col++
+		}
+	}
+
+	return common.FilePosition{
+		Line:   row,
+		Column: col,
+	}
+}
+
+func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
+	if len(snippet) == 0 {
+		return &common.FileRange{
+			Source: f.Source,
+			Start:  common.FilePosition{Line: 0, Column: 0},
+			End:    common.FilePosition{Line: 0, Column: 0},
+		}, nil
+	}
+
+	startOffset := bytes.Index(f.Source.Buffer, snippet)
+	if startOffset < 0 {
+		return nil, ErrSnippetNotFound
+	}
+
+	endOffset := startOffset + len(snippet)
+
+	return &common.FileRange{
+		Source: f.Source,
+		Start:  offsetToPosition(f.Source.Buffer, startOffset),
+		End:    offsetToPosition(f.Source.Buffer, endOffset),
+	}, nil
+}
+
 func (f COGFile) GetHash() string {
+	return f.Source.Path
+}
+
+func (f COGFile) GetFilePath() string {
 	return f.Source.Path
 }
 
 func (f COGFile) GetSource() string {
 	return string(f.Source.Buffer)
+}
+
+func (f COGFile) GetLanguage() string {
+	return f.Language.GetLanguageID()
 }
 
 func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
@@ -41,7 +101,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	if ext == ".go" {
 		lang = languages.Golang
 	} else {
-		return &COGFile{}, errors.New("Unsupported file type") // TODO: Use knownerrors
+		return &COGFile{}, errors.New("unsupported file type") // TODO: Use knownerrors
 	}
 
 	tsp := tree_sitter.NewParser()
@@ -58,7 +118,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	root, err := lang.Parse(ctx, src, tree)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse Go code: %w", err)
+		return nil, fmt.Errorf("failed to parse Go code: %w", err)
 	}
 
 	pf := COGFile{
@@ -82,7 +142,7 @@ func ParseFile(ctx context.Context, workspace string, file string) (*COGFile, er
 	src, err := common.NewSourceFromFile(ctx, workspace, path)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read main file %w", err)
+		return nil, fmt.Errorf("failed to read main file %w", err)
 	}
 
 	task.End()

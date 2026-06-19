@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/dominikbraun/graph"
-	"github.com/dominikbraun/graph/draw"
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/common"
 )
@@ -146,24 +145,29 @@ No markdown. No code fences.`
 	return QueryClaudeCode[common.ObservationSchema](ctx, systemPrompt, prompt, "medium")
 }
 
-type claudeBatchObservationInput struct {
-	Sources     map[string]string `json:"sources"`
-	Connections map[string]string `json:"connections"`
+type claudeIdentifiedObservationInput struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
 }
 
-func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g cog.ObservationGraph, root cog.COGNode) error {
+type claudeBatchObservationInput struct {
+	Sources     []claudeIdentifiedObservationInput `json:"sources"`
+	Connections []claudeIdentifiedObservationInput `json:"connections"`
+}
+
+func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cogref *cog.COG, g *cog.ObservationGraph, root cog.COGNode) error {
 	var innerErr error
 
 	// Resolves relevant vertices and edges in a subgraph
 	vertices := []cog.COGNode{}
 
-	err := graph.BFS(g, root.GetHash(), func(h string) bool {
+	err := graph.BFS(g.Graph, root.GetHash(), func(h string) bool {
 		if err := ctx.Err(); err != nil {
 			innerErr = err
 			return true
 		}
 
-		n, err := g.Vertex(h)
+		n, err := g.Graph.Vertex(h)
 		if err != nil {
 			innerErr = err
 			return true
@@ -181,14 +185,14 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 		return err
 	}
 
-	edgeKeys, err := g.Edges()
+	edgeKeys, err := g.Graph.Edges()
 	if err != nil {
 		return err
 	}
 
 	edges := make([]graph.Edge[cog.COGNode], 0, len(edgeKeys))
 	for _, ek := range edgeKeys {
-		e, err := g.Edge(ek.Source, ek.Target)
+		e, err := g.Graph.Edge(ek.Source, ek.Target)
 		if err != nil {
 			return err
 		}
@@ -197,17 +201,37 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 
 	// Build a batch call
 	in := claudeBatchObservationInput{
-		Sources:     map[string]string{},
-		Connections: map[string]string{},
+		Sources:     []claudeIdentifiedObservationInput{},
+		Connections: []claudeIdentifiedObservationInput{},
 	}
 
+	cogref.Mux.Lock()
+
 	for _, v := range vertices {
-		in.Sources[v.GetHash()] = v.GetSource()
+		k := v.GetHash()
+		if _, ok := cogref.ObservationCache[k]; !ok {
+			in.Sources = append(in.Sources, claudeIdentifiedObservationInput{
+				ID:          k,
+				Description: v.GetSource(),
+			})
+		}
 	}
 
 	for _, e := range edges {
 		ekey := fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash())
-		in.Connections[ekey] = fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash())
+		if _, ok := cogref.ObservationCache[ekey]; !ok {
+			in.Connections = append(in.Connections, claudeIdentifiedObservationInput{
+				ID:          ekey,
+				Description: fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash()),
+			})
+		}
+	}
+
+	cogref.Mux.Unlock()
+
+	if len(in.Connections)+len(in.Sources) == 0 {
+		// Everything can be read from cache
+		return nil
 	}
 
 	// Codechange prompt is just added redundancy, the real change guardrail is in --tools below
@@ -217,7 +241,8 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 	DO NOT MAKE ASSUMPTIONS, YOUR OBSERVATIONS MUST BE FACTUAL.
 	ACCEPT THE CODE AS IS, THERE IS NO NEED TO USE LSP QUERIES. Return ONLY raw JSON.
 	No markdown. No code fences.
-	YOU ARE REQUIRED TO KEEP A STRICT RELATIONSHIP BETWEEN INPUT KEYS AND OUTPUT DEFINITIONS`
+	YOU ARE REQUIRED TO KEEP A STRICT RELATIONSHIP BETWEEN INPUT KEYS AND OUTPUT DEFINITIONS
+	YOU SHOULD ALWAYS CHECK IF YOUR OUTPUT IS VALID JSON`
 
 	encin, err := json.Marshal(in)
 
@@ -225,7 +250,7 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 		return fmt.Errorf("failed to serialize batch input for claude code %w", err)
 	}
 
-	prompt := fmt.Sprintf("Respond with the observation schema to described code below while keeping IDs intact:\n```%s```", encin)
+	prompt := fmt.Sprintf("Respond with the exact observation schema to described code below while keeping IDs intact:\n```%s```", encin)
 
 	res, err := QueryClaudeCode[*common.BatchObservationSchema](ctx, systemPrompt, prompt, "high")
 
@@ -233,16 +258,24 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, g c
 		return err
 	}
 
-	encres, err := json.Marshal(res)
+	cogref.Mux.Lock()
+	defer cogref.Mux.Unlock()
 
-	if err != nil {
-		return err
+	for _, o := range res.Observations {
+		g.Graph.SetVertexAttribute(o.ID, "observation-behavior", o.Behavior)
+		cogref.ObservationCache[o.ID] = o
 	}
 
-	gfile, _ := os.Create("./viz.gv")
-	_ = draw.DOT(g, gfile)
+	for _, e := range res.ConnectionObservations {
+		chunks := strings.Split(e.ID, ":")
 
-	fmt.Printf("%s\n", encres)
+		if len(chunks) < 2 {
+			return fmt.Errorf("invalid edge ID %v", e.ID)
+		}
+
+		g.Graph.SetEdgeAttribute(chunks[1], chunks[2], "observation-behavior", e.Behavior)
+		cogref.ObservationCache[e.ID] = e
+	}
 
 	return nil
 }

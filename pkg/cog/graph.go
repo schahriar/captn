@@ -2,17 +2,25 @@ package cog
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/dominikbraun/graph"
+	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
 )
 
 type COG struct {
-	Graph            graph.Graph[string, COGNode]
-	mux              sync.Mutex
-	loadedFiles      map[string]*COGFile
+	loadedFiles map[string]*COGFile `json:""`
+
+	Mux *sync.Mutex `json:""`
+
+	Graph            graph.Graph[string, COGNode] `json:""`
 	Workspace        string
 	ObservationCache map[string]common.ObservationSchema
 }
@@ -20,8 +28,10 @@ type COG struct {
 // COGNode - COG has polymorphic nodes as long as they conform to this interface
 type COGNode interface {
 	GetHash() string
+	GetFilePath() string
+	GetLanguage() string
 	GetSource() string
-	ListImports(ctx context.Context) (common.ResolvedImports, error)
+	ListDependencies(ctx context.Context) (common.ResolvedDependencies, error)
 }
 
 func NodeHasher(cogn COGNode) string {
@@ -30,22 +40,59 @@ func NodeHasher(cogn COGNode) string {
 
 func NewCOG(workspace string) *COG {
 	return &COG{
-		Graph:       graph.New(NodeHasher),
-		mux:         sync.Mutex{},
-		loadedFiles: map[string]*COGFile{},
-		Workspace:   workspace,
+		Graph:            graph.New(NodeHasher),
+		Mux:              &sync.Mutex{},
+		loadedFiles:      map[string]*COGFile{},
+		ObservationCache: map[string]common.ObservationSchema{},
+		Workspace:        workspace,
 	}
 }
 
+func (cog *COG) FilePath() string {
+	return filepath.Join(cog.Workspace, "captn.cog")
+}
+
+func OpenCOG(workspace string) (*COG, error) {
+	cog := NewCOG(workspace)
+
+	f, err := os.OpenFile(cog.FilePath(), os.O_RDWR, 0644)
+
+	if errors.Is(err, os.ErrNotExist) {
+		return cog, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("OpenCOG File Error %w", err)
+	}
+
+	defer f.Close()
+
+	b, err := io.ReadAll(f)
+
+	if err != nil {
+		return nil, fmt.Errorf("OpenCOG File Read Error %w", err)
+	}
+
+	return cog, json.Unmarshal(b, &cog)
+}
+
+func (cog *COG) Persist() error {
+	b, err := json.Marshal(cog)
+
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(cog.FilePath(), b, 0644)
+}
+
 func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
-	cog.mux.Lock()
+	cog.Mux.Lock()
 
 	if n, ok := cog.loadedFiles[file]; ok {
-		cog.mux.Unlock()
+		cog.Mux.Unlock()
 		return n, nil
 	}
 
-	cog.mux.Unlock()
+	cog.Mux.Unlock()
 
 	f, err := ParseFile(ctx, cog.Workspace, file)
 
@@ -53,16 +100,42 @@ func (cog *COG) LoadFile(ctx context.Context, file string) (*COGFile, error) {
 		return nil, fmt.Errorf("failed to parse file (%v) %w", file, err)
 	}
 
-	cog.mux.Lock()
+	cog.Mux.Lock()
 	cog.loadedFiles[file] = f
 
 	cog.Graph.AddVertex(f, graph.VertexAttribute("import_type", string(f.Language.ClassifyImportType(f.Source))))
-	cog.mux.Unlock()
+	cog.Mux.Unlock()
 
 	return f, nil
 }
 
-func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNode], n COGNode, depth int, mux *sync.Mutex, visited map[string]bool) error {
+func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (*ObservationGraph, COGNode, error) {
+	f, err := cog.LoadFile(ctx, file)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	_, err = f.FindSnippetRange([]byte(snippet))
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// chlds := f.QueryNodesWithinRange(r)
+	/*root := &ast.ASTModule{
+		Name: file,
+	}*/
+
+	g := cgraph.New(NodeHasher)
+	og := &ObservationGraph{
+		Graph: &g,
+	}
+
+	return og, nil, nil
+}
+
+func (cog *COG) queryWithDepth(ctx context.Context, g *ObservationGraph, n COGNode, depth int, mux *sync.Mutex, visited map[string]bool) error {
 	if depth <= 0 || visited[n.GetHash()] {
 		return nil
 	}
@@ -73,10 +146,10 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 	// TODO: Support querying other sub nodes
 	case *COGFile:
 		mux.Lock()
-		g.AddVertex(n, graph.VertexAttribute("import_type", string(v.Language.ClassifyImportType(v.Source))))
+		g.Graph.AddVertex(n, graph.VertexAttribute("import_type", string(v.Language.ClassifyImportType(v.Source))))
 		mux.Unlock()
 
-		imps, err := v.ListImports(ctx)
+		imps, err := v.ListDependencies(ctx)
 
 		if err != nil {
 			return err
@@ -98,13 +171,13 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 
 				t := f.Language.ClassifyImportType(f.Source)
 
-				if t == common.ImportStandardLibrary || t == common.ImportDependency {
+				if t == common.StandardLibraryDependency || t == common.PackageDependency {
 					return
 				}
 
 				mux.Lock()
-				g.AddVertex(f, graph.VertexAttribute("import_type", string(t)))
-				if err := g.AddEdge(n.GetHash(), f.GetHash()); err != nil {
+				g.Graph.AddVertex(f, graph.VertexAttribute("import_type", string(t)))
+				if err := g.Graph.AddEdge(n.GetHash(), f.GetHash()); err != nil {
 					errs = append(errs, err)
 					mux.Unlock()
 					return
@@ -131,25 +204,10 @@ func (cog *COG) queryWithDepth(ctx context.Context, g graph.Graph[string, COGNod
 	}
 }
 
-func (cog *COG) QueryWithDepth(ctx context.Context, n COGNode, depth int) (graph.Graph[string, COGNode], error) {
-	g := graph.New(NodeHasher)
-	return g, cog.queryWithDepth(ctx, g, n, depth, &sync.Mutex{}, map[string]bool{})
-}
-
-func (cog *COG) ExplainWithDepth(ctx context.Context, n COGNode, prov ObservationProvider, depth int) (string, error) {
-	g := graph.New(NodeHasher)
-
-	if err := cog.queryWithDepth(ctx, g, n, depth, &sync.Mutex{}, map[string]bool{}); err != nil {
-		return "", err
+func (cog *COG) QueryWithDepth(ctx context.Context, n COGNode, depth int) (*ObservationGraph, error) {
+	g := cgraph.New(NodeHasher)
+	og := &ObservationGraph{
+		Graph: &g,
 	}
-
-	if err := prov.ResolveObservationsToGraph(ctx, g, n); err != nil {
-		return "", err
-	}
-
-	/*cog.mux.Lock()
-	cog.ObservationCache[h] = o
-	cog.mux.Unlock()*/
-
-	return "", nil
+	return og, cog.queryWithDepth(ctx, og, n, depth, &sync.Mutex{}, map[string]bool{})
 }

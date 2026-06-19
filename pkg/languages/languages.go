@@ -15,7 +15,7 @@ type LanguageSupport interface {
 	Parse(ctx context.Context, src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error)
 	NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error)
 	GetLanguageID() string
-	ClassifyImportType(*common.Source) common.ImportType
+	ClassifyImportType(*common.Source) common.DependencyType
 	GetTreeSitterLanguage() *tree_sitter.Language
 }
 

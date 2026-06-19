@@ -1,8 +1,6 @@
 
 [TestCOGResolveImports - 1]
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: stdlib
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests
@@ -39,9 +37,7 @@
         line: 398
         column: 11
         byteposition: 15826
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: stdlib
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests
@@ -78,9 +74,7 @@
         line: 10
         column: 1
         byteposition: 227
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: stdlib
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests
@@ -117,9 +111,7 @@
         line: 9
         column: 1
         byteposition: 210
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: stdlib
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests
@@ -156,9 +148,7 @@
         line: 14
         column: 1
         byteposition: 261
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: stdlib
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests
@@ -195,9 +185,7 @@
         line: 15
         column: 1
         byteposition: 259
-  - source:
-      workspace: /Users/workspace/Workspace/captn/tests
-      path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+  - type: local
     internal:
       source:
         workspace: /Users/workspace/Workspace/captn/tests

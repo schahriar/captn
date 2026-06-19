@@ -1,31 +1,31 @@
 package common
 
-type ImportType string
+type DependencyType string
 
 const (
-	ImportLocal           ImportType = "local"
-	ImportDependency      ImportType = "dependency"
-	ImportStandardLibrary ImportType = "stdlib"
+	LocalDependency           DependencyType = "local"
+	PackageDependency         DependencyType = "package"
+	StandardLibraryDependency DependencyType = "stdlib"
 )
 
-type ResolvedImport struct {
-	Type     ImportType
+type ResolvedDependency struct {
+	Type     DependencyType
 	Internal *FileRange
 	External *FileRange
 }
 
-func NewResolvedImport(t ImportType, i *FileRange, e *FileRange) ResolvedImport {
-	return ResolvedImport{
+func NewResolvedDependency(t DependencyType, i *FileRange, e *FileRange) ResolvedDependency {
+	return ResolvedDependency{
 		Type:     t,
 		Internal: i,
 		External: e,
 	}
 }
 
-type ResolvedImports []ResolvedImport
+type ResolvedDependencies []ResolvedDependency
 
-func (ri ResolvedImports) GroupByPackage() map[*FileRange]ResolvedImports {
-	groups := make(map[*FileRange]ResolvedImports)
+func (ri ResolvedDependencies) GroupByPackage() map[*FileRange]ResolvedDependencies {
+	groups := make(map[*FileRange]ResolvedDependencies)
 	for _, imp := range ri {
 		groups[imp.Internal] = append(groups[imp.Internal], imp)
 	}

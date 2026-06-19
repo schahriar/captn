@@ -6,6 +6,8 @@ export interface GraphNode {
   id: string;
   label: string;
   type: NodeType | "unknown";
+  behavior?: string;
+  edgeCases?: string;
 }
 
 // D3 simulation mutates nodes in place, adding physics properties
@@ -15,6 +17,8 @@ export type SimNode = GraphNode & SimulationNodeDatum;
 export interface GraphLink {
   source: string | SimNode;
   target: string | SimNode;
+  behavior?: string;
+  edgeCases?: string;
 }
 
 export interface GraphData {
