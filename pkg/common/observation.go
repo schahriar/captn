@@ -9,7 +9,7 @@ type ObservationSchemaType interface {
 }
 
 type ObservationSchema struct {
-	ID       string `json:"id" jsonschema_description:"The ID for this observation"`
+	ID       uint32 `json:"id" jsonschema_description:"The ID for this observation"`
 	Behavior string `json:"behavior" jsonschema:"minLength=40,description=Behavior of the code described in concise reasoning format. Prefer bullet-points"`
 }
 

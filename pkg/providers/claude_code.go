@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
-	"strings"
 
 	"github.com/dominikbraun/graph"
 	"github.com/schahriar/captn/pkg/cog"
@@ -99,6 +98,8 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		return scma, err
 	}
 
+	fmt.Println(prompt)
+
 	// TODO: Check for claude binary
 	cmd := exec.CommandContext(ctx,
 		"claude",
@@ -146,7 +147,7 @@ No markdown. No code fences.`
 }
 
 type claudeIdentifiedObservationInput struct {
-	ID          string `json:"id"`
+	ID          uint32 `json:"id"`
 	Description string `json:"description"`
 }
 
@@ -161,7 +162,7 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	// Resolves relevant vertices and edges in a subgraph
 	vertices := []cog.COGNode{}
 
-	err := graph.BFS(g.Graph, root.GetHash(), func(h string) bool {
+	err := graph.BFS(g.Graph, root.GetHash(), func(h uint32) bool {
 		if err := ctx.Err(); err != nil {
 			innerErr = err
 			return true
@@ -212,13 +213,28 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 		if _, ok := cogref.ObservationCache[k]; !ok {
 			in.Sources = append(in.Sources, claudeIdentifiedObservationInput{
 				ID:          k,
-				Description: v.GetSource(),
+				Description: v.GetStringSource(),
 			})
 		}
 	}
 
+	// Inverse mapping to recover edges
+	edgeimap := map[uint32]struct {
+		Source uint32
+		Target uint32
+	}{}
+
 	for _, e := range edges {
-		ekey := fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash())
+		ekey := common.PrimaryHash(fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash()))
+
+		edgeimap[ekey] = struct {
+			Source uint32
+			Target uint32
+		}{
+			Source: e.Source.GetHash(),
+			Target: e.Target.GetHash(),
+		}
+
 		if _, ok := cogref.ObservationCache[ekey]; !ok {
 			in.Connections = append(in.Connections, claudeIdentifiedObservationInput{
 				ID:          ekey,
@@ -267,14 +283,12 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	}
 
 	for _, e := range res.ConnectionObservations {
-		chunks := strings.Split(e.ID, ":")
-
-		if len(chunks) < 2 {
-			return fmt.Errorf("invalid edge ID %v", e.ID)
+		if edef, ok := edgeimap[e.ID]; ok {
+			g.Graph.SetEdgeAttribute(edef.Source, edef.Target, "observation-behavior", e.Behavior)
+			cogref.ObservationCache[e.ID] = e
+		} else {
+			// TODO: Log error
 		}
-
-		g.Graph.SetEdgeAttribute(chunks[1], chunks[2], "observation-behavior", e.Behavior)
-		cogref.ObservationCache[e.ID] = e
 	}
 
 	return nil

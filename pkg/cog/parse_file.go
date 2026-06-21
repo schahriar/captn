@@ -55,11 +55,7 @@ func offsetToPosition(buf []byte, offset int) common.FilePosition {
 
 func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
 	if len(snippet) == 0 {
-		return &common.FileRange{
-			Source: f.Source,
-			Start:  common.FilePosition{Line: 0, Column: 0},
-			End:    common.FilePosition{Line: 0, Column: 0},
-		}, nil
+		return common.NewFileRangeAutoBytePosition(f.Source, 0, 0, 0, 0)
 	}
 
 	startOffset := bytes.Index(f.Source.Buffer, snippet)
@@ -69,27 +65,26 @@ func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
 
 	endOffset := startOffset + len(snippet)
 
-	return &common.FileRange{
-		Source: f.Source,
-		Start:  offsetToPosition(f.Source.Buffer, startOffset),
-		End:    offsetToPosition(f.Source.Buffer, endOffset),
-	}, nil
+	start := offsetToPosition(f.Source.Buffer, startOffset)
+	end := offsetToPosition(f.Source.Buffer, endOffset)
+
+	return common.NewFileRangeAutoBytePosition(f.Source, start.Line, start.Column, end.Line, end.Column)
 }
 
-func (f COGFile) GetHash() string {
-	return f.Source.Path
+func (f COGFile) GetHash() uint32 {
+	return common.PrimaryHash(f.Source.Path)
 }
 
 func (f COGFile) GetFilePath() string {
 	return f.Source.Path
 }
 
-func (f COGFile) GetSource() string {
+func (f COGFile) GetStringSource() string {
 	return string(f.Source.Buffer)
 }
 
 func (f COGFile) GetLanguage() string {
-	return f.Language.GetLanguageID()
+	return f.Source.GetLanguage()
 }
 
 func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {

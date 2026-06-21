@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime/trace"
 )
 
@@ -67,6 +68,15 @@ func (src *Source) BytePositionForLineColumn(line int, col int) (int, error) {
 	}
 
 	return 0, fmt.Errorf("line %d is out of range", line)
+}
+
+func (src *Source) GetLanguage() string {
+	// TODO: Implement a better version
+	if filepath.Ext(src.Path) == ".go" {
+		return "golang"
+	} else {
+		return "unknown"
+	}
 }
 
 func NewSourceFromFile(ctx context.Context, workspace string, path string) (*Source, error) {

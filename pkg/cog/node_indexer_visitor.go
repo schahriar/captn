@@ -11,7 +11,7 @@ type nodeIndexerVisitor struct {
 }
 
 func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
-	hash := node.GetSourceHash()
+	hash := node.GetHash()
 	pos := node.GetPosition()
 
 	vis.pf.lookupTable[hash] = node

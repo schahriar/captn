@@ -16,25 +16,25 @@ import (
 )
 
 type COG struct {
-	loadedFiles map[string]*COGFile `json:""`
+	loadedFiles map[string]*COGFile `json:"-"`
 
-	Mux *sync.Mutex `json:""`
+	Mux *sync.Mutex `json:"-"`
 
-	Graph            graph.Graph[string, COGNode] `json:""`
+	Graph            graph.Graph[uint32, COGNode] `json:"-"`
 	Workspace        string
-	ObservationCache map[string]common.ObservationSchema
+	ObservationCache map[uint32]common.ObservationSchema
 }
 
 // COGNode - COG has polymorphic nodes as long as they conform to this interface
 type COGNode interface {
-	GetHash() string
+	GetHash() uint32
 	GetFilePath() string
 	GetLanguage() string
-	GetSource() string
+	GetStringSource() string
 	ListDependencies(ctx context.Context) (common.ResolvedDependencies, error)
 }
 
-func NodeHasher(cogn COGNode) string {
+func NodeHasher(cogn COGNode) uint32 {
 	return cogn.GetHash()
 }
 
@@ -43,7 +43,7 @@ func NewCOG(workspace string) *COG {
 		Graph:            graph.New(NodeHasher),
 		Mux:              &sync.Mutex{},
 		loadedFiles:      map[string]*COGFile{},
-		ObservationCache: map[string]common.ObservationSchema{},
+		ObservationCache: map[uint32]common.ObservationSchema{},
 		Workspace:        workspace,
 	}
 }
@@ -71,7 +71,11 @@ func OpenCOG(workspace string) (*COG, error) {
 		return nil, fmt.Errorf("OpenCOG File Read Error %w", err)
 	}
 
-	return cog, json.Unmarshal(b, &cog)
+	if err := json.Unmarshal(b, &cog); err != nil {
+		return nil, fmt.Errorf("Failed to decode COG at workspace %v with error %w", workspace, err)
+	}
+
+	return cog, nil
 }
 
 func (cog *COG) Persist() error {
@@ -116,26 +120,33 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 		return nil, nil, err
 	}
 
-	_, err = f.FindSnippetRange([]byte(snippet))
+	r, err := f.FindSnippetRange([]byte(snippet))
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	// chlds := f.QueryNodesWithinRange(r)
-	/*root := &ast.ASTModule{
-		Name: file,
-	}*/
+	chlds := f.QueryNodesWithinRange(r)
+	root := f.Module
 
 	g := cgraph.New(NodeHasher)
 	og := &ObservationGraph{
 		Graph: &g,
 	}
 
-	return og, nil, nil
+	og.Graph.AddVertex(root)
+
+	for _, chld := range chlds {
+		og.Graph.AddVertex(chld)
+		og.Graph.AddEdge(root.GetHash(), chld.GetHash())
+	}
+
+	fmt.Println(chlds)
+
+	return og, root, nil
 }
 
-func (cog *COG) queryWithDepth(ctx context.Context, g *ObservationGraph, n COGNode, depth int, mux *sync.Mutex, visited map[string]bool) error {
+func (cog *COG) queryWithDepth(ctx context.Context, g *ObservationGraph, n COGNode, depth int, mux *sync.Mutex, visited map[uint32]bool) error {
 	if depth <= 0 || visited[n.GetHash()] {
 		return nil
 	}
@@ -209,5 +220,5 @@ func (cog *COG) QueryWithDepth(ctx context.Context, n COGNode, depth int) (*Obse
 	og := &ObservationGraph{
 		Graph: &g,
 	}
-	return og, cog.queryWithDepth(ctx, og, n, depth, &sync.Mutex{}, map[string]bool{})
+	return og, cog.queryWithDepth(ctx, og, n, depth, &sync.Mutex{}, map[uint32]bool{})
 }

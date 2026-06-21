@@ -7,7 +7,9 @@ endif
 GO_ENV = PATH="$(GOBIN_DIR):$$PATH" \
          CGO_ENABLED=1
 
-.PHONY: mod build test generate coverage
+.PHONY: mod build test generate coverage vet
+
+BANSTRUCTLIT_BIN := $(CURDIR)/bin/banstructlit
 
 all: mod build generate init debug graphviz
 
@@ -23,7 +25,7 @@ sign:
 		codesign -f -s - bin/$(BINARY); \
 	fi;
 
-build: mod
+build: mod vet
 	@$(GO_ENV) go build -mod=mod -v -o bin/$(BINARY) cmd/main.go
 	make sign
 
@@ -51,6 +53,12 @@ test:
 
 graphviz:
 	cd ./tools/viz && npm start
+
+$(BANSTRUCTLIT_BIN):
+	cd tools/banstructlit && go build -o $(BANSTRUCTLIT_BIN) .
+
+vet: $(BANSTRUCTLIT_BIN)
+	@$(GO_ENV) $(BANSTRUCTLIT_BIN) ./...
 
 # Install delve first -> go install github.com/go-delve/delve/cmd/dlv@latest
 debug: build

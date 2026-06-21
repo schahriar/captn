@@ -1,6 +1,8 @@
 package ast
 
-import "github.com/schahriar/captn/pkg/knownerr"
+import (
+	"github.com/schahriar/captn/pkg/knownerr"
+)
 
 type ASTModule struct {
 	*ASTNodeContainer

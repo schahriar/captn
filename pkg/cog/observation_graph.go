@@ -3,23 +3,48 @@ package cog
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/schahriar/captn/pkg/cgraph"
 )
 
 type ObservationGraph struct {
-	Graph *cgraph.Graph[string, COGNode]
+	Graph *cgraph.Graph[uint32, COGNode]
+}
+
+func (og *ObservationGraph) WriteToFile(ctx context.Context, path string) error {
+	f, err := os.Create(path)
+
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	if err := cgraph.DOT(og.Graph, f); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov ObservationProvider, n COGNode, depth int) (string, error) {
+	if cog == nil {
+		return "", fmt.Errorf("expected instance of COG received nil")
+	}
+
+	if n == nil {
+		return "", fmt.Errorf("expected instance of COGNode as root node received nil")
+	}
+
 	if err := prov.ResolveObservationsToGraph(ctx, cog, og, n); err != nil {
 		return "", err
 	}
 
 	var expln strings.Builder
 
-	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[string, COGNode]) (bool, error) {
+	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[uint32, COGNode]) (bool, error) {
 		// First append the node description
 		_, err := expln.WriteString(
 			fmt.Sprintf(
@@ -29,7 +54,7 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 					"observation-behavior",
 				),
 				cur.Vertex.GetLanguage(),
-				cur.Vertex.GetSource(),
+				cur.Vertex.GetStringSource(),
 			),
 		)
 

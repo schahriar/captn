@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func DOT[K ~string, T any](g *Graph[K, T], w io.Writer) error {
+func DOT[K ~uint32, T any](g *Graph[K, T], w io.Writer) error {
 	graphType := "strict graph"
 	edgeOp := "--"
 	if g.Traits().IsDirected {
@@ -23,10 +23,10 @@ func DOT[K ~string, T any](g *Graph[K, T], w io.Writer) error {
 
 	for vertex, edges := range adjacency {
 		attrs := g.vertexAttrs(vertex)
-		fmt.Fprintf(w, "\t%q [ %sweight=0 ];\n\n", string(vertex), formatAttrs(attrs))
+		fmt.Fprintf(w, "\t\"v%v\" [ %sweight=0 ];\n\n", vertex, formatAttrs(attrs))
 
 		for target, edge := range edges {
-			fmt.Fprintf(w, "\t%q %s %q [ weight=%v%s ];\n\n", string(vertex), edgeOp, string(target), edge.Properties.Weight, formatEdgeAttrs(edge.Properties.Attributes))
+			fmt.Fprintf(w, "\t\"v%v\" %s \"v%v\" [ weight=%v%s ];\n\n", vertex, edgeOp, target, edge.Properties.Weight, formatEdgeAttrs(edge.Properties.Attributes))
 		}
 	}
 

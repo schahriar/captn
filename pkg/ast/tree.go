@@ -1,9 +1,9 @@
 package ast
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"hash/crc32"
 
 	"github.com/goccy/go-yaml"
 	"github.com/schahriar/captn/pkg/common"
@@ -24,21 +24,24 @@ type ASTNodeSourcePosition struct {
 }
 
 func (cont *ASTNodeContainer) GetRawSource() []byte {
-	nr := cont.Node.GetPosition().GetByteRange()
-	return cont.Node.GetSource().Buffer[nr[0]:nr[1]]
+	fr := cont.Node.GetPosition()
+	src := cont.Node.GetSource()
+
+	nr := fr.GetByteRange()
+	return src.Buffer[nr[0]:nr[1]]
 }
 
 func (cont *ASTNodeContainer) GetPosition() *common.FileRange {
 	return cont.Node.GetPosition()
 }
 
-func (cont *ASTNodeContainer) GetSourceHash() uint32 {
-	return crc32.ChecksumIEEE(cont.GetRawSource())
+func (cont *ASTNodeContainer) GetHash() uint32 {
+	return common.PrimaryHash(cont.GetRawSource())
 }
 
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
-	hash := cont.GetSourceHash()
+	hash := cont.GetHash()
 
 	return ASTNodeSourcePosition{
 		Position:   pos.String(),
@@ -54,10 +57,26 @@ func (cont *ASTNodeContainer) MarshalJSON() ([]byte, error) {
 	return json.Marshal(cont.DebugPosition())
 }
 
+func (cont *ASTNodeContainer) GetStringSource() string {
+	return string(cont.GetRawSource())
+}
+
+func (cont *ASTNodeContainer) GetFilePath() string {
+	return cont.Node.GetSource().Path
+}
+
+func (cont *ASTNodeContainer) GetLanguage() string {
+	return cont.Node.GetSource().GetLanguage()
+}
+
 func NewASTNodeContainer(node ASTParserNode) *ASTNodeContainer {
 	return &ASTNodeContainer{
 		Node: node,
 	}
+}
+
+func (node *ASTNodeContainer) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
+	return []common.ResolvedDependency{}, nil
 }
 
 func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
@@ -66,7 +85,7 @@ func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
 
 type ASTNode interface {
 	GetPosition() *common.FileRange
-	GetSourceHash() uint32
+	GetHash() uint32
 	DebugPosition() ASTNodeSourcePosition
 	GetRawSource() []byte
 	GetParserNode() ASTParserNode
@@ -76,6 +95,11 @@ type ASTNode interface {
 	String() string
 	Kind() string
 	Accept(visitor ASTVisitor) interface{}
+	GetFilePath() string
+	GetLanguage() string
+	GetStringSource() string
+
+	ListDependencies(ctx context.Context) (common.ResolvedDependencies, error)
 }
 
 type ASTSingularNode interface {
