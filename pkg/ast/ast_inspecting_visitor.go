@@ -6,6 +6,10 @@ import (
 
 type InspectingVisitor struct{}
 
+func NewInspectingVisitor() *InspectingVisitor {
+	return &InspectingVisitor{}
+}
+
 func resolveNested(visitor ASTVisitor, t reflect.Type, v reflect.Value) *[]interface{} {
 	res := []interface{}{}
 

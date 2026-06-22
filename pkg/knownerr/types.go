@@ -12,10 +12,14 @@ func (se TypeError) Error() string {
 	return se.Value.Error()
 }
 
-func (se TypeError) New(val error) any {
+func NewTypeError(val error) TypeError {
 	return TypeError{
 		Value: val,
 	}
+}
+
+func (se TypeError) New(val error) any {
+	return NewTypeError(val)
 }
 
 func UnresolvedType() TypeError {

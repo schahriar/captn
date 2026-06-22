@@ -80,7 +80,8 @@ func (apn ParserNode) GetNthChildByKind(kind string, n int) (ParserNode, bool) {
 		}
 	}
 
-	return ParserNode{}, false
+	var zero ParserNode
+	return zero, false
 }
 
 func (apn ParserNode) IterateChildrenByFieldName(fieldName string, iterator func(ParserNode) (bool, error)) error {
@@ -108,7 +109,8 @@ func (apn ParserNode) ChildByFieldName(name string) (ParserNode, bool) {
 	child := apn.raw.ChildByFieldName(name)
 
 	if child == nil {
-		return ParserNode{}, false
+		var zero ParserNode
+		return zero, false
 	}
 
 	nn := NewParserNode(apn.Source, child)
@@ -120,7 +122,7 @@ func (apn ParserNode) GetTextContent() string {
 	return apn.raw.Utf8Text(apn.Source.Buffer)
 }
 
-var _ ast.ASTParserNode = &ParserNode{}
+var _ ast.ASTParserNode = (*ParserNode)(nil)
 
 func NewParserNode(src *common.Source, node *tree_sitter.Node) ParserNode {
 	return ParserNode{
@@ -141,6 +143,14 @@ type TransformContext struct {
 	Parent ast.ASTNode
 	attach AttachNode
 	walk   func(ctx context.Context, parent ast.ASTNode) error
+}
+
+func NewTransformContext(root *ast.ASTModule, cursor *tree_sitter.TreeCursor, attach AttachNode) *TransformContext {
+	return &TransformContext{
+		Root:   root,
+		cursor: cursor,
+		attach: attach,
+	}
 }
 
 func (trx *TransformContext) Emit(child ast.ASTNode) error {
@@ -170,11 +180,7 @@ func WalkTransformTree(
 	cursor := tree.Walk()
 	defer cursor.Close()
 
-	trx := &TransformContext{
-		Root:   root,
-		cursor: cursor,
-		attach: attach,
-	}
+	trx := NewTransformContext(root, cursor, attach)
 
 	var walk func(ctx context.Context, parent ast.ASTNode) error
 

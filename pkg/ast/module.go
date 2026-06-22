@@ -38,7 +38,7 @@ func (node *ASTModule) Accept(visitor ASTVisitor) interface{} {
 }
 
 func (node *ASTModule) Debug() interface{} {
-	debug := &InspectingVisitor{}
+	debug := NewInspectingVisitor()
 	return node.Accept(debug)
 }
 
@@ -98,6 +98,6 @@ func (node *ASTImportStatement) Accept(visitor ASTVisitor) interface{} {
 }
 
 func (node *ASTImportStatement) Debug() interface{} {
-	debug := &InspectingVisitor{}
+	debug := NewInspectingVisitor()
 	return node.Accept(debug)
 }

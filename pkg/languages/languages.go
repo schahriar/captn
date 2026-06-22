@@ -19,4 +19,4 @@ type LanguageSupport interface {
 	GetTreeSitterLanguage() *tree_sitter.Language
 }
 
-var Golang LanguageSupport = &languages_golang.GolangLanguageSupportDefinition{}
+var Golang LanguageSupport = languages_golang.NewGolangLanguageSupportDefinition()

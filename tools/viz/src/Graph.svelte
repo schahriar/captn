@@ -7,8 +7,8 @@
   export let data: GraphData;
   const dispatch = createEventDispatcher();
 
-  const RADIUS: Record<string, number> = { local: 9, vendor: 5, stdlib: 4, unknown: 4 };
-  const ALL_TYPES = ['local', 'vendor', 'stdlib'] as const;
+  const RADIUS: Record<string, number> = { local: 9, vendor: 5, stdlib: 4, unknown: 6 };
+  const ALL_TYPES = ['local', 'vendor', 'stdlib', 'unknown'] as const;
 
   function getTheme() {
     const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -35,7 +35,7 @@
   let hoveredPathEdges = new Set<string>();
   let searchQuery = '';
   let hideUnmatched = false;
-  let typeFilter = new Set<string>(['local', 'vendor', 'stdlib']);
+  let typeFilter = new Set<string>(['local', 'vendor', 'stdlib', 'unknown']);
   let depthLimit: number | null = null;
 
   interface SelectionEntry {

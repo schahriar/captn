@@ -26,6 +26,15 @@ type ServerProcess struct {
 	Kill   func() error
 }
 
+func NewServerProcess(reader io.Reader, writer io.WriteCloser, wait, kill func() error) *ServerProcess {
+	return &ServerProcess{
+		Reader: reader,
+		Writer: writer,
+		Wait:   wait,
+		Kill:   kill,
+	}
+}
+
 type StartOptions struct {
 	WorkspaceRoot         string
 	ClientName            string
@@ -33,6 +42,15 @@ type StartOptions struct {
 	Capabilities          map[string]any
 	InitializationOptions any
 	Spawn                 SpawnFunc
+}
+
+func NewStartOptions(workspaceRoot, clientName, clientVersion string, spawn SpawnFunc) StartOptions {
+	return StartOptions{
+		WorkspaceRoot: workspaceRoot,
+		ClientName:    clientName,
+		ClientVersion: clientVersion,
+		Spawn:         spawn,
+	}
 }
 
 type Client struct {
@@ -49,14 +67,38 @@ type Client struct {
 	proc   *ServerProcess
 }
 
+func NewClient(proc *ServerProcess) *Client {
+	return &Client{
+		reader:  bufio.NewReader(proc.Reader),
+		writer:  proc.Writer,
+		pending: make(map[int64]chan response),
+		closed:  make(chan struct{}),
+		proc:    proc,
+	}
+}
+
 type RPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
+func NewRPCError(code int, message string) *RPCError {
+	return &RPCError{
+		Code:    code,
+		Message: message,
+	}
+}
+
 type Position struct {
 	Line      int `json:"line"`
 	Character int `json:"character"`
+}
+
+func NewPosition(line, character int) Position {
+	return Position{
+		Line:      line,
+		Character: character,
+	}
 }
 
 type Range struct {
@@ -67,6 +109,13 @@ type Range struct {
 type Location struct {
 	URI   string `json:"uri"`
 	Range Range  `json:"range"`
+}
+
+func NewLocation(uri string, r Range) Location {
+	return Location{
+		URI:   uri,
+		Range: r,
+	}
 }
 
 type LocationLink struct {
@@ -80,11 +129,24 @@ type TextDocumentIdentifier struct {
 	URI string `json:"uri"`
 }
 
+func NewTextDocumentIdentifier(uri string) TextDocumentIdentifier {
+	return TextDocumentIdentifier{URI: uri}
+}
+
 type TextDocumentItem struct {
 	URI        string `json:"uri"`
 	LanguageID string `json:"languageId"`
 	Version    int    `json:"version"`
 	Text       string `json:"text"`
+}
+
+func NewTextDocumentItem(uri, languageID string, version int, text string) TextDocumentItem {
+	return TextDocumentItem{
+		URI:        uri,
+		LanguageID: languageID,
+		Version:    version,
+		Text:       text,
+	}
 }
 
 type ReferenceRequest struct {
@@ -126,13 +188,7 @@ func Start(ctx context.Context, opts StartOptions) (*Client, error) {
 		return nil, fmt.Errorf("spawned LSP process has nil writer")
 	}
 
-	c := &Client{
-		reader:  bufio.NewReader(proc.Reader),
-		writer:  proc.Writer,
-		pending: make(map[int64]chan response),
-		closed:  make(chan struct{}),
-		proc:    proc,
-	}
+	c := NewClient(proc)
 
 	go c.readLoop()
 
@@ -180,9 +236,7 @@ func (c *Client) References(ctx context.Context, req ReferenceRequest) ([]Locati
 	var refs []Location
 
 	err = c.Request(ctx, "textDocument/references", map[string]any{
-		"textDocument": TextDocumentIdentifier{
-			URI: req.TextDocument.URI,
-		},
+		"textDocument": NewTextDocumentIdentifier(req.TextDocument.URI),
 		"position": position,
 		"context": map[string]any{
 			"includeDeclaration": req.IncludeDeclaration,
@@ -208,9 +262,7 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 	var raw json.RawMessage
 
 	err = c.Request(ctx, "textDocument/definition", map[string]any{
-		"textDocument": TextDocumentIdentifier{
-			URI: req.TextDocument.URI,
-		},
+		"textDocument": NewTextDocumentIdentifier(req.TextDocument.URI),
 		"position": position,
 	}, &raw)
 	if err != nil {
@@ -221,22 +273,24 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 }
 
 func PositionInsideRange(text string, r common.FileRange) (Position, error) {
+	var zero Position
+
 	if r.Start.Line < 0 || r.Start.Column < 0 || r.End.Line < 0 || r.End.Column < 0 {
-		return Position{}, fmt.Errorf("range cannot contain negative row or column")
+		return zero, fmt.Errorf("range cannot contain negative row or column")
 	}
 
 	if r.End.Line < r.Start.Line || r.End.Line == r.Start.Line && r.End.Column < r.Start.Column {
-		return Position{}, fmt.Errorf("range end is before range start")
+		return zero, fmt.Errorf("range end is before range start")
 	}
 
 	lines := strings.Split(text, "\n")
 
 	if r.Start.Line >= len(lines) {
-		return Position{}, fmt.Errorf("range start row out of bounds")
+		return zero, fmt.Errorf("range start row out of bounds")
 	}
 
 	if r.End.Line >= len(lines) {
-		return Position{}, fmt.Errorf("range end row out of bounds")
+		return zero, fmt.Errorf("range end row out of bounds")
 	}
 
 	for row := r.Start.Line; row <= r.End.Line; row++ {
@@ -253,21 +307,21 @@ func PositionInsideRange(text string, r common.FileRange) (Position, error) {
 		}
 
 		if startColumn > endColumn {
-			return Position{}, fmt.Errorf("range start column out of bounds")
+			return zero, fmt.Errorf("range start column out of bounds")
 		}
 
 		if endColumn > utf16Len(line) {
-			return Position{}, fmt.Errorf("range end column out of bounds")
+			return zero, fmt.Errorf("range end column out of bounds")
 		}
 
 		startByte, err := byteOffsetForUTF16Column(line, startColumn)
 		if err != nil {
-			return Position{}, err
+			return zero, err
 		}
 
 		endByte, err := byteOffsetForUTF16Column(line, endColumn)
 		if err != nil {
-			return Position{}, err
+			return zero, err
 		}
 
 		for byteIndex, ch := range line[startByte:endByte] {
@@ -277,20 +331,14 @@ func PositionInsideRange(text string, r common.FileRange) (Position, error) {
 
 			column, err := utf16ColumnAtByteOffset(line, startByte+byteIndex)
 			if err != nil {
-				return Position{}, err
+				return zero, err
 			}
 
-			return Position{
-				Line:      row,
-				Character: column,
-			}, nil
+			return NewPosition(row, column), nil
 		}
 	}
 
-	return Position{
-		Line:      r.Start.Line,
-		Character: r.Start.Column,
-	}, nil
+	return NewPosition(r.Start.Line, r.Start.Column), nil
 }
 
 func (c *Client) OpenDocument(doc TextDocumentItem) error {
@@ -443,7 +491,7 @@ func (c *Client) readLoop() {
 			return
 		}
 
-		msg := incomingMessage{}
+		msg := NewincomingMessage()
 
 		if err := json.Unmarshal(body, &msg); err != nil {
 			continue
@@ -482,10 +530,7 @@ func (c *Client) readLoop() {
 		c.pendingMu.Unlock()
 
 		if ch != nil {
-			ch <- response{
-				result: msg.Result,
-				err:    msg.Error,
-			}
+			ch <- Newresponse(msg.Result, msg.Error)
 		}
 	}
 }
@@ -534,12 +579,7 @@ func (c *Client) failAll(err error) {
 
 	for id, ch := range c.pending {
 		delete(c.pending, id)
-		ch <- response{
-			err: &RPCError{
-				Code:    -1,
-				Message: err.Error(),
-			},
-		}
+		ch <- Newresponse(nil, NewRPCError(-1, err.Error()))
 	}
 }
 
@@ -592,6 +632,10 @@ type DocumentLinkRequest struct {
 	TextDocument TextDocumentItem
 }
 
+func NewDocumentLinkRequest(doc TextDocumentItem) DocumentLinkRequest {
+	return DocumentLinkRequest{TextDocument: doc}
+}
+
 func (c *Client) DocumentLinks(ctx context.Context, req DocumentLinkRequest) ([]DocumentLink, error) {
 	if err := c.validateAndOpen(req.TextDocument); err != nil {
 		return nil, err
@@ -600,9 +644,7 @@ func (c *Client) DocumentLinks(ctx context.Context, req DocumentLinkRequest) ([]
 	var links []DocumentLink
 
 	err := c.Request(ctx, "textDocument/documentLink", map[string]any{
-		"textDocument": TextDocumentIdentifier{
-			URI: req.TextDocument.URI,
-		},
+		"textDocument": NewTextDocumentIdentifier(req.TextDocument.URI),
 	}, &links)
 	if err != nil {
 		return nil, err
@@ -612,9 +654,7 @@ func (c *Client) DocumentLinks(ctx context.Context, req DocumentLinkRequest) ([]
 }
 
 func (c *Client) ImportTarget(ctx context.Context, doc TextDocumentItem, r Range) (string, error) {
-	links, err := c.DocumentLinks(ctx, DocumentLinkRequest{
-		TextDocument: doc,
-	})
+	links, err := c.DocumentLinks(ctx, NewDocumentLinkRequest(doc))
 	if err != nil {
 		return "", err
 	}
@@ -641,9 +681,7 @@ func (c *Client) ImportDefinition(ctx context.Context, doc TextDocumentItem, imp
 	var raw json.RawMessage
 
 	err = c.Request(ctx, "textDocument/definition", map[string]any{
-		"textDocument": TextDocumentIdentifier{
-			URI: doc.URI,
-		},
+		"textDocument": NewTextDocumentIdentifier(doc.URI),
 		"position": position,
 	}, &raw)
 	if err != nil {

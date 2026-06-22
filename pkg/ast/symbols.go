@@ -45,4 +45,4 @@ func (node *ASTSymbol) Accept(visitor ASTVisitor) interface{} {
 }
 
 // Conformance checks
-var _ ASTNode = &ASTSymbol{}
+var _ ASTNode = (*ASTSymbol)(nil)

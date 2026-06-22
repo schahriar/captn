@@ -56,7 +56,7 @@ func main() {
 
 		task.End()
 
-		prov := &providers.ClaudeCodeProvider{}
+		prov := providers.NewClaudeCodeProvider()
 
 		og, start, err := g.QuerySnippet(ctx, cli.Args[1], cli.Args[2])
 		if err != nil {

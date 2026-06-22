@@ -14,6 +14,14 @@ type Source struct {
 	Buffer    []byte `json:"-"`
 }
 
+func NewSource(workspace, path string, buf []byte) *Source {
+	return &Source{
+		Workspace: workspace,
+		Path:      path,
+		Buffer:    buf,
+	}
+}
+
 func (src *Source) BytePositionForLineColumn(line int, col int) (int, error) {
 	if src == nil {
 		return 0, fmt.Errorf("source is nil")
@@ -90,9 +98,5 @@ func NewSourceFromFile(ctx context.Context, workspace string, path string) (*Sou
 		return nil, err
 	}
 
-	return &Source{
-		Workspace: workspace,
-		Path:      path,
-		Buffer:    buf,
-	}, nil
+	return NewSource(workspace, path, buf), nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"go/ast"
+	"go/token"
 	"go/types"
 	"strings"
 
@@ -20,11 +21,6 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(pass *analysis.Pass) (interface{}, error) {
-	path := pass.Pkg.Path()
-	if path == modulePath+"/tests" || strings.HasPrefix(path, modulePath+"/tests/") {
-		return nil, nil
-	}
-
 	insp := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	filter := []ast.Node{
@@ -49,6 +45,9 @@ func run(pass *analysis.Pass) (interface{}, error) {
 }
 
 func checkComposite(pass *analysis.Pass, lit *ast.CompositeLit, stack []ast.Node) {
+	if isExcludedFile(pass, lit.Pos()) {
+		return
+	}
 	named := namedStruct(pass.TypesInfo.TypeOf(lit))
 	if named == nil || !inThisModule(named) {
 		return
@@ -56,11 +55,13 @@ func checkComposite(pass *analysis.Pass, lit *ast.CompositeLit, stack []ast.Node
 	if allowedByConstructor(pass, named, stack) {
 		return
 	}
-	name := named.Obj().Name()
-	pass.Reportf(lit.Pos(), "direct instantiation of %s is banned; use New%s constructor", name, name)
+	pass.Reportf(lit.Pos(), "direct instantiation of %s is banned; use %s constructor", named.Obj().Name(), suggestedConstructor(named))
 }
 
 func checkNewCall(pass *analysis.Pass, call *ast.CallExpr, stack []ast.Node) {
+	if isExcludedFile(pass, call.Pos()) {
+		return
+	}
 	id, ok := call.Fun.(*ast.Ident)
 	if !ok || id.Name != "new" || len(call.Args) != 1 {
 		return
@@ -75,8 +76,15 @@ func checkNewCall(pass *analysis.Pass, call *ast.CallExpr, stack []ast.Node) {
 	if allowedByConstructor(pass, named, stack) {
 		return
 	}
+	pass.Reportf(call.Pos(), "new(%s) is banned; use %s constructor", named.Obj().Name(), suggestedConstructor(named))
+}
+
+func suggestedConstructor(named *types.Named) string {
 	name := named.Obj().Name()
-	pass.Reportf(call.Pos(), "new(%s) is banned; use New%s constructor", name, name)
+	if named.Obj().Exported() {
+		return "New" + name
+	}
+	return "new" + strings.ToUpper(name[:1]) + name[1:]
 }
 
 func namedStruct(t types.Type) *types.Named {
@@ -96,6 +104,11 @@ func namedStruct(t types.Type) *types.Named {
 	return named
 }
 
+func isExcludedFile(pass *analysis.Pass, pos token.Pos) bool {
+	file := pass.Fset.Position(pos).Filename
+	return strings.Contains(file, "/tests/")
+}
+
 func inThisModule(named *types.Named) bool {
 	pkg := named.Obj().Pkg()
 	if pkg == nil {
@@ -109,13 +122,15 @@ func allowedByConstructor(pass *analysis.Pass, named *types.Named, stack []ast.N
 	if named.Obj().Pkg() != pass.Pkg {
 		return false
 	}
-	expected := "New" + named.Obj().Name()
+	name := named.Obj().Name()
+	exportedForm := "New" + name
+	unexportedForm := "new" + strings.ToUpper(name[:1]) + name[1:]
 	for i := len(stack) - 1; i >= 0; i-- {
 		fn, ok := stack[i].(*ast.FuncDecl)
 		if !ok {
 			continue
 		}
-		return fn.Name.Name == expected
+		return fn.Name.Name == exportedForm || fn.Name.Name == unexportedForm
 	}
 	return false
 }

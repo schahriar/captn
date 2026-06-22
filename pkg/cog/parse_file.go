@@ -25,9 +25,17 @@ type COGFile struct {
 	Language languages.LanguageSupport
 }
 
+func NewCOGFile(src *common.Source, module *ast.ASTModule, lang languages.LanguageSupport) *COGFile {
+	return &COGFile{
+		Source:   src,
+		Module:   module,
+		Language: lang,
+	}
+}
+
 var ErrSnippetNotFound = errors.New("snippet not found")
 
-func offsetToPosition(buf []byte, offset int) common.FilePosition {
+func offsetToLineColumn(buf []byte, offset int) (int, int) {
 	if offset < 0 {
 		offset = 0
 	}
@@ -47,10 +55,7 @@ func offsetToPosition(buf []byte, offset int) common.FilePosition {
 		}
 	}
 
-	return common.FilePosition{
-		Line:   row,
-		Column: col,
-	}
+	return row, col
 }
 
 func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
@@ -65,10 +70,10 @@ func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
 
 	endOffset := startOffset + len(snippet)
 
-	start := offsetToPosition(f.Source.Buffer, startOffset)
-	end := offsetToPosition(f.Source.Buffer, endOffset)
+	startLine, startCol := offsetToLineColumn(f.Source.Buffer, startOffset)
+	endLine, endCol := offsetToLineColumn(f.Source.Buffer, endOffset)
 
-	return common.NewFileRangeAutoBytePosition(f.Source, start.Line, start.Column, end.Line, end.Column)
+	return common.NewFileRangeAutoBytePosition(f.Source, startLine, startCol, endLine, endCol)
 }
 
 func (f COGFile) GetHash() uint32 {
@@ -96,7 +101,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	if ext == ".go" {
 		lang = languages.Golang
 	} else {
-		return &COGFile{}, errors.New("unsupported file type") // TODO: Use knownerrors
+		return nil, errors.New("unsupported file type") // TODO: Use knownerrors
 	}
 
 	tsp := tree_sitter.NewParser()
@@ -116,17 +121,13 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 		return nil, fmt.Errorf("failed to parse Go code: %w", err)
 	}
 
-	pf := COGFile{
-		Source:   src,
-		Module:   root,
-		Language: lang,
-	}
+	pf := NewCOGFile(src, root, lang)
 
 	pf.IndexNodes()
 
 	task.End()
 
-	return &pf, nil
+	return pf, nil
 }
 
 func ParseFile(ctx context.Context, workspace string, file string) (*COGFile, error) {

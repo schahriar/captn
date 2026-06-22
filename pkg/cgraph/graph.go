@@ -15,7 +15,7 @@ type Graph[K comparable, T any] struct {
 	mu    sync.RWMutex
 }
 
-func New[K comparable, T any](hash graph.Hash[K, T], options ...func(*graph.Traits)) Graph[K, T] {
+func NewGraph[K comparable, T any](hash graph.Hash[K, T], options ...func(*graph.Traits)) Graph[K, T] {
 	return Graph[K, T]{
 		Graph: graph.New(hash, options...),
 		hash:  hash,
@@ -62,6 +62,30 @@ type dfsFrame[K comparable] struct {
 	hasEdge   bool
 }
 
+func newDfsFrame[K comparable](id, parent K, hasParent bool, depth int, via graph.Edge[K], hasEdge bool) dfsFrame[K] {
+	return dfsFrame[K]{
+		id:        id,
+		parent:    parent,
+		hasParent: hasParent,
+		depth:     depth,
+		via:       via,
+		hasEdge:   hasEdge,
+	}
+}
+
+func NewDFSVisit[K comparable, T any](id K, vertex T, parent K, hasParent bool, depth int, via graph.Edge[K], hasEdge bool, g *Graph[K, T]) DFSVisit[K, T] {
+	return DFSVisit[K, T]{
+		ID:        id,
+		Vertex:    vertex,
+		Parent:    parent,
+		HasParent: hasParent,
+		Depth:     depth,
+		Via:       via,
+		HasEdge:   hasEdge,
+		g:         g,
+	}
+}
+
 func (g *Graph[K, T]) DetailedDFS(
 	start K,
 	// Return true to stop traversal, or a non-nil error to stop and propagate.
@@ -76,8 +100,9 @@ func (g *Graph[K, T]) DetailedDFS(
 		start: true,
 	}
 
+	var zeroK K
 	stack := []dfsFrame[K]{
-		{id: start, depth: 0},
+		newDfsFrame[K](start, zeroK, false, 0, graph.Edge[K]{}, false),
 	}
 
 	for len(stack) > 0 {
@@ -89,16 +114,7 @@ func (g *Graph[K, T]) DetailedDFS(
 			return err
 		}
 
-		stop, err := visit(DFSVisit[K, T]{
-			ID:        f.id,
-			Vertex:    vertex,
-			Parent:    f.parent,
-			HasParent: f.hasParent,
-			Depth:     f.depth,
-			Via:       f.via,
-			HasEdge:   f.hasEdge,
-			g:         g,
-		})
+		stop, err := visit(NewDFSVisit(f.id, vertex, f.parent, f.hasParent, f.depth, f.via, f.hasEdge, g))
 		if err != nil {
 			return err
 		}
@@ -124,14 +140,7 @@ func (g *Graph[K, T]) DetailedDFS(
 		// Reverse push so pop order matches recursive DFS order.
 		for i := len(children) - 1; i >= 0; i-- {
 			child := children[i]
-			stack = append(stack, dfsFrame[K]{
-				id:        child,
-				parent:    f.id,
-				hasParent: true,
-				depth:     f.depth + 1,
-				via:       adj[f.id][child],
-				hasEdge:   true,
-			})
+			stack = append(stack, newDfsFrame(child, f.id, true, f.depth+1, adj[f.id][child], true))
 		}
 	}
 

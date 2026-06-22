@@ -4,6 +4,10 @@ type ImportVisitor struct {
 	Imports []*ASTImportStatement
 }
 
+func NewImportVisitor() *ImportVisitor {
+	return &ImportVisitor{}
+}
+
 func (vis *ImportVisitor) VisitModule(node *ASTModule) interface{} {
 	return AutoVisit(vis, node)
 }
@@ -42,4 +46,4 @@ func (vis *ImportVisitor) VisitSymbol(node *ASTSymbol) interface{} {
 }
 
 // Conformance check
-var _ ASTVisitor = &ImportVisitor{}
+var _ ASTVisitor = (*ImportVisitor)(nil)

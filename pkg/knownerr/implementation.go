@@ -19,10 +19,14 @@ func (se ImplementationError) Error() string {
 	return se.Value.Error()
 }
 
-func (se ImplementationError) New(val error) any {
+func NewImplementationError(val error) ImplementationError {
 	return ImplementationError{
 		Value: val,
 	}
+}
+
+func (se ImplementationError) New(val error) any {
+	return NewImplementationError(val)
 }
 
 func NewError[T BaseErrorInterface](err any, a ...any) T {

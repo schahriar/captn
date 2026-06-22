@@ -205,7 +205,7 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 		return trx.WalkChildrenInto(ctx, callExpr)
 
 	case "return_statement":
-		ret := ast.NewReturnStatement(ast.NewASTNodeContainer(node))
+		ret := ast.NewASTReturnStatement(ast.NewASTNodeContainer(node))
 
 		// Capture plain identifier return values as symbol references
 		node.IterateChildren(func(pn parsers.ParserNode) (bool, error) {
@@ -233,6 +233,10 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 }
 
 type GolangLanguageSupportDefinition struct{}
+
+func NewGolangLanguageSupportDefinition() *GolangLanguageSupportDefinition {
+	return &GolangLanguageSupportDefinition{}
+}
 
 var (
 	toolchainStdlibRE = regexp.MustCompile(`/pkg/mod/golang\.org/toolchain@[^/]+/src/`)
@@ -282,14 +286,9 @@ func (glsd *GolangLanguageSupportDefinition) NewLSPServer(ctx context.Context) (
 		return nil, err
 	}
 
-	return &lsp.ServerProcess{
-		Reader: stdout,
-		Writer: stdin,
-		Wait:   cmd.Wait,
-		Kill: func() error {
-			return cmd.Process.Kill()
-		},
-	}, nil
+	return lsp.NewServerProcess(stdout, stdin, cmd.Wait, func() error {
+		return cmd.Process.Kill()
+	}), nil
 }
 
 func (glsd *GolangLanguageSupportDefinition) Parse(ctx context.Context, src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error) {

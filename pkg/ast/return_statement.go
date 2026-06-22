@@ -14,7 +14,7 @@ func (node *ASTReturnStatement) Kind() string {
 	return "Return"
 }
 
-func NewReturnStatement(cont *ASTNodeContainer) *ASTReturnStatement {
+func NewASTReturnStatement(cont *ASTNodeContainer) *ASTReturnStatement {
 	return &ASTReturnStatement{
 		ASTNodeContainer: cont,
 		Virtual:          []ASTNode{},

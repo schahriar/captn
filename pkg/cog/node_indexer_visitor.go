@@ -10,6 +10,10 @@ type nodeIndexerVisitor struct {
 	pf *COGFile
 }
 
+func NewnodeIndexerVisitor(pf *COGFile) *nodeIndexerVisitor {
+	return &nodeIndexerVisitor{pf: pf}
+}
+
 func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
 	hash := node.GetHash()
 	pos := node.GetPosition()
@@ -57,10 +61,10 @@ func (vis *nodeIndexerVisitor) VisitSymbol(node *ast.ASTSymbol) interface{} {
 }
 
 // Conformance check
-var _ ast.ASTVisitor = &nodeIndexerVisitor{}
+var _ ast.ASTVisitor = (*nodeIndexerVisitor)(nil)
 
 func (pf *COGFile) IndexNodes() {
-	vis := nodeIndexerVisitor{pf: pf}
+	vis := NewnodeIndexerVisitor(pf)
 
 	pf.lookupTable = map[uint32]ast.ASTNode{}
 	pf.intervals = interval.NewSearchTree[uint32](common.CompareFilePosition)

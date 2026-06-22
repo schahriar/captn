@@ -23,6 +23,13 @@ type ASTNodeSourcePosition struct {
 	SourceHash string
 }
 
+func NewASTNodeSourcePosition(position, sourceHash string) ASTNodeSourcePosition {
+	return ASTNodeSourcePosition{
+		Position:   position,
+		SourceHash: sourceHash,
+	}
+}
+
 func (cont *ASTNodeContainer) GetRawSource() []byte {
 	fr := cont.Node.GetPosition()
 	src := cont.Node.GetSource()
@@ -43,10 +50,7 @@ func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
 	hash := cont.GetHash()
 
-	return ASTNodeSourcePosition{
-		Position:   pos.String(),
-		SourceHash: fmt.Sprintf("%08x\n", hash),
-	}
+	return NewASTNodeSourcePosition(pos.String(), fmt.Sprintf("%08x\n", hash))
 }
 
 func (cont *ASTNodeContainer) MarshalYAML() ([]byte, error) {
@@ -109,15 +113,15 @@ type ASTSingularNode interface {
 }
 
 // Conformance checks
-var _ ASTNode = &ASTModule{}
-var _ ASTNode = &ASTImportStatement{}
-var _ ASTNode = &ASTFuncExpression{}
-var _ ASTNode = &ASTFuncArgument{}
-var _ ASTNode = &ASTBlock{}
-var _ ASTNode = &ASTReturnStatement{}
-var _ ASTNode = &ASTCallExpression{}
-var _ ASTNode = &ASTDeclaration{}
-var _ ASTNode = &ASTSymbol{}
+var _ ASTNode = (*ASTModule)(nil)
+var _ ASTNode = (*ASTImportStatement)(nil)
+var _ ASTNode = (*ASTFuncExpression)(nil)
+var _ ASTNode = (*ASTFuncArgument)(nil)
+var _ ASTNode = (*ASTBlock)(nil)
+var _ ASTNode = (*ASTReturnStatement)(nil)
+var _ ASTNode = (*ASTCallExpression)(nil)
+var _ ASTNode = (*ASTDeclaration)(nil)
+var _ ASTNode = (*ASTSymbol)(nil)
 
 type ASTVisitor interface {
 	VisitModule(*ASTModule) interface{}

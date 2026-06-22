@@ -13,7 +13,7 @@ func stringHash(s string) string { return s }
 
 func newDirectedGraph(t *testing.T, vertices []string, edges [][2]string) cgraph.Graph[string, string] {
 	t.Helper()
-	g := cgraph.New[string, string](stringHash, graph.Directed())
+	g := cgraph.NewGraph[string, string](stringHash, graph.Directed())
 	for _, v := range vertices {
 		assert.NoError(t, g.AddVertex(v))
 	}
@@ -227,7 +227,7 @@ func TestDetailedDFS_MissingStartReturnsError(t *testing.T) {
 }
 
 func TestDetailedDFS_UndirectedDoesNotRevisitParent(t *testing.T) {
-	g := cgraph.New[string, string](stringHash)
+	g := cgraph.NewGraph[string, string](stringHash)
 	for _, v := range []string{"a", "b", "c"} {
 		assert.NoError(t, g.AddVertex(v))
 	}

@@ -13,6 +13,28 @@ import (
 
 type ClaudeCodeProvider struct{}
 
+func NewClaudeCodeProvider() *ClaudeCodeProvider {
+	return &ClaudeCodeProvider{}
+}
+
+func NewClaudeResult() *ClaudeResult {
+	return &ClaudeResult{}
+}
+
+func NewclaudeBatchObservationInput() claudeBatchObservationInput {
+	return claudeBatchObservationInput{
+		Sources:     []claudeIdentifiedObservationInput{},
+		Connections: []claudeIdentifiedObservationInput{},
+	}
+}
+
+func NewclaudeIdentifiedObservationInput(id, description string) claudeIdentifiedObservationInput {
+	return claudeIdentifiedObservationInput{
+		ID:          id,
+		Description: description,
+	}
+}
+
 type ClaudeResult struct {
 	Type           string `json:"type"`
 	Subtype        string `json:"subtype"`
@@ -98,8 +120,6 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		return scma, err
 	}
 
-	fmt.Println(prompt)
-
 	// TODO: Check for claude binary
 	cmd := exec.CommandContext(ctx,
 		"claude",
@@ -119,7 +139,9 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		return scma, fmt.Errorf("failed to run claude code with error %w", err)
 	}
 
-	res := &ClaudeResult{}
+	fmt.Println(string(out))
+
+	res := NewClaudeResult()
 
 	if err := json.Unmarshal(out, &res); err != nil {
 		return scma, fmt.Errorf("unexpected response from claude with error %w \n Received: %s", err, out)
@@ -147,7 +169,7 @@ No markdown. No code fences.`
 }
 
 type claudeIdentifiedObservationInput struct {
-	ID          uint32 `json:"id"`
+	ID          string `json:"id"`
 	Description string `json:"description"`
 }
 
@@ -201,45 +223,43 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	}
 
 	// Build a batch call
-	in := claudeBatchObservationInput{
-		Sources:     []claudeIdentifiedObservationInput{},
-		Connections: []claudeIdentifiedObservationInput{},
-	}
+	in := NewclaudeBatchObservationInput()
+
+	// Short, sequential string IDs for the LLM round-trip; raw uint32 hashes are
+	// fragile to copy verbatim and LLMs frequently drift digits.
+	verteximap := map[string]uint32{}
+	edgeimap := map[string]struct {
+		Source uint32
+		Target uint32
+		Hash   uint32
+	}{}
 
 	cogref.Mux.Lock()
 
 	for _, v := range vertices {
 		k := v.GetHash()
 		if _, ok := cogref.ObservationCache[k]; !ok {
-			in.Sources = append(in.Sources, claudeIdentifiedObservationInput{
-				ID:          k,
-				Description: v.GetStringSource(),
-			})
+			sid := fmt.Sprintf("s%d", len(in.Sources))
+			verteximap[sid] = k
+			in.Sources = append(in.Sources, NewclaudeIdentifiedObservationInput(sid, v.GetStringSource()))
 		}
 	}
-
-	// Inverse mapping to recover edges
-	edgeimap := map[uint32]struct {
-		Source uint32
-		Target uint32
-	}{}
 
 	for _, e := range edges {
 		ekey := common.PrimaryHash(fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash()))
 
-		edgeimap[ekey] = struct {
-			Source uint32
-			Target uint32
-		}{
-			Source: e.Source.GetHash(),
-			Target: e.Target.GetHash(),
-		}
-
 		if _, ok := cogref.ObservationCache[ekey]; !ok {
-			in.Connections = append(in.Connections, claudeIdentifiedObservationInput{
-				ID:          ekey,
-				Description: fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash()),
-			})
+			sid := fmt.Sprintf("c%d", len(in.Connections))
+			edgeimap[sid] = struct {
+				Source uint32
+				Target uint32
+				Hash   uint32
+			}{
+				Source: e.Source.GetHash(),
+				Target: e.Target.GetHash(),
+				Hash:   ekey,
+			}
+			in.Connections = append(in.Connections, NewclaudeIdentifiedObservationInput(sid, fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash())))
 		}
 	}
 
@@ -256,9 +276,14 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	Prefer NO or MINIMAL exploration in the repository to answer the given question.
 	DO NOT MAKE ASSUMPTIONS, YOUR OBSERVATIONS MUST BE FACTUAL.
 	ACCEPT THE CODE AS IS, THERE IS NO NEED TO USE LSP QUERIES. Return ONLY raw JSON.
-	No markdown. No code fences.
-	YOU ARE REQUIRED TO KEEP A STRICT RELATIONSHIP BETWEEN INPUT KEYS AND OUTPUT DEFINITIONS
-	YOU SHOULD ALWAYS CHECK IF YOUR OUTPUT IS VALID JSON`
+	No markdown. No code fences. DO NOT echo the input back.
+	You will be given an input object with "sources" and "connections" arrays.
+	For every entry in "sources" you MUST emit exactly one entry in the output "observations" array.
+	For every entry in "connections" you MUST emit exactly one entry in the output "connectionObservations" array.
+	Each output entry has two fields: "id" (copied verbatim from the matching input entry) and "behavior"
+	DO NOT REPEAT CODE PROVIDED TO YOU UNLESS YOU ARE PROVIDING AN EXAMPLE SNIPPET FOR EXPLANATIONS / OBSERVATIONS
+	(a concise, factual description of what the code does, skip niceties and prefer IDs over paths if possible).
+	Output must be valid JSON matching the supplied json-schema.`
 
 	encin, err := json.Marshal(in)
 
@@ -266,7 +291,10 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 		return fmt.Errorf("failed to serialize batch input for claude code %w", err)
 	}
 
-	prompt := fmt.Sprintf("Respond with the exact observation schema to described code below while keeping IDs intact:\n```%s```", encin)
+	prompt := fmt.Sprintf(`Produce observations for the input below. Input shape: {"sources":[{"id","description"}],"connections":[{"id","description"}]}. Output shape: {"observations":[{"id","behavior"}],"connectionObservations":[{"id","behavior"}]}. Copy each "id" verbatim; replace "description" with a "behavior" that explains what that code does. Do not include the original source text in your output.
+
+Input:
+%s`, encin)
 
 	res, err := QueryClaudeCode[*common.BatchObservationSchema](ctx, systemPrompt, prompt, "high")
 
@@ -278,20 +306,28 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	defer cogref.Mux.Unlock()
 
 	for _, o := range res.Observations {
-		g.Graph.SetVertexAttribute(o.ID, "observation-behavior", o.Behavior)
-		cogref.ObservationCache[o.ID] = o
+		hash, ok := verteximap[o.ID]
+		if !ok {
+			// TODO: Track error
+			continue
+		}
+
+		g.Graph.SetVertexAttribute(hash, "observation-behavior", o.Behavior)
+		cogref.ObservationCache[hash] = o
 	}
 
 	for _, e := range res.ConnectionObservations {
-		if edef, ok := edgeimap[e.ID]; ok {
-			g.Graph.SetEdgeAttribute(edef.Source, edef.Target, "observation-behavior", e.Behavior)
-			cogref.ObservationCache[e.ID] = e
-		} else {
-			// TODO: Log error
+		edef, ok := edgeimap[e.ID]
+		if !ok {
+			// TODO: Track error
+			continue
 		}
+
+		g.Graph.SetEdgeAttribute(edef.Source, edef.Target, "observation-behavior", e.Behavior)
+		cogref.ObservationCache[edef.Hash] = e
 	}
 
 	return nil
 }
 
-var _ cog.ObservationProvider = &ClaudeCodeProvider{}
+var _ cog.ObservationProvider = (*ClaudeCodeProvider)(nil)

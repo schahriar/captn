@@ -74,12 +74,7 @@ func decodeDefinitionResult(raw json.RawMessage) ([]Location, error) {
 			return nil, nil
 		}
 
-		return []Location{
-			{
-				URI:   link.TargetURI,
-				Range: link.TargetSelectionRange,
-			},
-		}, nil
+		return []Location{NewLocation(link.TargetURI, link.TargetSelectionRange)}, nil
 	}
 
 	if raw[0] != '[' {
@@ -109,10 +104,7 @@ func decodeDefinitionResult(raw json.RawMessage) ([]Location, error) {
 			continue
 		}
 
-		locations = append(locations, Location{
-			URI:   link.TargetURI,
-			Range: link.TargetSelectionRange,
-		})
+		locations = append(locations, NewLocation(link.TargetURI, link.TargetSelectionRange))
 	}
 
 	return locations, nil

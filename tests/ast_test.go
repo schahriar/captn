@@ -217,7 +217,7 @@ func TestASTDeclarationChildren(t *testing.T) {
 	decl := ast.NewASTDeclaration(cont)
 	sym := ast.NewASTSymbol(cont, "x")
 	decl.Names = append(decl.Names, sym)
-	ret := ast.NewReturnStatement(cont)
+	ret := ast.NewASTReturnStatement(cont)
 	decl.AppendChild(ret)
 	children := decl.Children()
 	assert.Len(t, children, 2)
@@ -238,14 +238,14 @@ func TestASTDeclarationAppendChild(t *testing.T) {
 func TestASTReturnStatementEmpty(t *testing.T) {
 	src := &common.Source{Path: "test.go", Buffer: []byte("return")}
 	cont := newTestContainer(src, 0, 6)
-	ret := ast.NewReturnStatement(cont)
+	ret := ast.NewASTReturnStatement(cont)
 	assert.Len(t, ret.Children(), 0)
 }
 
 func TestASTReturnStatementAppendChild(t *testing.T) {
 	src := &common.Source{Path: "test.go", Buffer: []byte("return x")}
 	cont := newTestContainer(src, 0, 8)
-	ret := ast.NewReturnStatement(cont)
+	ret := ast.NewASTReturnStatement(cont)
 	sym := ast.NewASTSymbol(cont, "x")
 	ret.AppendChild(sym)
 	children := ret.Children()

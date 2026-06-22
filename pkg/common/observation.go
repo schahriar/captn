@@ -9,7 +9,7 @@ type ObservationSchemaType interface {
 }
 
 type ObservationSchema struct {
-	ID       uint32 `json:"id" jsonschema_description:"The ID for this observation"`
+	ID       string `json:"id" jsonschema_description:"The ID for this observation. Copy verbatim from the input."`
 	Behavior string `json:"behavior" jsonschema:"minLength=40,description=Behavior of the code described in concise reasoning format. Prefer bullet-points"`
 }
 
@@ -48,4 +48,4 @@ func (o *BatchObservationSchema) Serialize() (string, error) {
 	return string(b), nil
 }
 
-var _ ObservationSchemaType = &ObservationSchema{}
+var _ ObservationSchemaType = (*ObservationSchema)(nil)

@@ -129,10 +129,10 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 	chlds := f.QueryNodesWithinRange(r)
 	root := f.Module
 
-	g := cgraph.New(NodeHasher)
-	og := &ObservationGraph{
-		Graph: &g,
-	}
+	// TODO: Collate by blocks or parents and then add dep resolve into block nodes
+
+	g := cgraph.NewGraph(NodeHasher)
+	og := NewObservationGraph(&g)
 
 	og.Graph.AddVertex(root)
 
@@ -216,9 +216,7 @@ func (cog *COG) queryWithDepth(ctx context.Context, g *ObservationGraph, n COGNo
 }
 
 func (cog *COG) QueryWithDepth(ctx context.Context, n COGNode, depth int) (*ObservationGraph, error) {
-	g := cgraph.New(NodeHasher)
-	og := &ObservationGraph{
-		Graph: &g,
-	}
+	g := cgraph.NewGraph(NodeHasher)
+	og := NewObservationGraph(&g)
 	return og, cog.queryWithDepth(ctx, og, n, depth, &sync.Mutex{}, map[uint32]bool{})
 }

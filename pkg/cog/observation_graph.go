@@ -13,6 +13,10 @@ type ObservationGraph struct {
 	Graph *cgraph.Graph[uint32, COGNode]
 }
 
+func NewObservationGraph(g *cgraph.Graph[uint32, COGNode]) *ObservationGraph {
+	return &ObservationGraph{Graph: g}
+}
+
 func (og *ObservationGraph) WriteToFile(ctx context.Context, path string) error {
 	f, err := os.Create(path)
 
@@ -43,6 +47,8 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 	}
 
 	var expln strings.Builder
+
+	og.WriteToFile(ctx, "./graph.gv")
 
 	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[uint32, COGNode]) (bool, error) {
 		// First append the node description

@@ -22,12 +22,7 @@ func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) 
 		return server, nil
 	}
 
-	client, err := lsp.Start(context.Background(), lsp.StartOptions{
-		WorkspaceRoot: workspace,
-		ClientName:    "captn-lsp-client",
-		ClientVersion: "0.1.0",
-		Spawn:         lang.NewLSPServer,
-	})
+	client, err := lsp.Start(context.Background(), lsp.NewStartOptions(workspace, "captn-lsp-client", "0.1.0", lang.NewLSPServer))
 
 	if err != nil {
 		return nil, err
@@ -51,7 +46,7 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 
 	reg = trace.StartRegion(ctx, "LSPImportsQuery")
 
-	impVis := &ast.ImportVisitor{}
+	impVis := ast.NewImportVisitor()
 
 	pf.Module.Accept(impVis)
 
@@ -64,12 +59,12 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 			return []common.ResolvedDependency{}, fmt.Errorf("Position was nil for import node %+v\n", imp)
 		}
 
-		refs, err := client.ImportDefinition(ctx, lsp.TextDocumentItem{
-			URI:        lsp.FileURI(pf.Source.Path),
-			LanguageID: pf.Language.GetLanguageID(),
-			Version:    1,
-			Text:       string(pf.Source.Buffer),
-		}, *pos)
+		refs, err := client.ImportDefinition(ctx, lsp.NewTextDocumentItem(
+			lsp.FileURI(pf.Source.Path),
+			pf.Language.GetLanguageID(),
+			1,
+			string(pf.Source.Buffer),
+		), *pos)
 
 		if err != nil && strings.Contains(err.Error(), "has no readable files") {
 			continue

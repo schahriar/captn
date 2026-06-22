@@ -3,8 +3,7 @@
 ## TODO:
 - [ ] Add observation backend
   - [ ] **Provided a snippet and file path** explain subgraphs as a batch including relationships etc
-    - [ ] Reverse interval lookup
-    - [ ] Block-based observations
+    - [ ] Block-based observations (should filter to relevant high level scopes)
 - [ ] MCP Server
 - [ ] Integrate with Claude Code as COG Frontend and Backend
 - [ ] Assign layered hashes to each edge

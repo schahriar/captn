@@ -19,6 +19,20 @@ type ASTErrorStack struct {
 	Error error
 }
 
+func NewASTErrorStack() ASTErrorStack {
+	return ASTErrorStack{
+		Stack: []ASTNode{},
+	}
+}
+
+func NewASTError(value interface{}, node ASTNode, callStack *runtime.Frames) ASTError {
+	return ASTError{
+		Value:     value,
+		Node:      node,
+		CallStack: callStack,
+	}
+}
+
 func (estack ASTErrorStack) String() string {
 	res := estack.Error.Error() + "\n\n"
 
@@ -63,9 +77,7 @@ func (ae ASTError) Stack() ASTErrorStack {
 }
 
 func (ae ASTError) StackWithMaxDepth(maxDepth int) ASTErrorStack {
-	res := ASTErrorStack{
-		Stack: []ASTNode{},
-	}
+	res := NewASTErrorStack()
 	cur := ae
 
 	for i := 0; i < maxDepth; i++ {
@@ -96,17 +108,9 @@ func ASTPanicBoundary(node ASTNode, fn func() interface{}) interface{} {
 				pcs = pcs[:n]
 				frames := runtime.CallersFrames(pcs)
 
-				panic(ASTError{
-					Value:     r,
-					Node:      node,
-					CallStack: frames,
-				})
+				panic(NewASTError(r, node, frames))
 			} else if astErr, ok := r.(ASTError); ok {
-				panic(ASTError{
-					Value:     astErr,
-					Node:      node,
-					CallStack: astErr.CallStack, // Simply hoists the call stack up
-				})
+				panic(NewASTError(astErr, node, astErr.CallStack)) // Simply hoists the call stack up
 			} else {
 				panic(r)
 			}
