@@ -14,11 +14,16 @@ func (node *ASTReturnStatement) Kind() string {
 	return "Return"
 }
 
+func (node *ASTReturnStatement) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTReturnStatement(cont *ASTNodeContainer) *ASTReturnStatement {
-	return &ASTReturnStatement{
-		ASTNodeContainer: cont,
+	node := &ASTReturnStatement{
+		ASTNodeContainer: cont.Clone(),
 		Virtual:          []ASTNode{},
 	}
+	return node
 }
 
 func (node *ASTReturnStatement) GetContainer() *ASTNodeContainer {

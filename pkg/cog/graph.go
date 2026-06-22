@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/dominikbraun/graph"
+	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
 )
@@ -129,19 +130,35 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 	chlds := f.QueryNodesWithinRange(r)
 	root := f.Module
 
-	// TODO: Collate by blocks or parents and then add dep resolve into block nodes
+	// Collate by blocks
+	interests := map[ast.ASTNode]bool{} // Basically a Set
+
+	for _, chld := range chlds {
+		v := chld.NearestOrSelf(func(a ast.ASTNode) bool {
+			switch a.(type) {
+			case *ast.ASTBlock:
+				return true
+			default:
+				return false
+			}
+		})
+
+		if v != nil {
+			interests[v] = true
+		}
+	}
+
+	// TODO: Resolve references for Blocks
 
 	g := cgraph.NewGraph(NodeHasher)
 	og := NewObservationGraph(&g)
 
 	og.Graph.AddVertex(root)
 
-	for _, chld := range chlds {
-		og.Graph.AddVertex(chld)
-		og.Graph.AddEdge(root.GetHash(), chld.GetHash())
+	for n := range interests {
+		og.Graph.AddVertex(n)
+		og.Graph.AddEdge(root.GetHash(), n.GetHash())
 	}
-
-	fmt.Println(chlds)
 
 	return og, root, nil
 }

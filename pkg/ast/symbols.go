@@ -15,11 +15,16 @@ func (node *ASTSymbol) Kind() string {
 	return "Symbol"
 }
 
+func (node *ASTSymbol) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTSymbol(cont *ASTNodeContainer, name string) *ASTSymbol {
-	return &ASTSymbol{
-		ASTNodeContainer: cont,
+	node := &ASTSymbol{
+		ASTNodeContainer: cont.Clone(),
 		Name:             name,
 	}
+	return node
 }
 
 func (node *ASTSymbol) GetContainer() *ASTNodeContainer {

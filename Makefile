@@ -1,4 +1,6 @@
 BINARY  := captn
+export GOCACHE := $(CURDIR)/.gocache
+
 GOBIN_DIR := $(shell go env GOBIN)
 ifeq ($(strip $(GOBIN_DIR)),)
   GOBIN_DIR := $(shell go env GOPATH)/bin

@@ -17,12 +17,17 @@ func (node *ASTDeclaration) Kind() string {
 	return "Declaration"
 }
 
+func (node *ASTDeclaration) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTDeclaration(cont *ASTNodeContainer) *ASTDeclaration {
-	return &ASTDeclaration{
-		ASTNodeContainer: cont,
+	node := &ASTDeclaration{
+		ASTNodeContainer: cont.Clone(),
 		Names:            []*ASTSymbol{},
 		Virtual:          []ASTNode{},
 	}
+	return node
 }
 
 func (node *ASTDeclaration) GetContainer() *ASTNodeContainer {

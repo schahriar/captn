@@ -16,6 +16,7 @@
 coverage.*
 *.coverprofile
 profile.cov
+.gocache/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -50,3 +51,6 @@ dist
 # it currently doesn't get much use in this repo until we dogfood COG in Claude and get
 # some consistency in patterns
 .claude
+
+.gocache
+out.txt

@@ -90,3 +90,79 @@ func TestParserCallExpression(t *testing.T) {
 		assert.Equal(t, "string", call.Symbol.Name)
 	}
 }
+
+func TestParserAttachesASTParents(t *testing.T) {
+	pf := parseSimple(t)
+	module := pf.Module
+	fn := module.Block.Children()[0].(*ast.ASTFuncExpression)
+	arg := fn.Arguments[0]
+	ret := fn.Block.Children()[0].(*ast.ASTReturnStatement)
+	call := ret.Virtual[0].(*ast.ASTCallExpression)
+
+	assert.Nil(t, module.GetParent())
+	assert.Same(t, module, module.Block.GetParent())
+	assert.Same(t, module.Block, fn.GetParent())
+	assert.Same(t, fn, fn.Name.GetParent())
+	assert.Same(t, fn, arg.GetParent())
+	assert.Same(t, arg, arg.Identifier.GetParent())
+	assert.Same(t, arg, arg.Type.GetParent())
+	assert.Same(t, fn, fn.ReturnType.GetParent())
+	assert.Same(t, fn, fn.Block.GetParent())
+	assert.Same(t, fn.Block, ret.GetParent())
+	assert.Same(t, ret, call.GetParent())
+	assert.Same(t, call, call.Symbol.GetParent())
+}
+
+func TestParserFindsNearestASTParent(t *testing.T) {
+	pf := parseSimple(t)
+	module := pf.Module
+	fn := module.Block.Children()[0].(*ast.ASTFuncExpression)
+	ret := fn.Block.Children()[0].(*ast.ASTReturnStatement)
+	call := ret.Virtual[0].(*ast.ASTCallExpression)
+
+	nearestFunc := call.Symbol.Nearest(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTFuncExpression)
+		return ok
+	})
+
+	nearestReturn := call.Symbol.Nearest(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTReturnStatement)
+		return ok
+	})
+
+	missingImport := call.Symbol.Nearest(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTImportStatement)
+		return ok
+	})
+
+	assert.Same(t, fn, nearestFunc)
+	assert.Same(t, ret, nearestReturn)
+	assert.Nil(t, missingImport)
+	assert.Nil(t, module.Nearest(func(node ast.ASTNode) bool {
+		return true
+	}))
+}
+
+func TestParserFindsNearestASTParentOrSelf(t *testing.T) {
+	pf := parseSimple(t)
+	fn := pf.Module.Block.Children()[0].(*ast.ASTFuncExpression)
+	ret := fn.Block.Children()[0].(*ast.ASTReturnStatement)
+	call := ret.Virtual[0].(*ast.ASTCallExpression)
+
+	nearestCall := call.NearestOrSelf(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTCallExpression)
+		return ok
+	})
+
+	nearestReturn := call.NearestOrSelf(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTReturnStatement)
+		return ok
+	})
+
+	assert.Same(t, call, nearestCall)
+	assert.Same(t, ret, nearestReturn)
+	assert.Nil(t, fn.Nearest(func(node ast.ASTNode) bool {
+		_, ok := node.(*ast.ASTFuncExpression)
+		return ok
+	}))
+}

@@ -4,6 +4,7 @@
 - [ ] Add observation backend
   - [ ] **Provided a snippet and file path** explain subgraphs as a batch including relationships etc
     - [ ] Block-based observations (should filter to relevant high level scopes)
+    - [ ] Resolve references for Blocks, gets n-degree of separation
 - [ ] MCP Server
 - [ ] Integrate with Claude Code as COG Frontend and Backend
 - [ ] Assign layered hashes to each edge

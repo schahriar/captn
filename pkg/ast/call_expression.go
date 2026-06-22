@@ -18,14 +18,19 @@ func (node *ASTCallExpression) Kind() string {
 	return "CallExpression"
 }
 
+func (node *ASTCallExpression) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTCallExpression(cont *ASTNodeContainer) *ASTCallExpression {
-	return &ASTCallExpression{
-		ASTNodeContainer: cont,
+	node := &ASTCallExpression{
+		ASTNodeContainer: cont.Clone(),
 		Symbol:           nil,
 		Namespace:        nil,
 		Arguments:        []*ASTFuncArgument{},
 		Virtual:          []ASTNode{},
 	}
+	return node
 }
 
 func (node *ASTCallExpression) GetContainer() *ASTNodeContainer {

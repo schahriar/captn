@@ -223,5 +223,10 @@ func WalkTransformTree(
 	ctx, task := trace.NewTask(ctx, "walkTree")
 	defer task.End()
 
-	return walk(ctx, root)
+	if err := walk(ctx, root); err != nil {
+		return err
+	}
+
+	ast.AttachParents(root)
+	return nil
 }

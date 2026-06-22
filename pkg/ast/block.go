@@ -13,6 +13,10 @@ func (node *ASTBlock) Kind() string {
 	return "Block"
 }
 
+func (node *ASTBlock) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func (node *ASTBlock) GetContainer() *ASTNodeContainer {
 	return node.ASTNodeContainer
 }
@@ -30,10 +34,11 @@ func (node *ASTBlock) AppendChild(n ASTNode) {
 }
 
 func NewASTBlock(cont *ASTNodeContainer) *ASTBlock {
-	return &ASTBlock{
-		ASTNodeContainer: cont,
+	node := &ASTBlock{
+		ASTNodeContainer: cont.Clone(),
 		Virtual:          []ASTNode{},
 	}
+	return node
 }
 
 func (node *ASTBlock) Accept(visitor ASTVisitor) interface{} {

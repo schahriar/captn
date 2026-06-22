@@ -20,12 +20,17 @@ func (node *ASTFuncArgument) Kind() string {
 	return "FuncArgument"
 }
 
+func (node *ASTFuncArgument) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTFuncArgument(cont *ASTNodeContainer, nid *ASTSymbol, nt *ASTSymbol) *ASTFuncArgument {
-	return &ASTFuncArgument{
-		ASTNodeContainer: cont,
+	node := &ASTFuncArgument{
+		ASTNodeContainer: cont.Clone(),
 		Identifier:       nid,
 		Type:             nt,
 	}
+	return node
 }
 
 func (node *ASTFuncArgument) GetContainer() *ASTNodeContainer {
@@ -70,14 +75,19 @@ func (node *ASTFuncExpression) Kind() string {
 	return "FuncExpression"
 }
 
+func (node *ASTFuncExpression) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func NewASTFuncExpression(cont *ASTNodeContainer) *ASTFuncExpression {
 	// Default is void function with an empty block
-	return &ASTFuncExpression{
-		ASTNodeContainer: cont,
+	node := &ASTFuncExpression{
+		ASTNodeContainer: cont.Clone(),
 		Arguments:        []*ASTFuncArgument{},
 		ReturnType:       nil,
 		Block:            NewASTBlock(cont),
 	}
+	return node
 }
 
 func (node *ASTFuncExpression) GetContainer() *ASTNodeContainer {

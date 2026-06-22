@@ -31,6 +31,10 @@ func (node *ASTModule) Kind() string {
 	return "Module"
 }
 
+func (node *ASTModule) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
+}
+
 func (node *ASTModule) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitModule(node)
@@ -43,11 +47,12 @@ func (node *ASTModule) Debug() interface{} {
 }
 
 func NewASTModule(cont *ASTNodeContainer, name string) *ASTModule {
-	return &ASTModule{
-		ASTNodeContainer: cont,
+	node := &ASTModule{
+		ASTNodeContainer: cont.Clone(),
 		Name:             name,
 		Block:            NewASTBlock(cont),
 	}
+	return node
 }
 
 // ASTImportStatement - We treat imports as a node to support dynamic imports
@@ -59,9 +64,10 @@ type ASTImportStatement struct {
 }
 
 func NewASTImportStatement(cont *ASTNodeContainer) *ASTImportStatement {
-	return &ASTImportStatement{
-		ASTNodeContainer: cont,
+	node := &ASTImportStatement{
+		ASTNodeContainer: cont.Clone(),
 	}
+	return node
 }
 
 func (node *ASTImportStatement) GetContainer() *ASTNodeContainer {
@@ -70,6 +76,10 @@ func (node *ASTImportStatement) GetContainer() *ASTNodeContainer {
 
 func (node *ASTImportStatement) Kind() string {
 	return "Import"
+}
+
+func (node *ASTImportStatement) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
+	return node.ASTNodeContainer.NearestOrSelf(node, filt)
 }
 
 func (node *ASTImportStatement) Children() []ASTNode {

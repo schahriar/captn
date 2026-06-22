@@ -10,7 +10,8 @@ import (
 )
 
 type ASTNodeContainer struct {
-	Node ASTParserNode
+	Node   ASTParserNode
+	parent ASTNode
 }
 
 type ASTParserNode interface {
@@ -79,12 +80,58 @@ func NewASTNodeContainer(node ASTParserNode) *ASTNodeContainer {
 	}
 }
 
+func (cont *ASTNodeContainer) Clone() *ASTNodeContainer {
+	return NewASTNodeContainer(cont.Node)
+}
+
 func (node *ASTNodeContainer) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
 	return []common.ResolvedDependency{}, nil
 }
 
 func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
 	return holder.Node
+}
+
+func (holder *ASTNodeContainer) GetParent() ASTNode {
+	return holder.parent
+}
+
+func (holder *ASTNodeContainer) SetParent(parent ASTNode) {
+	holder.parent = parent
+}
+
+func (holder *ASTNodeContainer) Nearest(filt func(ASTNode) bool) ASTNode {
+	for node := holder.parent; node != nil; node = node.GetParent() {
+		if filt(node) {
+			return node
+		}
+	}
+
+	return nil
+}
+
+func (holder *ASTNodeContainer) NearestOrSelf(self ASTNode, filt func(ASTNode) bool) ASTNode {
+	if filt(self) {
+		return self
+	}
+
+	return holder.Nearest(filt)
+}
+
+func AttachParents(root ASTNode) {
+	attachParents(root, nil)
+}
+
+func attachParents(node ASTNode, parent ASTNode) {
+	if node == nil {
+		return
+	}
+
+	node.SetParent(parent)
+
+	for _, child := range node.Children() {
+		attachParents(child, node)
+	}
 }
 
 type ASTNode interface {
@@ -94,6 +141,10 @@ type ASTNode interface {
 	GetRawSource() []byte
 	GetParserNode() ASTParserNode
 	GetContainer() *ASTNodeContainer
+	GetParent() ASTNode
+	SetParent(ASTNode)
+	Nearest(func(ASTNode) bool) ASTNode
+	NearestOrSelf(func(ASTNode) bool) ASTNode
 	Children() []ASTNode
 	AppendChild(ASTNode)
 	String() string
