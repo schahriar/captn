@@ -51,6 +51,23 @@ func TestCOGRangeQueryModule(t *testing.T) {
 	assert.Contains(t, kinds, "CallExpression")
 }
 
+func TestCOGRangeQueryFindsMethodDefinitionSymbol(t *testing.T) {
+	pf := parseTestFile(t, "./fixtures/golang/baseproj/method.go")
+
+	rng, err := common.NewFileRangeAutoBytePosition(pf.Source, 4, 17, 4, 25)
+	assert.NoError(t, err)
+
+	nodes := pf.QueryNodesWithinRange(rng)
+	if !assert.Len(t, nodes, 1) {
+		return
+	}
+
+	sym, ok := nodes[0].(*ast.ASTSymbol)
+	if assert.True(t, ok, "expected definition range to resolve to symbol") {
+		assert.Equal(t, "Describe", sym.Name)
+	}
+}
+
 func TestCOGResolveImports(t *testing.T) {
 	pf := parseTestFile(t, "./fixtures/golang/multidep/cmd/main.go")
 

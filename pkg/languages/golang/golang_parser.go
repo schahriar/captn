@@ -65,7 +65,7 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 
 		return nil
 
-	case "function_declaration":
+	case "function_declaration", "method_declaration":
 		fn := ast.NewASTFuncExpression(ast.NewASTNodeContainer(node))
 
 		if nameNode, ok := node.ChildByFieldName("name"); ok {

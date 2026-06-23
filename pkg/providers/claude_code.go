@@ -294,6 +294,8 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 Input:
 %s`, encin)
 
+	fmt.Println("Prompting claude code with input", string(prompt))
+
 	res, err := QueryClaudeCode[*common.BatchObservationSchema](ctx, systemPrompt, prompt, "high")
 
 	if err != nil {

@@ -272,8 +272,6 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 			return nil, nil, err
 		}
 
-		fmt.Println("____________")
-
 		enodes := ef.QueryNodesWithinRange(dep.External)
 
 		// Again we blindly expect the nodes to map correctly as dependency resolution should've worked correctly
