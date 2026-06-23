@@ -1,6 +1,8 @@
 package cog
 
 import (
+	"fmt"
+
 	"github.com/rdleal/intervalst/interval"
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
@@ -17,6 +19,10 @@ func NewnodeIndexerVisitor(pf *COGFile) *nodeIndexerVisitor {
 func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
 	hash := node.GetHash()
 	pos := node.GetPosition()
+
+	if coll, ok := vis.pf.lookupTable[hash]; ok {
+		panic(fmt.Errorf("hash collision detected for node %+v with hash %v colliding with node %+v", node, hash, coll))
+	}
 
 	vis.pf.lookupTable[hash] = node
 	vis.pf.intervals.Insert(pos.Start, pos.End, hash)
@@ -66,8 +72,8 @@ var _ ast.ASTVisitor = (*nodeIndexerVisitor)(nil)
 func (pf *COGFile) IndexNodes() {
 	vis := NewnodeIndexerVisitor(pf)
 
-	pf.lookupTable = map[uint32]ast.ASTNode{}
-	pf.intervals = interval.NewSearchTree[uint32](common.CompareFilePosition)
+	pf.lookupTable = map[common.HashType]ast.ASTNode{}
+	pf.intervals = interval.NewSearchTree[common.HashType](common.CompareFilePosition)
 	pf.isIndexed = false
 
 	_ = vis.VisitModule(pf.Module)

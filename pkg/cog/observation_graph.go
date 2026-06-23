@@ -15,10 +15,10 @@ import (
 )
 
 type ObservationGraph struct {
-	Graph *cgraph.Graph[uint32, COGNode]
+	Graph *cgraph.Graph[common.HashType, COGNode]
 }
 
-func NewObservationGraph(g *cgraph.Graph[uint32, COGNode]) *ObservationGraph {
+func NewObservationGraph(g *cgraph.Graph[common.HashType, COGNode]) *ObservationGraph {
 	return &ObservationGraph{Graph: g}
 }
 
@@ -37,12 +37,12 @@ func (og *ObservationGraph) WriteDOT(w io.Writer) error {
 
 	fmt.Fprintf(w, "%s {\n\n", graphType)
 
-	vertices := make([]uint32, 0, len(adjacency))
+	vertices := make([]common.HashType, 0, len(adjacency))
 	for vertex := range adjacency {
 		vertices = append(vertices, vertex)
 	}
 	sort.Slice(vertices, func(i, j int) bool {
-		return vertices[i] < vertices[j]
+		return vertices[i].Sum() < vertices[j].Sum()
 	})
 
 	for _, vertex := range vertices {
@@ -54,12 +54,12 @@ func (og *ObservationGraph) WriteDOT(w io.Writer) error {
 		attrs := observationGraphNodeAttrs(node, props.Attributes)
 		fmt.Fprintf(w, "\t\"v%v\" [ %sweight=0 ];\n\n", vertex, formatDOTAttrs(attrs))
 
-		targets := make([]uint32, 0, len(adjacency[vertex]))
+		targets := make([]common.HashType, 0, len(adjacency[vertex]))
 		for target := range adjacency[vertex] {
 			targets = append(targets, target)
 		}
 		sort.Slice(targets, func(i, j int) bool {
-			return targets[i] < targets[j]
+			return targets[i].Sum() < targets[j].Sum()
 		})
 
 		for _, target := range targets {
@@ -202,7 +202,7 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 
 	og.WriteToFile(ctx, "./graph.gv")
 
-	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[uint32, COGNode]) (bool, error) {
+	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[common.HashType, COGNode]) (bool, error) {
 		// First append the node description
 		_, err := expln.WriteString(
 			fmt.Sprintf(

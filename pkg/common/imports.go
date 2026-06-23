@@ -1,5 +1,12 @@
 package common
 
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"runtime/trace"
+)
+
 type DependencyType string
 
 const (
@@ -20,6 +27,50 @@ func NewResolvedDependency(t DependencyType, i *FileRange, e *FileRange) Resolve
 		Internal: i,
 		External: e,
 	}
+}
+
+func NewResolvedDependencyFromURI(
+	ctx context.Context,
+	workspace string,
+	internal *FileRange,
+	uri string,
+	startLine int,
+	startColumn int,
+	endLine int,
+	endColumn int,
+	classify func(*Source) DependencyType,
+) (ResolvedDependency, error) {
+	zero := NewResolvedDependency(LocalDependency, nil, nil)
+	refp, err := AbsolutePathFromURI(uri)
+	if err != nil {
+		return zero, err
+	}
+
+	rel, err := filepath.Rel(workspace, refp)
+	if err != nil {
+		return zero, err
+	}
+
+	_, task := trace.NewTask(ctx, "loadResolvedDependency")
+	defer task.End()
+
+	buf, err := os.ReadFile(refp)
+	if err != nil {
+		return zero, err
+	}
+
+	src := NewSource(workspace, rel, buf)
+	external, err := NewFileRangeAutoBytePosition(src, startLine, startColumn, endLine, endColumn)
+	if err != nil {
+		return zero, err
+	}
+
+	dependencyType := LocalDependency
+	if classify != nil {
+		dependencyType = classify(src)
+	}
+
+	return NewResolvedDependency(dependencyType, internal, external), nil
 }
 
 type ResolvedDependencies []ResolvedDependency

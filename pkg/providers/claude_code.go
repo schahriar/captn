@@ -184,7 +184,7 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	// Resolves relevant vertices and edges in a subgraph
 	vertices := []cog.COGNode{}
 
-	err := graph.BFS(g.Graph, root.GetHash(), func(h uint32) bool {
+	err := graph.BFS(g.Graph, root.GetHash(), func(h common.HashType) bool {
 		if err := ctx.Err(); err != nil {
 			innerErr = err
 			return true
@@ -227,11 +227,11 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 
 	// Short, sequential string IDs for the LLM round-trip; raw uint32 hashes are
 	// fragile to copy verbatim and LLMs frequently drift digits.
-	verteximap := map[string]uint32{}
+	verteximap := map[string]common.HashType{}
 	edgeimap := map[string]struct {
-		Source uint32
-		Target uint32
-		Hash   uint32
+		Source common.HashType
+		Target common.HashType
+		Hash   common.HashType
 	}{}
 
 	cogref.Mux.Lock()
@@ -251,9 +251,9 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 		if _, ok := cogref.ObservationCache[ekey]; !ok {
 			sid := fmt.Sprintf("c%d", len(in.Connections))
 			edgeimap[sid] = struct {
-				Source uint32
-				Target uint32
-				Hash   uint32
+				Source common.HashType
+				Target common.HashType
+				Hash   common.HashType
 			}{
 				Source: e.Source.GetHash(),
 				Target: e.Target.GetHash(),

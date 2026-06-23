@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func DOT[K ~uint32, T any](g *Graph[K, T], w io.Writer) error {
+func DOT[K comparable, T any](g *Graph[K, T], w io.Writer) error {
 	graphType := "strict graph"
 	edgeOp := "--"
 	if g.Traits().IsDirected {

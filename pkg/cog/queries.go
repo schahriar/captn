@@ -3,7 +3,6 @@ package cog
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"runtime/trace"
 	"strings"
 
@@ -25,7 +24,7 @@ func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) 
 	client, err := lsp.Start(context.Background(), lsp.NewStartOptions(workspace, "captn-lsp-client", "0.1.0", lang.NewLSPServer))
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load language server for language %v with error %w", lang.GetLanguageID(), err)
 	}
 
 	lspServerCache[serkey] = client
@@ -64,7 +63,7 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 			pf.Language.GetLanguageID(),
 			1,
 			string(pf.Source.Buffer),
-		), *pos)
+		), pos)
 
 		if err != nil && strings.Contains(err.Error(), "has no readable files") {
 			continue
@@ -75,31 +74,11 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 		}
 
 		for _, ref := range refs {
-			refp, err := lsp.AbsolutePathFromURI(ref.URI)
-
+			ri, err := NewResolvedDependencyFromURIFromCOGFile(ctx, pf, pos, ref)
 			if err != nil {
 				return []common.ResolvedDependency{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
 			}
 
-			rel, err := filepath.Rel(pf.Source.Workspace, refp)
-
-			if err != nil {
-				return []common.ResolvedDependency{}, fmt.Errorf("Breaking path under workspace %v where import node = %+v\n and LSP ref = %+v\n %w", pf.Source.Workspace, imp, ref, err)
-			}
-
-			esrc, err := common.NewSourceFromFile(ctx, pf.Source.Workspace, rel)
-
-			if err != nil {
-				return []common.ResolvedDependency{}, err
-			}
-
-			erange, err := common.NewFileRangeAutoBytePosition(esrc, ref.Range.Start.Line, ref.Range.Start.Character, ref.Range.End.Line, ref.Range.End.Character)
-
-			if err != nil {
-				return []common.ResolvedDependency{}, err
-			}
-
-			ri := common.NewResolvedDependency(pf.Language.ClassifyImportType(erange.Source), pos, erange)
 			impLoc = append(impLoc, ri)
 		}
 	}
@@ -127,6 +106,10 @@ func (pf *COGFile) QueryNodesWithinRange(r *common.FileRange) []ast.ASTNode {
 		if r != nil {
 			if node.GetPosition().ContainedBy(*r) {
 				nodes = append(nodes, node)
+			} else {
+				fmt.Printf("node of interest for range %v = %v is not contained by the range %v\n", r, node, node.GetPosition())
+
+				fmt.Println("all hashes", hashes)
 			}
 		}
 	}

@@ -18,6 +18,7 @@
   - [ ] Add tests for freshness checks
 - [ ] Assign meaning to edges and cache
 - [ ] Restore graph
+- [ ] Add Codex support
 - [ ] Add a per language import to package name and path resolver
   - [ ] Possibly in AST?
 - [ ] Support Comments

@@ -151,13 +151,25 @@ func NewTextDocumentItem(uri, languageID string, version int, text string) TextD
 
 type ReferenceRequest struct {
 	TextDocument       TextDocumentItem
-	Range              common.FileRange
+	Range              *common.FileRange
 	IncludeDeclaration bool
 }
 
 type DefinitionRequest struct {
 	TextDocument TextDocumentItem
-	Range        common.FileRange
+	Range        *common.FileRange
+}
+
+type DefinitionBatchRequest struct {
+	TextDocument TextDocumentItem
+	Ranges       []*common.FileRange
+}
+
+func NewDefinitionBatchRequest(doc TextDocumentItem, ranges []*common.FileRange) *DefinitionBatchRequest {
+	return &DefinitionBatchRequest{
+		TextDocument: doc,
+		Ranges:       ranges,
+	}
 }
 
 func Start(ctx context.Context, opts StartOptions) (*Client, error) {
@@ -237,7 +249,7 @@ func (c *Client) References(ctx context.Context, req ReferenceRequest) ([]Locati
 
 	err = c.Request(ctx, "textDocument/references", map[string]any{
 		"textDocument": NewTextDocumentIdentifier(req.TextDocument.URI),
-		"position": position,
+		"position":     position,
 		"context": map[string]any{
 			"includeDeclaration": req.IncludeDeclaration,
 		},
@@ -254,7 +266,31 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 		return nil, err
 	}
 
-	position, err := PositionInsideRange(req.TextDocument.Text, req.Range)
+	return c.definition(ctx, req.TextDocument, req.Range)
+}
+
+// Note that definitions can return multiple locations for one range
+// This isn't a common use-case in most languages but added for future compatibility
+func (c *Client) Definitions(ctx context.Context, req *DefinitionBatchRequest) (map[*common.FileRange][]Location, error) {
+	if err := c.validateAndOpen(req.TextDocument); err != nil {
+		return nil, err
+	}
+
+	definitions := make(map[*common.FileRange][]Location, len(req.Ranges))
+	for _, r := range req.Ranges {
+		refs, err := c.definition(ctx, req.TextDocument, r)
+		if err != nil {
+			return nil, err
+		}
+
+		definitions[r] = refs
+	}
+
+	return definitions, nil
+}
+
+func (c *Client) definition(ctx context.Context, doc TextDocumentItem, r *common.FileRange) ([]Location, error) {
+	position, err := PositionInsideRange(doc.Text, r)
 	if err != nil {
 		return nil, err
 	}
@@ -262,8 +298,8 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 	var raw json.RawMessage
 
 	err = c.Request(ctx, "textDocument/definition", map[string]any{
-		"textDocument": NewTextDocumentIdentifier(req.TextDocument.URI),
-		"position": position,
+		"textDocument": NewTextDocumentIdentifier(doc.URI),
+		"position":     position,
 	}, &raw)
 	if err != nil {
 		return nil, err
@@ -272,7 +308,7 @@ func (c *Client) Definition(ctx context.Context, req DefinitionRequest) ([]Locat
 	return decodeDefinitionResult(raw)
 }
 
-func PositionInsideRange(text string, r common.FileRange) (Position, error) {
+func PositionInsideRange(text string, r *common.FileRange) (Position, error) {
 	var zero Position
 
 	if r.Start.Line < 0 || r.Start.Column < 0 || r.End.Line < 0 || r.End.Column < 0 {
@@ -668,25 +704,10 @@ func (c *Client) ImportTarget(ctx context.Context, doc TextDocumentItem, r Range
 	return "", nil
 }
 
-func (c *Client) ImportDefinition(ctx context.Context, doc TextDocumentItem, importRange common.FileRange) ([]Location, error) {
+func (c *Client) ImportDefinition(ctx context.Context, doc TextDocumentItem, importRange *common.FileRange) ([]Location, error) {
 	if err := c.validateAndOpen(doc); err != nil {
 		return nil, err
 	}
 
-	position, err := PositionInsideRange(doc.Text, importRange)
-	if err != nil {
-		return nil, err
-	}
-
-	var raw json.RawMessage
-
-	err = c.Request(ctx, "textDocument/definition", map[string]any{
-		"textDocument": NewTextDocumentIdentifier(doc.URI),
-		"position": position,
-	}, &raw)
-	if err != nil {
-		return nil, err
-	}
-
-	return decodeDefinitionResult(raw)
+	return c.definition(ctx, doc, importRange)
 }

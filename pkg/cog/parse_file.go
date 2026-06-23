@@ -17,8 +17,8 @@ import (
 
 type COGFile struct {
 	isIndexed   bool
-	lookupTable map[uint32]ast.ASTNode
-	intervals   *interval.SearchTree[uint32, common.FilePosition]
+	lookupTable map[common.HashType]ast.ASTNode
+	intervals   *interval.SearchTree[common.HashType, common.FilePosition]
 
 	Source   *common.Source
 	Module   *ast.ASTModule
@@ -76,7 +76,7 @@ func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
 	return common.NewFileRangeAutoBytePosition(f.Source, startLine, startCol, endLine, endCol)
 }
 
-func (f COGFile) GetHash() uint32 {
+func (f COGFile) GetHash() common.HashType {
 	return common.PrimaryHash(f.Source.Path)
 }
 

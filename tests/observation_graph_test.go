@@ -1,8 +1,7 @@
-package cog_test
+package tests_test
 
 import (
 	"bytes"
-	"context"
 	"testing"
 
 	"github.com/dominikbraun/graph"
@@ -13,13 +12,13 @@ import (
 )
 
 type dotTestNode struct {
-	hash     uint32
+	hash     common.HashType
 	path     string
 	language string
 	label    string
 }
 
-func newDotTestNode(hash uint32, path, language, label string) dotTestNode {
+func newDotTestNode(hash common.HashType, path, language, label string) dotTestNode {
 	return dotTestNode{
 		hash:     hash,
 		path:     path,
@@ -28,7 +27,7 @@ func newDotTestNode(hash uint32, path, language, label string) dotTestNode {
 	}
 }
 
-func (n dotTestNode) GetHash() uint32 {
+func (n dotTestNode) GetHash() common.HashType {
 	return n.hash
 }
 
@@ -44,19 +43,15 @@ func (n dotTestNode) GetStringSource() string {
 	return ""
 }
 
-func (n dotTestNode) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
-	return nil, nil
-}
-
 func (n dotTestNode) String() string {
 	return n.label
 }
 
 func TestObservationGraphWriteDOTAddsVizNodeAttributes(t *testing.T) {
-	g := cgraph.NewGraph[uint32, cog.COGNode](cog.NodeHasher)
+	g := cgraph.NewGraph[common.HashType, cog.COGNode](cog.NodeHasher)
 	og := cog.NewObservationGraph(&g)
 
-	node := newDotTestNode(42, "/workspace/vendor/example/mod/file.go", "golang", "CallExpression Symbol:x(1)")
+	node := newDotTestNode(common.HashType{42, 0, 0, 0}, "/workspace/vendor/example/mod/file.go", "golang", "CallExpression Symbol:x(1)")
 
 	assert.NoError(t, og.Graph.AddVertex(node, graph.VertexAttribute("import_type", "package")))
 
@@ -67,5 +62,5 @@ func TestObservationGraphWriteDOTAddsVizNodeAttributes(t *testing.T) {
 	assert.Contains(t, dot, `"label"="CallExpression Symbol:x(1)"`)
 	assert.Contains(t, dot, `"import_type"="dependency"`)
 	assert.Contains(t, dot, `"file_type"="golang"`)
-	assert.Contains(t, dot, `"node_type"="cog_test.dotTestNode"`)
+	assert.Contains(t, dot, `"node_type"="tests_test.dotTestNode"`)
 }

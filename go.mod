@@ -4,6 +4,7 @@ go 1.26.3
 
 require (
 	github.com/alecthomas/kong v1.15.0
+	github.com/cespare/xxhash v1.1.0
 	github.com/dominikbraun/graph v0.23.0
 	github.com/gkampitakis/go-snaps v0.5.22
 	github.com/goccy/go-yaml v1.19.2

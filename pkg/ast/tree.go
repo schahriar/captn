@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
@@ -43,8 +42,19 @@ func (cont *ASTNodeContainer) GetPosition() *common.FileRange {
 	return cont.Node.GetPosition()
 }
 
-func (cont *ASTNodeContainer) GetHash() uint32 {
-	return common.PrimaryHash(cont.GetRawSource())
+func (cont *ASTNodeContainer) GetHash() common.HashType {
+	hash := common.HashMany(
+		[]byte(cont.GetFilePath()),
+		cont.GetRawSource(),
+		[]byte(cont.GetPosition().String()),
+	)
+
+	if cont.parent == nil {
+		return hash
+	}
+
+	hash = hash.Add(cont.parent.GetHash())
+	return hash
 }
 
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
@@ -82,10 +92,6 @@ func NewASTNodeContainer(node ASTParserNode) *ASTNodeContainer {
 
 func (cont *ASTNodeContainer) Clone() *ASTNodeContainer {
 	return NewASTNodeContainer(cont.Node)
-}
-
-func (node *ASTNodeContainer) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
-	return []common.ResolvedDependency{}, nil
 }
 
 func (holder *ASTNodeContainer) GetParserNode() ASTParserNode {
@@ -136,7 +142,7 @@ func attachParents(node ASTNode, parent ASTNode) {
 
 type ASTNode interface {
 	GetPosition() *common.FileRange
-	GetHash() uint32
+	GetHash() common.HashType
 	DebugPosition() ASTNodeSourcePosition
 	GetRawSource() []byte
 	GetParserNode() ASTParserNode
@@ -153,8 +159,6 @@ type ASTNode interface {
 	GetFilePath() string
 	GetLanguage() string
 	GetStringSource() string
-
-	ListDependencies(ctx context.Context) (common.ResolvedDependencies, error)
 }
 
 type ASTSingularNode interface {
