@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/knownerr"
 )
 
@@ -60,6 +61,22 @@ func (node *ASTFuncArgument) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitFuncArgument(node)
 	})
+}
+
+func (node *ASTFuncArgument) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTFuncArgument) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTFuncArgument) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTFuncArgument) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }
 
 type ASTFuncExpression struct {
@@ -123,4 +140,20 @@ func (node *ASTFuncExpression) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitFuncExpression(node)
 	})
+}
+
+func (node *ASTFuncExpression) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTFuncExpression) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTFuncExpression) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTFuncExpression) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }

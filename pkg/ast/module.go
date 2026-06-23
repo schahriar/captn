@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/knownerr"
 )
 
@@ -39,6 +40,22 @@ func (node *ASTModule) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitModule(node)
 	})
+}
+
+func (node *ASTModule) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTModule) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTModule) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTModule) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }
 
 func (node *ASTModule) Debug() interface{} {
@@ -105,6 +122,22 @@ func (node *ASTImportStatement) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitImport(node)
 	})
+}
+
+func (node *ASTImportStatement) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTImportStatement) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTImportStatement) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTImportStatement) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }
 
 func (node *ASTImportStatement) Debug() interface{} {

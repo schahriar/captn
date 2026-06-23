@@ -43,13 +43,21 @@ func NewError[T BaseErrorInterface](err any, a ...any) T {
 }
 
 func DoesNotAcceptChildren(t any) ImplementationError {
-	return NewError[ImplementationError]("Node %T does not accept children", t)
+	return NewError[ImplementationError]("node %T does not accept children", t)
+}
+
+func HashCollision(node any, hash any, collisionHash any, collision any) ImplementationError {
+	return NewError[ImplementationError]("hash collision detected for node %+v with hash %v = %v colliding with node %+v", node, hash, collisionHash, collision)
+}
+
+func IntervalInsertError(node any, err error) ImplementationError {
+	return NewError[ImplementationError]("error inserting interval for node %+v: %w", node, err)
 }
 
 func UnsupportedFeature(feat string) ImplementationError {
-	return NewError[ImplementationError]("Unsupported feature: %v", feat)
+	return NewError[ImplementationError]("unsupported feature: %v", feat)
 }
 
 func InvalidLocalType() ImplementationError {
-	return NewError[ImplementationError]("Invalid local type")
+	return NewError[ImplementationError]("invalid local type")
 }

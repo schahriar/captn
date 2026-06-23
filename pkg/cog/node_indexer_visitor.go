@@ -1,11 +1,10 @@
 package cog
 
 import (
-	"fmt"
-
 	"github.com/rdleal/intervalst/interval"
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/knownerr"
 )
 
 type nodeIndexerVisitor struct {
@@ -17,15 +16,21 @@ func NewnodeIndexerVisitor(pf *COGFile) *nodeIndexerVisitor {
 }
 
 func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
-	hash := node.GetHash()
+	hash := ast.GetHash(node)
 	pos := node.GetPosition()
 
 	if coll, ok := vis.pf.lookupTable[hash]; ok {
-		panic(fmt.Errorf("hash collision detected for node %+v with hash %v colliding with node %+v", node, hash, coll))
+		// This is a valid panic because it indicates a hash collision, which should not happen in a properly functioning implementation
+		// We catch it and panic to report the issue as an implementation error, likely in a specific language parser
+		panic(knownerr.HashCollision(node, hash, ast.GetHash(coll), coll))
 	}
 
 	vis.pf.lookupTable[hash] = node
-	vis.pf.intervals.Insert(pos.Start, pos.End, hash)
+	err := vis.pf.intervals.Insert(pos.Start, pos.End, hash)
+
+	if err != nil {
+		panic(knownerr.IntervalInsertError(node, err))
+	}
 
 	return ast.AutoVisit(vis, node)
 }

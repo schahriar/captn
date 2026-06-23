@@ -273,7 +273,6 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 		}
 
 		fmt.Println("____________")
-		fmt.Println(ef.Module.Block.Virtual)
 
 		enodes := ef.QueryNodesWithinRange(dep.External)
 
@@ -312,9 +311,9 @@ func (cog *COG) QuerySnippet(ctx context.Context, file string, snippet string) (
 		// If the node exists in a chain then map it to its upstream
 		// Otherwise map to root
 		if sib, ok := ichains[n]; ok {
-			og.Graph.AddEdge(sib.GetHash(), n.GetHash())
+			og.Graph.AddEdge(ast.GetHash(sib), ast.GetHash(n))
 		} else {
-			og.Graph.AddEdge(root.GetHash(), n.GetHash())
+			og.Graph.AddEdge(ast.GetHash(root), ast.GetHash(n))
 		}
 	}
 

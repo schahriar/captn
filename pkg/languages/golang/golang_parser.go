@@ -128,7 +128,7 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 					typeSym = ast.NewASTSymbol(ast.NewASTNodeContainer(typeNode), typeNode.GetTextContent())
 				}
 
-				fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(node), idSym, typeSym))
+				fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, typeSym))
 
 				return true, nil
 			})
@@ -227,7 +227,6 @@ func GolangTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 		return nil
 
 	default:
-		// fmt.Println("Skip", node.Kind)
 		return trx.WalkChildren(ctx)
 	}
 }

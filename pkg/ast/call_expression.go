@@ -2,6 +2,8 @@ package ast
 
 import (
 	"fmt"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 type ASTCallExpression struct {
@@ -69,4 +71,20 @@ func (node *ASTCallExpression) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitCallExpression(node)
 	})
+}
+
+func (node *ASTCallExpression) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTCallExpression) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTCallExpression) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTCallExpression) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }

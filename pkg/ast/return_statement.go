@@ -2,6 +2,8 @@ package ast
 
 import (
 	"fmt"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 type ASTReturnStatement struct {
@@ -46,4 +48,20 @@ func (node *ASTReturnStatement) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitReturn(node)
 	})
+}
+
+func (node *ASTReturnStatement) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTReturnStatement) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTReturnStatement) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTReturnStatement) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }

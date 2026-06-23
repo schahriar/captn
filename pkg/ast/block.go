@@ -2,6 +2,8 @@ package ast
 
 import (
 	"fmt"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 type ASTBlock struct {
@@ -45,4 +47,20 @@ func (node *ASTBlock) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitBlock(node)
 	})
+}
+
+func (node *ASTBlock) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTBlock) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTBlock) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTBlock) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }

@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/knownerr"
 )
 
@@ -47,6 +48,22 @@ func (node *ASTSymbol) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitSymbol(node)
 	})
+}
+
+func (node *ASTSymbol) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTSymbol) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTSymbol) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTSymbol) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }
 
 // Conformance checks

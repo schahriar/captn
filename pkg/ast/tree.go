@@ -2,7 +2,6 @@ package ast
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/goccy/go-yaml"
 	"github.com/schahriar/captn/pkg/common"
@@ -21,6 +20,41 @@ type ASTParserNode interface {
 type ASTNodeSourcePosition struct {
 	Position   string
 	SourceHash string
+}
+
+func GetHash(node ASTNode) common.HashType {
+	hash := common.HashMany(
+		[]byte(node.GetFilePath()),
+		node.GetRawSource(),
+		[]byte(node.GetPosition().String()),
+		[]byte(node.Kind()),
+	)
+
+	if node.GetParent() == nil {
+		return hash
+	}
+
+	hash = hash.Add(GetHash(node.GetParent()))
+	return hash
+}
+
+func formatHash(hash common.HashType) string {
+	return hash.String() + "\n"
+}
+
+func GetDebugPosition(node ASTNode) ASTNodeSourcePosition {
+	pos := node.GetPosition()
+	hash := GetHash(node)
+
+	return NewASTNodeSourcePosition(pos.String(), formatHash(hash))
+}
+
+func marshalNodeYAML(node ASTNode) ([]byte, error) {
+	return yaml.Marshal(GetDebugPosition(node))
+}
+
+func marshalNodeJSON(node ASTNode) ([]byte, error) {
+	return json.Marshal(GetDebugPosition(node))
 }
 
 func NewASTNodeSourcePosition(position, sourceHash string) ASTNodeSourcePosition {
@@ -42,26 +76,18 @@ func (cont *ASTNodeContainer) GetPosition() *common.FileRange {
 	return cont.Node.GetPosition()
 }
 
-func (cont *ASTNodeContainer) GetHash() common.HashType {
+func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
+	pos := cont.Node.GetPosition()
 	hash := common.HashMany(
 		[]byte(cont.GetFilePath()),
 		cont.GetRawSource(),
-		[]byte(cont.GetPosition().String()),
+		[]byte(pos.String()),
 	)
-
-	if cont.parent == nil {
-		return hash
+	if cont.parent != nil {
+		hash = hash.Add(GetHash(cont.parent))
 	}
 
-	hash = hash.Add(cont.parent.GetHash())
-	return hash
-}
-
-func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
-	pos := cont.Node.GetPosition()
-	hash := cont.GetHash()
-
-	return NewASTNodeSourcePosition(pos.String(), fmt.Sprintf("%08x\n", hash))
+	return NewASTNodeSourcePosition(pos.String(), formatHash(hash))
 }
 
 func (cont *ASTNodeContainer) MarshalYAML() ([]byte, error) {

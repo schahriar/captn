@@ -139,8 +139,6 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		return scma, fmt.Errorf("failed to run claude code with error %w", err)
 	}
 
-	fmt.Println(string(out))
-
 	res := NewClaudeResult()
 
 	if err := json.Unmarshal(out, &res); err != nil {

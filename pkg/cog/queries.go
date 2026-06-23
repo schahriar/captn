@@ -97,6 +97,8 @@ func (pf *COGFile) QueryNodesWithinRange(r *common.FileRange) []ast.ASTNode {
 
 	nodes := make([]ast.ASTNode, 0, len(hashes))
 
+	fmt.Println(r.Start, r.End, hashes)
+
 	for _, hash := range hashes {
 		node, ok := pf.lookupTable[hash]
 		if !ok {
@@ -106,10 +108,6 @@ func (pf *COGFile) QueryNodesWithinRange(r *common.FileRange) []ast.ASTNode {
 		if r != nil {
 			if node.GetPosition().ContainedBy(*r) {
 				nodes = append(nodes, node)
-			} else {
-				fmt.Printf("node of interest for range %v = %v is not contained by the range %v\n", r, node, node.GetPosition())
-
-				fmt.Println("all hashes", hashes)
 			}
 		}
 	}

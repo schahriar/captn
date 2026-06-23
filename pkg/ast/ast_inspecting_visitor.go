@@ -84,6 +84,14 @@ func inspectingVisit(visitor ASTVisitor, node interface{}) []interface{} {
 			fieldValue := value.FieldByName(field.Name)
 
 			fmap := map[string]any{}
+			if field.Anonymous && fieldType == reflect.TypeOf((*ASTNodeContainer)(nil)) {
+				if astNode, ok := node.(ASTNode); ok {
+					fmap[field.Name] = []interface{}{astNode.DebugPosition()}
+					res = append(res, fmap)
+				}
+				continue
+			}
+
 			sub := resolveNested(visitor, fieldType, fieldValue)
 
 			if sub != nil {

@@ -2,6 +2,8 @@ package ast
 
 import (
 	"fmt"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 // ASTDeclaration - Any declaration that's not a function declaration
@@ -54,4 +56,20 @@ func (node *ASTDeclaration) Accept(visitor ASTVisitor) interface{} {
 	return ASTPanicBoundary(node, func() interface{} {
 		return visitor.VisitDeclaration(node)
 	})
+}
+
+func (node *ASTDeclaration) GetHash() common.HashType {
+	return GetHash(node)
+}
+
+func (node *ASTDeclaration) DebugPosition() ASTNodeSourcePosition {
+	return GetDebugPosition(node)
+}
+
+func (node *ASTDeclaration) MarshalYAML() ([]byte, error) {
+	return marshalNodeYAML(node)
+}
+
+func (node *ASTDeclaration) MarshalJSON() ([]byte, error) {
+	return marshalNodeJSON(node)
 }
