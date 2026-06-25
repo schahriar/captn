@@ -1,12 +1,12 @@
 # captn
 
 ## TODO:
-- [ ] Add observation backend
-  - [ ] **Provided a snippet and file path** explain subgraphs as a batch including relationships etc
-    - [ ] Block-based observations (should filter to relevant high level scopes)
-    - [ ] Resolve references for Blocks, gets n-degree of separation
-- [ ] MCP Server
-- [ ] Integrate with Claude Code as COG Frontend and Backend
+- [ ] Integrate with Claude Code as COG Frontend
+  - captn claude
+  - [ ] Integrate grep MCP tool so finds are done in captn
+- [ ] n-degree of separation on node queries
+- [ ] Retries for observation backend
+- [ ] Add postprocessing validation step to ensure a quality batch
 - [ ] Assign layered hashes to each edge
   - [ ] Hash questions too to ensure queries stay consistent
 - [ ] Persist graph observations as inline log

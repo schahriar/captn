@@ -236,29 +236,38 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 
 	for _, v := range vertices {
 		k := v.GetHash()
-		if _, ok := cogref.ObservationCache[k]; !ok {
-			sid := fmt.Sprintf("s%d", len(in.Sources))
-			verteximap[sid] = k
-			in.Sources = append(in.Sources, NewclaudeIdentifiedObservationInput(sid, v.GetStringSource()))
+		// A cache hit still has to be written onto this run's graph; the cache is
+		// only consulted to skip the LLM round-trip, the attribute it carries is
+		// what the explanation renders from.
+		if cached, ok := cogref.ObservationCache[k]; ok {
+			g.Graph.SetVertexAttribute(k, "observation-behavior", cached.Behavior)
+			continue
 		}
+
+		sid := fmt.Sprintf("s%d", len(in.Sources))
+		verteximap[sid] = k
+		in.Sources = append(in.Sources, NewclaudeIdentifiedObservationInput(sid, v.GetStringSource()))
 	}
 
 	for _, e := range edges {
 		ekey := common.PrimaryHash(fmt.Sprintf("edge:%v:%v", e.Source.GetHash(), e.Target.GetHash()))
 
-		if _, ok := cogref.ObservationCache[ekey]; !ok {
-			sid := fmt.Sprintf("c%d", len(in.Connections))
-			edgeimap[sid] = struct {
-				Source common.HashType
-				Target common.HashType
-				Hash   common.HashType
-			}{
-				Source: e.Source.GetHash(),
-				Target: e.Target.GetHash(),
-				Hash:   ekey,
-			}
-			in.Connections = append(in.Connections, NewclaudeIdentifiedObservationInput(sid, fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash())))
+		if cached, ok := cogref.ObservationCache[ekey]; ok {
+			g.Graph.SetEdgeAttribute(e.Source.GetHash(), e.Target.GetHash(), "observation-behavior", cached.Behavior)
+			continue
 		}
+
+		sid := fmt.Sprintf("c%d", len(in.Connections))
+		edgeimap[sid] = struct {
+			Source common.HashType
+			Target common.HashType
+			Hash   common.HashType
+		}{
+			Source: e.Source.GetHash(),
+			Target: e.Target.GetHash(),
+			Hash:   ekey,
+		}
+		in.Connections = append(in.Connections, NewclaudeIdentifiedObservationInput(sid, fmt.Sprintf("%v loads %v", e.Source.GetHash(), e.Target.GetHash())))
 	}
 
 	cogref.Mux.Unlock()
@@ -273,11 +282,12 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	YOU MUST NOT MAKE ANY CODECHANGES.
 	Prefer NO or MINIMAL exploration in the repository to answer the given question.
 	DO NOT MAKE ASSUMPTIONS, YOUR OBSERVATIONS MUST BE FACTUAL.
-	ACCEPT THE CODE AS IS, THERE IS NO NEED TO USE LSP QUERIES. Return ONLY raw JSON.
+	ACCEPT THE GIVEN CODE AS IS, THERE IS NO NEED TO USE LSP QUERIES. Return ONLY raw JSON.
 	No markdown. No code fences. DO NOT echo the input back.
 	You will be given an input object with "sources" and "connections" arrays.
-	For every entry in "sources" you MUST emit exactly one entry in the output "observations" array.
-	For every entry in "connections" you MUST emit exactly one entry in the output "connectionObservations" array.
+	- For every entry in "sources" you MUST emit exactly one entry in the output "observations" array.
+	- For every entry in "connections" you MUST emit exactly one entry in the output "connectionObservations" array.
+	- Your outputs must represent a reasoning trace as a teacher model for a student model to understand the code and its connections.
 	Each output entry has two fields: "id" (copied verbatim from the matching input entry) and "behavior"
 	DO NOT REPEAT CODE PROVIDED TO YOU UNLESS YOU ARE PROVIDING AN EXAMPLE SNIPPET FOR EXPLANATIONS / OBSERVATIONS
 	(a concise, factual description of what the code does, skip niceties and prefer IDs over paths if possible).
@@ -293,8 +303,6 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 
 Input:
 %s`, encin)
-
-	fmt.Println("Prompting claude code with input", string(prompt))
 
 	res, err := QueryClaudeCode[*common.BatchObservationSchema](ctx, systemPrompt, prompt, "high")
 

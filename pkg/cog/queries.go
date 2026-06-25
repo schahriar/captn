@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"runtime/trace"
 	"strings"
+	"sync"
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
@@ -14,9 +15,16 @@ import (
 
 // TODO: Convert to LRU
 var lspServerCache map[string]*lsp.Client = map[string]*lsp.Client{}
+var lspServerCacheMu sync.Mutex
 
 func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) (*lsp.Client, error) {
 	serkey := fmt.Sprintf("%v:%v", lang.GetLanguageID(), workspace)
+
+	// Held across lsp.Start so concurrent callers for the same language share a
+	// single server instead of racing on the map or spawning duplicates.
+	lspServerCacheMu.Lock()
+	defer lspServerCacheMu.Unlock()
+
 	if server, ok := lspServerCache[serkey]; ok {
 		return server, nil
 	}

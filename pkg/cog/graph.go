@@ -103,6 +103,9 @@ func OpenCOG(workspace string) (*COG, error) {
 }
 
 func (cog *COG) Persist() error {
+	cog.Mux.Lock()
+	defer cog.Mux.Unlock()
+
 	b, err := json.Marshal(cog)
 
 	if err != nil {
