@@ -185,6 +185,16 @@ func (og *ObservationGraph) WriteToFile(ctx context.Context, path string) error 
 	return nil
 }
 
+func nodeLocation(n COGNode) string {
+	if astNode, ok := n.(ast.ASTNode); ok {
+		if pos := astNode.GetPosition(); pos != nil {
+			return pos.String()
+		}
+	}
+
+	return n.GetFilePath()
+}
+
 func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov ObservationProvider, n COGNode, depth int) (string, error) {
 	if cog == nil {
 		return "", fmt.Errorf("expected instance of COG received nil")
@@ -203,45 +213,25 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 	og.WriteToFile(ctx, "./graph.gv")
 
 	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[common.HashType, COGNode]) (bool, error) {
-		// First append the node description
-		_, err := expln.WriteString(
-			fmt.Sprintf(
-				"%v does this %v with the following code \n```%v\n%v\n```",
-				cur.Vertex.GetFilePath(),
-				safeReadAttr(cur.VertexAttributes(),
-					"observation-behavior",
-				),
-				cur.Vertex.GetLanguage(),
-				cur.Vertex.GetStringSource(),
-			),
-		)
-
-		if err != nil {
+		if _, err := fmt.Fprintf(&expln, "%v does the following:\n%v\n",
+			nodeLocation(cur.Vertex),
+			safeReadAttr(cur.VertexAttributes(), "observation-behavior"),
+		); err != nil {
 			return true, err
 		}
 
-		// Append edge connection
 		if cur.HasParent {
-			expln.WriteString(safeReadAttr(cur.Via.Properties.Attributes, "observation-behavior"))
-
 			par, err := og.Graph.Vertex(cur.Parent)
 
 			if err != nil {
 				return true, err
 			}
 
-			_, err = expln.WriteString(
-				fmt.Sprintf(
-					"%v uses %v with the following behavior\n '''%v'''\n",
-					par.GetFilePath(),
-					cur.Vertex.GetFilePath(),
-					safeReadAttr(cur.EdgeAttributes(),
-						"observation-behavior",
-					),
-				),
-			)
-
-			if err != nil {
+			if _, err := fmt.Fprintf(&expln, "%v uses %v with the following behavior:\n%v\n",
+				nodeLocation(par),
+				nodeLocation(cur.Vertex),
+				safeReadAttr(cur.EdgeAttributes(), "observation-behavior"),
+			); err != nil {
 				return true, err
 			}
 		}
@@ -251,6 +241,139 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 
 	if err != nil {
 		return "", err
+	}
+
+	return expln.String(), nil
+}
+
+type GraphWithRoot struct {
+	Graph *ObservationGraph
+	Root  COGNode
+}
+
+func normalizeEdgeKey(a, b common.HashType) [2]common.HashType {
+	if a.String() <= b.String() {
+		return [2]common.HashType{a, b}
+	}
+	return [2]common.HashType{b, a}
+}
+
+func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationProvider, items []GraphWithRoot, depth int) (string, error) {
+	if cog == nil {
+		return "", fmt.Errorf("expected instance of COG received nil")
+	}
+
+	type vertexEntry struct {
+		node     COGNode
+		behavior string
+	}
+
+	type edgeEntry struct {
+		source   COGNode
+		target   COGNode
+		behavior string
+	}
+
+	vseen := map[common.HashType]vertexEntry{}
+	eseen := map[[2]common.HashType]edgeEntry{}
+
+	for _, item := range items {
+		if item.Graph == nil || item.Root == nil {
+			continue
+		}
+
+		if err := prov.ResolveObservationsToGraph(ctx, cog, item.Graph, item.Root); err != nil {
+			return "", err
+		}
+
+		g := item.Graph.Graph
+
+		adj, err := g.AdjacencyMap()
+		if err != nil {
+			return "", err
+		}
+
+		for h := range adj {
+			if _, ok := vseen[h]; ok {
+				continue
+			}
+
+			node, props, err := g.VertexWithProperties(h)
+			if err != nil {
+				return "", err
+			}
+
+			// banstructlit:ignore
+			vseen[h] = vertexEntry{
+				node:     node,
+				behavior: safeReadAttr(props.Attributes, "observation-behavior"),
+			}
+		}
+
+		edgeKeys, err := g.Edges()
+		if err != nil {
+			return "", err
+		}
+
+		for _, ek := range edgeKeys {
+			key := normalizeEdgeKey(ek.Source, ek.Target)
+			if _, ok := eseen[key]; ok {
+				continue
+			}
+
+			e, err := g.Edge(ek.Source, ek.Target)
+			if err != nil {
+				return "", err
+			}
+
+			// banstructlit:ignore
+			eseen[key] = edgeEntry{
+				source:   e.Source,
+				target:   e.Target,
+				behavior: safeReadAttr(e.Properties.Attributes, "observation-behavior"),
+			}
+		}
+	}
+
+	vlist := make([]vertexEntry, 0, len(vseen))
+	for _, v := range vseen {
+		vlist = append(vlist, v)
+	}
+	sort.Slice(vlist, func(i, j int) bool {
+		return nodeLocation(vlist[i].node) < nodeLocation(vlist[j].node)
+	})
+
+	elist := make([]edgeEntry, 0, len(eseen))
+	for _, e := range eseen {
+		elist = append(elist, e)
+	}
+	sort.Slice(elist, func(i, j int) bool {
+		li, lj := nodeLocation(elist[i].source), nodeLocation(elist[j].source)
+		if li != lj {
+			return li < lj
+		}
+		return nodeLocation(elist[i].target) < nodeLocation(elist[j].target)
+	})
+
+	var expln strings.Builder
+
+	for _, v := range vlist {
+		if _, err := fmt.Fprintf(&expln, "%v does the following:\n%v\n",
+			nodeLocation(v.node),
+			v.behavior,
+		); err != nil {
+			return "", err
+		}
+	}
+
+	for _, e := range elist {
+		if _, err := fmt.Fprintf(&expln, "%v uses %v with the following behavior:\n%v\n",
+			nodeLocation(e.source),
+			nodeLocation(e.target),
+			e.behavior,
+		); err != nil {
+			return "", err
+		}
 	}
 
 	return expln.String(), nil

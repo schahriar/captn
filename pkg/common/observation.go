@@ -1,11 +1,13 @@
 package common
 
 import (
+	"encoding/json"
+
 	"github.com/invopop/jsonschema"
 )
 
 type ObservationSchemaType interface {
-	Serialize() (string, error)
+	Marshal() ([]byte, error)
 }
 
 type ObservationSchema struct {
@@ -13,19 +15,35 @@ type ObservationSchema struct {
 	Behavior string `json:"behavior" jsonschema:"minLength=40,description=Behavior of the code described in concise reasoning format. Prefer bullet-points"`
 }
 
+func NewObservationSchema(id string, behavior string) ObservationSchema {
+	return ObservationSchema{
+		ID:       id,
+		Behavior: behavior,
+	}
+}
+
 func (o ObservationSchema) GetSchema() *jsonschema.Schema {
 	return jsonschema.Reflect(o)
 }
 
-func (o ObservationSchema) Serialize() (string, error) {
-	scma := o.GetSchema()
-	b, err := scma.MarshalJSON()
+func (o ObservationSchema) Marshal() ([]byte, error) {
+	b, err := json.Marshal(o)
 
 	if err != nil {
-		return "", err
+		return []byte{}, err
 	}
 
-	return string(b), nil
+	return b, nil
+}
+
+func UnmarshalObservationSchema(bytes []byte) (ObservationSchema, error) {
+	scma := NewObservationSchema("", "")
+
+	if err := json.Unmarshal(bytes, &scma); err != nil {
+		return scma, err
+	}
+
+	return scma, nil
 }
 
 type BatchObservationSchema struct {
@@ -37,15 +55,15 @@ func (o *BatchObservationSchema) GetSchema() *jsonschema.Schema {
 	return jsonschema.Reflect(o)
 }
 
-func (o *BatchObservationSchema) Serialize() (string, error) {
+func (o *BatchObservationSchema) Marshal() ([]byte, error) {
 	scma := o.GetSchema()
 	b, err := scma.MarshalJSON()
 
 	if err != nil {
-		return "", err
+		return []byte{}, err
 	}
 
-	return string(b), nil
+	return b, nil
 }
 
 var _ ObservationSchemaType = (*ObservationSchema)(nil)

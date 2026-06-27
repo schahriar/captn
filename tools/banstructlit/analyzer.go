@@ -12,6 +12,7 @@ import (
 )
 
 const modulePath = "github.com/schahriar/captn"
+const ignoreDirective = "banstructlit:ignore"
 
 var Analyzer = &analysis.Analyzer{
 	Name:     "banstructlit",
@@ -48,6 +49,9 @@ func checkComposite(pass *analysis.Pass, lit *ast.CompositeLit, stack []ast.Node
 	if isExcludedFile(pass, lit.Pos()) {
 		return
 	}
+	if ignoredByDirective(pass, lit.Pos(), stack) {
+		return
+	}
 	named := namedStruct(pass.TypesInfo.TypeOf(lit))
 	if named == nil || !inThisModule(named) {
 		return
@@ -60,6 +64,9 @@ func checkComposite(pass *analysis.Pass, lit *ast.CompositeLit, stack []ast.Node
 
 func checkNewCall(pass *analysis.Pass, call *ast.CallExpr, stack []ast.Node) {
 	if isExcludedFile(pass, call.Pos()) {
+		return
+	}
+	if ignoredByDirective(pass, call.Pos(), stack) {
 		return
 	}
 	id, ok := call.Fun.(*ast.Ident)
@@ -107,6 +114,58 @@ func namedStruct(t types.Type) *types.Named {
 func isExcludedFile(pass *analysis.Pass, pos token.Pos) bool {
 	file := pass.Fset.Position(pos).Filename
 	return strings.Contains(file, "/tests/")
+}
+
+func hasIgnoreCommentAbove(pass *analysis.Pass, pos token.Pos) bool {
+	for _, file := range pass.Files {
+		if !fileContainsPos(file, pos) {
+			continue
+		}
+		return ignoreDirectiveAbove(file, pass.Fset, pos)
+	}
+	return false
+}
+
+func ignoredByDirective(pass *analysis.Pass, pos token.Pos, stack []ast.Node) bool {
+	if hasIgnoreCommentAbove(pass, pos) {
+		return true
+	}
+	for i := len(stack) - 1; i >= 0; i-- {
+		stmt, ok := stack[i].(ast.Stmt)
+		if !ok {
+			continue
+		}
+		return hasIgnoreCommentAbove(pass, stmt.Pos())
+	}
+	return false
+}
+
+func fileContainsPos(file *ast.File, pos token.Pos) bool {
+	return file.Pos() <= pos && pos <= file.End()
+}
+
+func ignoreDirectiveAbove(file *ast.File, fset *token.FileSet, pos token.Pos) bool {
+	nodePos := fset.Position(pos)
+	for _, group := range file.Comments {
+		if fset.Position(group.End()).Line != nodePos.Line-1 {
+			continue
+		}
+		for _, comment := range group.List {
+			if strings.Contains(commentText(comment.Text), ignoreDirective) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func commentText(text string) string {
+	if strings.HasPrefix(text, "//") {
+		return strings.TrimSpace(strings.TrimPrefix(text, "//"))
+	}
+	text = strings.TrimPrefix(text, "/*")
+	text = strings.TrimSuffix(text, "*/")
+	return strings.TrimSpace(text)
 }
 
 func inThisModule(named *types.Named) bool {

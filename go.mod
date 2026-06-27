@@ -8,6 +8,7 @@ require (
 	github.com/dominikbraun/graph v0.23.0
 	github.com/gkampitakis/go-snaps v0.5.22
 	github.com/goccy/go-yaml v1.19.2
+	github.com/gofrs/flock v0.13.0
 	github.com/invopop/jsonschema v0.14.0
 	github.com/modelcontextprotocol/go-sdk v1.6.1
 	github.com/rdleal/intervalst v1.5.0

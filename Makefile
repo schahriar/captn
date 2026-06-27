@@ -12,6 +12,7 @@ GO_ENV = PATH="$(GOBIN_DIR):$$PATH" \
 .PHONY: mod build test generate coverage vet
 
 BANSTRUCTLIT_BIN := $(CURDIR)/bin/banstructlit
+BANSTRUCTLIT_SRCS := $(wildcard tools/banstructlit/*.go tools/banstructlit/go.mod tools/banstructlit/go.sum)
 
 all: mod build generate init debug graphviz
 
@@ -56,7 +57,8 @@ test:
 graphviz:
 	cd ./tools/viz && npm start
 
-$(BANSTRUCTLIT_BIN):
+$(BANSTRUCTLIT_BIN): $(BANSTRUCTLIT_SRCS)
+	@mkdir -p $(dir $(BANSTRUCTLIT_BIN))
 	cd tools/banstructlit && go build -o $(BANSTRUCTLIT_BIN) .
 
 vet: $(BANSTRUCTLIT_BIN)

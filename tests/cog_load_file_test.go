@@ -4,8 +4,10 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/schahriar/captn/pkg/cog"
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,4 +50,34 @@ func TestCOGLoadFileClearsInflightAfterError(t *testing.T) {
 	loaded, err := c.LoadFile(t.Context(), "main.go")
 	assert.NoError(t, err)
 	assert.NotNil(t, loaded)
+}
+
+func TestCOGPersistReturns(t *testing.T) {
+	c := cog.NewCOG(t.TempDir())
+	done := make(chan error, 1)
+
+	go func() {
+		done <- c.Persist()
+	}()
+
+	select {
+	case err := <-done:
+		assert.NoError(t, err)
+	case <-time.After(time.Second):
+		t.Fatal("COG Persist did not return")
+	}
+}
+
+func TestOpenCOGLoadsPersistedCache(t *testing.T) {
+	workspace := t.TempDir()
+	h := common.PrimaryHash("persisted-observation")
+	o := common.NewObservationSchema(h.String(), "persisted behavior")
+
+	c := cog.NewCOG(workspace)
+	c.ObservationCache[h] = o
+	assert.NoError(t, c.Persist())
+
+	loaded, err := cog.OpenCOG(workspace)
+	assert.NoError(t, err)
+	assert.Equal(t, o, loaded.ObservationCache[h])
 }

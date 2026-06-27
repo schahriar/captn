@@ -114,7 +114,7 @@ type ClaudeModelUsage struct {
 }
 
 func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, systemPrompt string, prompt string, effort string) (scma T, err error) {
-	sscma, err := scma.Serialize()
+	sscma, err := scma.Marshal()
 
 	if err != nil {
 		return scma, err
@@ -130,7 +130,7 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		"--output-format", "json",
 		"--tools", "Read", // Only allow file reads
 		"--system-prompt", systemPrompt,
-		"--json-schema", sscma,
+		"--json-schema", string(sscma),
 	)
 
 	out, err := cmd.CombinedOutput()
@@ -290,7 +290,8 @@ func (p *ClaudeCodeProvider) ResolveObservationsToGraph(ctx context.Context, cog
 	- Your outputs must represent a reasoning trace as a teacher model for a student model to understand the code and its connections.
 	Each output entry has two fields: "id" (copied verbatim from the matching input entry) and "behavior"
 	DO NOT REPEAT CODE PROVIDED TO YOU UNLESS YOU ARE PROVIDING AN EXAMPLE SNIPPET FOR EXPLANATIONS / OBSERVATIONS
-	(a concise, factual description of what the code does, skip niceties and prefer IDs over paths if possible).
+	(a concise, factual description of what the code does, skip niceties).
+	Each "behavior" MUST stand on its own. NEVER reference another entry by its "s"/"c" id (e.g. "same as s0", "identical to s1") — those ids are internal and not shown to the reader. Describe the code directly even if another entry is identical.
 	Output must be valid JSON matching the supplied json-schema.`
 
 	encin, err := json.Marshal(in)
@@ -313,12 +314,18 @@ Input:
 	cogref.Mux.Lock()
 	defer cogref.Mux.Unlock()
 
+	var responseErr error
+
 	for _, o := range res.Observations {
 		hash, ok := verteximap[o.ID]
 		if !ok {
-			// TODO: Track error
+			if responseErr == nil {
+				responseErr = fmt.Errorf("claude code returned observation for unknown source id %q", o.ID)
+			}
 			continue
 		}
+
+		o.ID = hash.String()
 
 		g.Graph.SetVertexAttribute(hash, "observation-behavior", o.Behavior)
 		cogref.ObservationCache[hash] = o
@@ -327,15 +334,19 @@ Input:
 	for _, e := range res.ConnectionObservations {
 		edef, ok := edgeimap[e.ID]
 		if !ok {
-			// TODO: Track error
+			if responseErr == nil {
+				responseErr = fmt.Errorf("claude code returned observation for unknown connection id %q", e.ID)
+			}
 			continue
 		}
+
+		e.ID = edef.Hash.String()
 
 		g.Graph.SetEdgeAttribute(edef.Source, edef.Target, "observation-behavior", e.Behavior)
 		cogref.ObservationCache[edef.Hash] = e
 	}
 
-	return nil
+	return responseErr
 }
 
 var _ cog.ObservationProvider = (*ClaudeCodeProvider)(nil)

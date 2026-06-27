@@ -2,20 +2,24 @@ package cog
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/dominikbraun/graph"
+	"github.com/gofrs/flock"
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/lsp"
 )
+
+var cogCache = map[string]*COG{}
+var cogCacheMux = &sync.Mutex{}
 
 type COG struct {
 	loadedFiles  map[string]*COGFile      `json:"-"`
@@ -36,8 +40,10 @@ type loadFileCall struct {
 
 func IsNodeOfInterest(a ast.ASTNode) bool {
 	switch a.(type) {
-	case *ast.ASTBlock:
+	case *ast.ASTFuncExpression:
 		return true
+	case *ast.ASTModule:
+		return true // Catch all parent
 	default:
 		return false
 	}
@@ -77,7 +83,24 @@ func (cog *COG) FilePath() string {
 }
 
 func OpenCOG(workspace string) (*COG, error) {
+	cogCacheMux.Lock()
+	if cog, ok := cogCache[workspace]; ok {
+		cogCacheMux.Unlock()
+		return cog, nil
+	}
+
+	cogCacheMux.Unlock()
+
 	cog := NewCOG(workspace)
+
+	// Important: Lock file first to avoid deadlock
+	fl, err := cog.LockFile()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fl.Unlock()
 
 	f, err := os.OpenFile(cog.FilePath(), os.O_RDWR, 0644)
 
@@ -95,18 +118,113 @@ func OpenCOG(workspace string) (*COG, error) {
 		return nil, fmt.Errorf("OpenCOG File Read Error %w", err)
 	}
 
-	if err := json.Unmarshal(b, &cog); err != nil {
+	cog.Mux.Lock()
+	err = cog.unmarshalLocked(b)
+	cog.Mux.Unlock()
+
+	if err != nil {
 		return nil, fmt.Errorf("Failed to decode COG at workspace %v with error %w", workspace, err)
 	}
 
+	cogCacheMux.Lock()
+	cogCache[workspace] = cog
+	cogCacheMux.Unlock()
+
 	return cog, nil
+}
+
+func (cog *COG) Marshal() ([]byte, error) {
+	cog.Mux.Lock()
+	defer cog.Mux.Unlock()
+
+	return cog.marshalLocked()
+}
+
+func (cog *COG) marshalLocked() ([]byte, error) {
+	var builder strings.Builder
+
+	for h, f := range cog.ObservationCache {
+		v, err := f.Marshal()
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to serialize observation %v with error %w", h.String(), err)
+		}
+
+		fmt.Fprintf(&builder, "%s = %s\n", h.String(), v)
+	}
+
+	return []byte(builder.String()), nil
+}
+
+func (cog *COG) LockFile() (*flock.Flock, error) {
+	cog.Mux.Lock()
+	defer cog.Mux.Unlock()
+	fileLock := flock.New(cog.FilePath())
+	locked, err := fileLock.TryLock()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire file lock %w", err)
+	}
+	if !locked {
+		return nil, fmt.Errorf("file is already locked")
+	}
+
+	return fileLock, nil
+}
+
+func (cog *COG) Unmarshal(data []byte) error {
+	// Important: Lock file first to avoid deadlock
+	fl, err := cog.LockFile()
+
+	if err != nil {
+		return err
+	}
+
+	defer fl.Unlock()
+
+	cog.Mux.Lock()
+	defer cog.Mux.Unlock()
+
+	return cog.unmarshalLocked(data)
+}
+
+func (cog *COG) unmarshalLocked(data []byte) error {
+	lines := strings.Split(string(data), "\n")
+
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+
+		parts := strings.SplitN(line, " = ", 2)
+
+		if len(parts) != 2 {
+			return fmt.Errorf("failed to parse observation line %v", line)
+		}
+
+		h, err := common.UnmarshalHashType([]byte(strings.TrimSpace(parts[0])))
+
+		if err != nil {
+			return fmt.Errorf("failed to parse observation hash %v with error %w", parts[0], err)
+		}
+
+		v, err := common.UnmarshalObservationSchema([]byte(strings.TrimSpace(parts[1])))
+
+		if err != nil {
+			return fmt.Errorf("failed to parse observation value %v with error %w", parts[1], err)
+		}
+
+		cog.ObservationCache[*h] = v
+	}
+
+	return nil
 }
 
 func (cog *COG) Persist() error {
 	cog.Mux.Lock()
 	defer cog.Mux.Unlock()
 
-	b, err := json.Marshal(cog)
+	b, err := cog.marshalLocked()
 
 	if err != nil {
 		return err

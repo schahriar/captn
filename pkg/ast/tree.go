@@ -38,15 +38,11 @@ func GetHash(node ASTNode) common.HashType {
 	return hash
 }
 
-func formatHash(hash common.HashType) string {
-	return hash.String() + "\n"
-}
-
 func GetDebugPosition(node ASTNode) ASTNodeSourcePosition {
 	pos := node.GetPosition()
 	hash := GetHash(node)
 
-	return NewASTNodeSourcePosition(pos.String(), formatHash(hash))
+	return NewASTNodeSourcePosition(pos.String(), hash.String())
 }
 
 func marshalNodeYAML(node ASTNode) ([]byte, error) {
@@ -87,7 +83,7 @@ func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 		hash = hash.Add(GetHash(cont.parent))
 	}
 
-	return NewASTNodeSourcePosition(pos.String(), formatHash(hash))
+	return NewASTNodeSourcePosition(pos.String(), hash.String())
 }
 
 func (cont *ASTNodeContainer) MarshalYAML() ([]byte, error) {

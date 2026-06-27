@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/schahriar/captn/pkg/cog"
@@ -32,11 +35,12 @@ type SearchAndExplainOutputItem struct {
 }
 
 type SearchAndExplainOutput struct {
+	Duration     int                          `json:"duration" jsonschema:"the duration of this operation in milliseconds"`
 	Explanations []SearchAndExplainOutputItem `json:"explanations" jsonschema:"the explanations of the code snippets"`
 }
 
-func NewSearchAndExplainOutput(explanations []SearchAndExplainOutputItem) SearchAndExplainOutput {
-	return SearchAndExplainOutput{Explanations: explanations}
+func NewSearchAndExplainOutput(explanations []SearchAndExplainOutputItem, dur int) SearchAndExplainOutput {
+	return SearchAndExplainOutput{Explanations: explanations, Duration: dur}
 }
 
 func NewSearchAndExplainOutputItem(filePath, explanation string) SearchAndExplainOutputItem {
@@ -65,7 +69,8 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 	SearchAndExplainOutput,
 	error,
 ) {
-	zero := NewSearchAndExplainOutput(nil)
+	zero := NewSearchAndExplainOutput(nil, 0)
+	dstart := time.Now()
 	cwd, err := os.Getwd()
 
 	if err != nil {
@@ -105,7 +110,8 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 	var (
 		mu    sync.Mutex
 		wg    sync.WaitGroup
-		items []SearchAndExplainOutputItem
+		pairs []cog.GraphWithRoot
+		files []string
 		sem   = make(chan struct{}, searchExplainWorker)
 	)
 
@@ -126,24 +132,49 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 				return
 			}
 
-			expln, err := og.ExplainWithDepth(ctx, g, prov, start, 1)
-			if err != nil {
-				return
-			}
-
 			mu.Lock()
-			items = append(items, NewSearchAndExplainOutputItem(rel, expln))
+			// banstructlit:ignore
+			pairs = append(pairs, cog.GraphWithRoot{Graph: og, Root: start})
+			files = append(files, rel)
 			mu.Unlock()
 		}(rel, m.Text)
 	}
 
 	wg.Wait()
 
+	expln, err := cog.MultiGraphExplainWithDepth(ctx, g, prov, pairs, 1)
+	if err != nil {
+		return nil, zero, fmt.Errorf("failed to explain snippets: %w", err)
+	}
+
 	if err := g.Persist(); err != nil {
 		return nil, zero, fmt.Errorf("failed to persist COG: %w", err)
 	}
 
-	return nil, NewSearchAndExplainOutput(items), nil
+	var items []SearchAndExplainOutputItem
+	if expln != "" {
+		items = append(items, NewSearchAndExplainOutputItem(joinDistinctFiles(files), expln))
+	}
+
+	return nil, NewSearchAndExplainOutput(items, int(time.Since(dstart).Milliseconds())), nil
+}
+
+// joinDistinctFiles collapses the matched file paths into one sorted, comma
+// separated label since the merged explanation spans all of them.
+func joinDistinctFiles(files []string) string {
+	seen := make(map[string]bool, len(files))
+	uniq := make([]string, 0, len(files))
+
+	for _, f := range files {
+		if seen[f] {
+			continue
+		}
+		seen[f] = true
+		uniq = append(uniq, f)
+	}
+
+	sort.Strings(uniq)
+	return strings.Join(uniq, ", ")
 }
 
 // dedupeMatches collapses matches that share a file path and matched text since

@@ -1,6 +1,8 @@
 package common
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"strconv"
 	"strings"
@@ -14,7 +16,39 @@ func (ht HashType) Sum() uint64 {
 	return ht[0] + ht[1] + ht[2] + ht[3]
 }
 
+func (ht HashType) Marshal() ([]byte, error) {
+	var raw [32]byte
+	binary.BigEndian.PutUint64(raw[0:8], ht[0])
+	binary.BigEndian.PutUint64(raw[8:16], ht[1])
+	binary.BigEndian.PutUint64(raw[16:24], ht[2])
+	binary.BigEndian.PutUint64(raw[24:32], ht[3])
+
+	var out [43]byte
+	base64.RawURLEncoding.Encode(out[:], raw[:])
+	return out[:], nil
+}
+
+func UnmarshalHashType(data []byte) (*HashType, error) {
+	var raw [32]byte
+	if n, err := base64.RawURLEncoding.Decode(raw[:], data); err != nil || n != len(raw) {
+		return nil, fmt.Errorf("invalid hash %q", data)
+	}
+
+	ht := &HashType{
+		binary.BigEndian.Uint64(raw[0:8]),
+		binary.BigEndian.Uint64(raw[8:16]),
+		binary.BigEndian.Uint64(raw[16:24]),
+		binary.BigEndian.Uint64(raw[24:32]),
+	}
+	return ht, nil
+}
+
 func (ht HashType) String() string {
+	b, _ := ht.Marshal()
+	return string(b)
+}
+
+func (ht HashType) Debug() string {
 	return fmt.Sprintf("%016x:%016x:%016x:%016x", ht[0], ht[1], ht[2], ht[3])
 }
 
@@ -31,6 +65,15 @@ func (ht HashType) MarshalText() ([]byte, error) {
 }
 
 func (ht *HashType) UnmarshalText(text []byte) error {
+	var raw [32]byte
+	if n, err := base64.RawURLEncoding.Decode(raw[:], text); err == nil && n == len(raw) {
+		ht[0] = binary.BigEndian.Uint64(raw[0:8])
+		ht[1] = binary.BigEndian.Uint64(raw[8:16])
+		ht[2] = binary.BigEndian.Uint64(raw[16:24])
+		ht[3] = binary.BigEndian.Uint64(raw[24:32])
+		return nil
+	}
+
 	parts := strings.Split(string(text), ":")
 	if len(parts) != 4 {
 		return fmt.Errorf("invalid hash %q", text)

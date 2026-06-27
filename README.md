@@ -1,23 +1,25 @@
 # captn
 
 ## TODO:
-- [ ] Integrate with Claude Code as COG Frontend
-  - captn claude
-  - [ ] Integrate grep MCP tool so finds are done in captn
-- [ ] n-degree of separation on node queries
-- [ ] Retries for observation backend
-- [ ] Add postprocessing validation step to ensure a quality batch
-- [ ] Assign layered hashes to each edge
-  - [ ] Hash questions too to ensure queries stay consistent
 - [ ] Persist graph observations as inline log
   - [ ] Allow for growing write sharding, reads all logs
   - [ ] Use file location to decide which shard to write to
     - [ ] Reduces conflicts
     - [ ] Start with 10 shards
     - [ ] Or create a new cog per directory
+  - [ ] Attach hashes of git author on the first prefix of logs to avoid conflicts
+    - [ ] Dedupe
   - [ ] Add tests for freshness checks
-- [ ] Assign meaning to edges and cache
 - [ ] Restore graph
+- [ ] Modify the MCP query to prefer paths
+- [ ] Have graph exploration without resolution
+  - [ ] Provides a semantic tree to frontend to query
+- [ ] Add a variety of possible queries instead of just explain
+  - [ ] Hash queries too to ensure queries stay consistent
+- [ ] n-degree of separation on node queries
+- [ ] Retries for observation backend
+- [ ] Add postprocessing validation step to ensure a quality batch
+- [ ] Assign meaning to edges and cache
 - [ ] Add Codex support
 - [ ] Add a per language import to package name and path resolver
   - [ ] Possibly in AST?

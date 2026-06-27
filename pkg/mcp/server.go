@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/schahriar/captn/pkg/common"
@@ -20,7 +21,9 @@ func StartServer(ctx context.Context, addr string) error {
 
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
 		return server
-	}, nil)
+	}, &mcp.StreamableHTTPOptions{
+		SessionTimeout: 30 * time.Minute,
+	})
 
 	go func() {
 		if err := http.ListenAndServe(addr, handler); err != nil {

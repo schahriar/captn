@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/schahriar/captn/pkg/cog"
@@ -16,11 +17,12 @@ type ExplainInput struct {
 }
 
 type ExplainOutput struct {
+	Duration    int    `json:"duration" jsonschema:"the duration of this operation in milliseconds"`
 	Explanation string `json:"explanation" jsonschema:"the explanation of the code snippet"`
 }
 
-func NewExplainOutput(explanation string) ExplainOutput {
-	return ExplainOutput{Explanation: explanation}
+func NewExplainOutput(explanation string, duration int) ExplainOutput {
+	return ExplainOutput{Explanation: explanation, Duration: duration}
 }
 
 type ExplainTool struct{}
@@ -42,7 +44,9 @@ func (t *ExplainTool) Call(ctx context.Context, req *mcp.CallToolRequest, input 
 	ExplainOutput,
 	error,
 ) {
-	zero := NewExplainOutput("")
+	zero := NewExplainOutput("", 0)
+
+	dstart := time.Now()
 	cwd, err := os.Getwd()
 
 	if err != nil {
@@ -68,11 +72,17 @@ func (t *ExplainTool) Call(ctx context.Context, req *mcp.CallToolRequest, input 
 		return nil, zero, fmt.Errorf("failed to explain snippet: %w", err)
 	}
 
-	if err := g.Persist(); err != nil {
-		return nil, zero, fmt.Errorf("failed to persist COG: %w", err)
-	}
+	go func() {
+		if err := g.Persist(); err != nil {
+			// TODO: Report this error to the user in a better way. For now, we just log it.
+			// But the logs override the claude stdout
+			fmt.Printf("failed to persist COG: %v\n", err)
+		}
+	}()
 
-	return nil, NewExplainOutput(expln), nil
+	dur := int(time.Since(dstart).Milliseconds())
+
+	return nil, NewExplainOutput(expln, dur), nil
 }
 
 var explainTool Tool[ExplainInput, ExplainOutput] = NewExplainTool()

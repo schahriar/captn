@@ -1,6 +1,7 @@
 package tests_test
 
 import (
+	"bytes"
 	"errors"
 	"testing"
 
@@ -247,4 +248,35 @@ func TestDetailedDFS_UndirectedDoesNotRevisitParent(t *testing.T) {
 	assert.Equal(t, 0, depths["a"])
 	assert.Equal(t, 1, depths["b"])
 	assert.Equal(t, 2, depths["c"])
+}
+
+func TestDOTWritesUndirectedGraph(t *testing.T) {
+	g := cgraph.NewGraph(stringHash)
+	assert.NoError(t, g.AddVertex("a", graph.VertexAttribute("label", "Alpha")))
+	assert.NoError(t, g.AddVertex("b"))
+	assert.NoError(t, g.AddEdge("a", "b", graph.EdgeWeight(7), graph.EdgeAttribute("kind", "calls")))
+
+	var out bytes.Buffer
+	assert.NoError(t, cgraph.DOT(&g, &out))
+
+	dot := out.String()
+	assert.Contains(t, dot, "strict graph {")
+	assert.Contains(t, dot, `"va" [ "label"="Alpha", weight=0 ];`)
+	assert.Contains(t, dot, `"vb" [ weight=0 ];`)
+	assert.Contains(t, dot, `"va" -- "vb" [ weight=7, "kind"="calls" ];`)
+}
+
+func TestDOTWritesDirectedGraph(t *testing.T) {
+	g := cgraph.NewGraph(stringHash, graph.Directed())
+	assert.NoError(t, g.AddVertex("a"))
+	assert.NoError(t, g.AddVertex("b"))
+	assert.NoError(t, g.AddEdge("a", "b"))
+
+	var out bytes.Buffer
+	assert.NoError(t, cgraph.DOT(&g, &out))
+
+	dot := out.String()
+	assert.Contains(t, dot, "strict digraph {")
+	assert.Contains(t, dot, `"va" -> "vb" [ weight=0 ];`)
+	assert.NotContains(t, dot, `"va" -- "vb"`)
 }

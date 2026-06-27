@@ -24,8 +24,22 @@ var CLI struct {
 	Claude struct{} `cmd:"" help:"Run Claude Claude using Captn"`
 }
 
+func splitPassthroughArgs(args []string) ([]string, []string) {
+	for i, arg := range args {
+		if arg == "--" {
+			return args[:i], args[i+1:]
+		}
+	}
+
+	return args, nil
+}
+
 func main() {
-	cli := kong.Parse(&CLI)
+	captnArgs, claudeArgs := splitPassthroughArgs(os.Args[1:])
+	parser := kong.Must(&CLI)
+	cli, err := parser.Parse(captnArgs)
+	parser.FatalIfErrorf(err)
+
 	switch cli.Command() {
 	case "claude":
 		ctx := context.Background()
@@ -43,11 +57,14 @@ func main() {
 			log.Fatalf("failed to marshal MCP config: %v", err)
 		}
 
-		cmd := exec.Command("claude", "--append-system-prompt", `
+		args := []string{"--append-system-prompt", `
 		"Instead of calling Read tool, use the MCP "explain" tool.
 		Always use the MCP "explain" or "search_and_explain" tool instead of grep or grep-equivalent tools.
 		YOU SHOULD NEVER USE grep directly anymore, just use the MCP "search_and_explain" tool instead.
-		`, "--mcp-config", string(conf))
+		`, "--mcp-config", string(conf)}
+		args = append(args, claudeArgs...)
+
+		cmd := exec.Command("claude", args...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Stdin = os.Stdin
