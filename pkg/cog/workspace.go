@@ -2,6 +2,7 @@ package cog
 
 import (
 	"context"
+	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -13,6 +14,11 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-git/go-git/v6"
+	"github.com/go-git/go-git/v6/config"
+	"github.com/go-git/go-git/v6/x/plugin"
+
+	"github.com/OneOfOne/xxhash"
 	"github.com/dominikbraun/graph"
 	"github.com/gofrs/flock"
 	"github.com/hashicorp/go-msgpack/v2/codec"
@@ -59,6 +65,9 @@ type Workspace struct {
 
 	Path             string
 	ObservationCache map[common.HashType]COGObservation
+
+	ActiveAuthor string          `json:"-"`
+	Repository   *git.Repository `json:"-"`
 
 	observationOrder map[common.HashType]int
 	observationCount int
@@ -153,6 +162,39 @@ func OpenWorkspace(workspace string) (*Workspace, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	r, err := git.PlainOpen(workspace)
+
+	if err != nil {
+		fmt.Printf("Failed to initialize git repository at %v with error %v\nCaptn will continue to operate without git.", workspace, err)
+	} else {
+		wspace.Repository = r
+	}
+
+	loader, err := plugin.Get(plugin.ConfigLoader())
+	if err == nil {
+		storer, err := loader.Load(config.GlobalScope)
+		if err == nil {
+			cfg, err := storer.Config()
+
+			if err == nil {
+				name, email := cfg.User.Name, cfg.User.Email
+				if cfg.Author.Name != "" {
+					name = cfg.Author.Name
+				}
+				if cfg.Author.Email != "" {
+					email = cfg.Author.Email
+				}
+				if name != "" || email != "" {
+					wspace.ActiveAuthor = fmt.Sprintf("%s <%s>", name, email)
+				}
+			}
+		} else {
+			fmt.Printf("Failed to load git config with error %v\nCaptn will continue to operate without git.", err)
+		}
+	} else {
+		fmt.Printf("Failed to load git config with error %v\nCaptn will continue to operate without git.", err)
 	}
 
 	defer fl.Unlock()
@@ -279,8 +321,15 @@ func decodeMetadata(workspace string, segment string) (COGObservationMetadata, i
 	return meta, wire.AnswerLength, body[hexLen+1:], nil
 }
 
+func authorHash(author string) string {
+	var sum [4]byte
+	binary.BigEndian.PutUint32(sum[:], xxhash.ChecksumString32(author))
+	return hex.EncodeToString(sum[:])
+}
+
 func (wspace *Workspace) marshalLocked() ([]byte, error) {
 	var builder strings.Builder
+	author := authorHash(wspace.ActiveAuthor)
 
 	// Observations written to the cache directly rather than through
 	// SetObservation have no index yet; assign them deterministically
@@ -316,7 +365,7 @@ func (wspace *Workspace) marshalLocked() ([]byte, error) {
 			return nil, fmt.Errorf("failed to encode metadata for observation %v with error %w", h.String(), err)
 		}
 
-		fmt.Fprintf(&builder, "%s %s %s\n", h.String(), meta, answer)
+		fmt.Fprintf(&builder, "%s %s %s %s\n", author, h.String(), meta, answer)
 	}
 
 	return []byte(builder.String()), nil
@@ -363,7 +412,17 @@ func (wspace *Workspace) unmarshalLocked(data []byte) error {
 	for strings.TrimSpace(rest) != "" {
 		rest = strings.TrimLeft(rest, "\n")
 
-		hashPart, tail, ok := strings.Cut(rest, " ")
+		authorPart, tail, ok := strings.Cut(rest, " ")
+
+		if !ok {
+			return fmt.Errorf("failed to parse observation at %q", rest)
+		}
+
+		if b, err := hex.DecodeString(authorPart); err != nil || len(b) != 4 {
+			return fmt.Errorf("failed to parse observation author hash %q", authorPart)
+		}
+
+		hashPart, tail, ok := strings.Cut(tail, " ")
 
 		if !ok {
 			return fmt.Errorf("failed to parse observation at %q", rest)

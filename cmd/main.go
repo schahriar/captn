@@ -7,8 +7,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/alecthomas/kong"
+	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/mcp"
 	"github.com/schahriar/captn/pkg/server"
 	"github.com/schahriar/captn/pkg/tui"
@@ -65,8 +67,23 @@ YOU SHOULD NEVER USE grep directly anymore, just use captn
 		ctx := tui.WithStatusProvider(context.Background(), overlay)
 		srv.Serve(ctx)
 
-		loader := tui.NewLoader()
-		overlay.SetSubStatus(tui.Decorate(loader, tui.ShimmerColor(tui.NewRGB(70, 130, 220), tui.NewRGB(180, 220, 255))))
+		cwd, err := os.Getwd()
+
+		if err != nil {
+			panic(err)
+		}
+
+		g, err := cog.OpenWorkspace(cwd)
+		if err != nil {
+			panic(err)
+		}
+
+		go func() {
+			time.Sleep(1 * time.Second)
+			overlay.SetStatus(
+				tui.Text(fmt.Sprintf("Author: %+v", g.ActiveAuthor)),
+			)
+		}()
 
 		if err := overlay.Run(); err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {

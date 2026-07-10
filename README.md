@@ -2,13 +2,12 @@
 
 ## TODO:
 - [ ] Provide detailed logs on what Captn does
-- [ ] Attach hashes of git author on the first prefix of logs to avoid conflicts
-  - [ ] Dedupe and GC
 - [ ] Have graph exploration without resolution
   - [ ] Provides a semantic tree to frontend to query
   - [ ] Allow for Claude to call different questions
 - [ ] Add tests for freshness checks
 - [ ] A new cog per directory
+- [ ] Dedupe and GC
 - [ ] Modify the child spawns to prefer paths
 - [ ] n-degree of separation on node queries
 - [ ] Retries for observation backend

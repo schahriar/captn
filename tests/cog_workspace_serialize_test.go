@@ -132,7 +132,9 @@ func TestWorkspaceMarshalPreservesOrder(t *testing.T) {
 	assert.Len(t, lines, 4)
 
 	for i, h := range append(hashes, h4) {
-		assert.True(t, strings.HasPrefix(lines[i], h.String()+" "), "line %d should start with hash %v", i, h.String())
+		fields := strings.SplitN(lines[i], " ", 3)
+		assert.Len(t, fields, 3, "line %d should have author hash, hash and body", i)
+		assert.Equal(t, h.String(), fields[1], "line %d should carry hash %v after the author hash", i, h.String())
 	}
 }
 
