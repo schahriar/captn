@@ -9,6 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/providers"
+	"github.com/schahriar/captn/pkg/queries"
 )
 
 type ExplainInput struct {
@@ -53,7 +54,7 @@ func (t *ExplainTool) Call(ctx context.Context, req *mcp.CallToolRequest, input 
 		return nil, zero, fmt.Errorf("invalid CWD (current working directory) %w", err)
 	}
 
-	g, err := cog.OpenCOG(cwd)
+	g, err := cog.OpenWorkspace(cwd)
 
 	if err != nil {
 		return nil, zero, err
@@ -61,12 +62,12 @@ func (t *ExplainTool) Call(ctx context.Context, req *mcp.CallToolRequest, input 
 
 	prov := providers.NewClaudeCodeProvider()
 
-	og, start, err := g.QuerySnippet(ctx, input.FilePath, input.Snippet)
+	og, start, err := g.SearchSnippet(ctx, input.FilePath, input.Snippet)
 	if err != nil {
 		return nil, zero, fmt.Errorf("failed to query snippet: %w", err)
 	}
 
-	expln, err := og.ExplainWithDepth(ctx, g, prov, start, 1)
+	expln, err := og.QueryWithDepth(ctx, g, prov, start, queries.NewExplainBehaviorQuery(), 1)
 
 	if err != nil {
 		return nil, zero, fmt.Errorf("failed to explain snippet: %w", err)

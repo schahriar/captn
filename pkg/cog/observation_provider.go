@@ -3,10 +3,9 @@ package cog
 import (
 	"context"
 
-	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/queries"
 )
 
 type ObservationProvider interface {
-	GetObservationFromSource(ctx context.Context, r *common.FileRange) (common.ObservationSchema, error)
-	ResolveObservationsToGraph(ctx context.Context, cog *COG, g *ObservationGraph, root COGNode) error
+	Query(ctx context.Context, cog *Workspace, g *RootedObservationGraph, q queries.PromptQuery) error
 }

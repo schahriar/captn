@@ -12,6 +12,7 @@ import (
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/queries"
 )
 
 type ObservationGraph struct {
@@ -195,16 +196,18 @@ func nodeLocation(n COGNode) string {
 	return n.GetFilePath()
 }
 
-func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov ObservationProvider, n COGNode, depth int) (string, error) {
-	if cog == nil {
-		return "", fmt.Errorf("expected instance of COG received nil")
+func (og *ObservationGraph) QueryWithDepth(ctx context.Context, wspace *Workspace, prov ObservationProvider, n COGNode, q queries.PromptQuery, depth int) (string, error) {
+	if wspace == nil {
+		return "", fmt.Errorf("expected instance of Workspace received nil")
 	}
 
 	if n == nil {
 		return "", fmt.Errorf("expected instance of COGNode as root node received nil")
 	}
 
-	if err := prov.ResolveObservationsToGraph(ctx, cog, og, n); err != nil {
+	rog := NewRootedObservationGraph(og, n)
+
+	if err := prov.Query(ctx, wspace, rog, q); err != nil {
 		return "", err
 	}
 
@@ -215,7 +218,7 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 	err := og.Graph.DetailedDFS(n.GetHash(), func(cur cgraph.DFSVisit[common.HashType, COGNode]) (bool, error) {
 		if _, err := fmt.Fprintf(&expln, "%v does the following:\n%v\n",
 			nodeLocation(cur.Vertex),
-			safeReadAttr(cur.VertexAttributes(), "observation-behavior"),
+			safeReadAttr(cur.VertexAttributes(), "observation-answer"),
 		); err != nil {
 			return true, err
 		}
@@ -227,10 +230,10 @@ func (og *ObservationGraph) ExplainWithDepth(ctx context.Context, cog *COG, prov
 				return true, err
 			}
 
-			if _, err := fmt.Fprintf(&expln, "%v uses %v with the following behavior:\n%v\n",
+			if _, err := fmt.Fprintf(&expln, "%v uses %v with the following answer:\n%v\n",
 				nodeLocation(par),
 				nodeLocation(cur.Vertex),
-				safeReadAttr(cur.EdgeAttributes(), "observation-behavior"),
+				safeReadAttr(cur.EdgeAttributes(), "observation-answer"),
 			); err != nil {
 				return true, err
 			}
@@ -258,20 +261,20 @@ func normalizeEdgeKey(a, b common.HashType) [2]common.HashType {
 	return [2]common.HashType{b, a}
 }
 
-func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationProvider, items []GraphWithRoot, depth int) (string, error) {
-	if cog == nil {
-		return "", fmt.Errorf("expected instance of COG received nil")
+func MultiGraphQueryWithDepth(ctx context.Context, wspace *Workspace, prov ObservationProvider, items []GraphWithRoot, q queries.PromptQuery, depth int) (string, error) {
+	if wspace == nil {
+		return "", fmt.Errorf("expected instance of Workspace received nil")
 	}
 
 	type vertexEntry struct {
-		node     COGNode
-		behavior string
+		node   COGNode
+		answer string
 	}
 
 	type edgeEntry struct {
-		source   COGNode
-		target   COGNode
-		behavior string
+		source COGNode
+		target COGNode
+		answer string
 	}
 
 	vseen := map[common.HashType]vertexEntry{}
@@ -282,7 +285,9 @@ func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationP
 			continue
 		}
 
-		if err := prov.ResolveObservationsToGraph(ctx, cog, item.Graph, item.Root); err != nil {
+		rog := NewRootedObservationGraph(item.Graph, item.Root)
+
+		if err := prov.Query(ctx, wspace, rog, q); err != nil {
 			return "", err
 		}
 
@@ -305,8 +310,8 @@ func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationP
 
 			// banstructlit:ignore
 			vseen[h] = vertexEntry{
-				node:     node,
-				behavior: safeReadAttr(props.Attributes, "observation-behavior"),
+				node:   node,
+				answer: safeReadAttr(props.Attributes, "observation-answer"),
 			}
 		}
 
@@ -328,9 +333,9 @@ func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationP
 
 			// banstructlit:ignore
 			eseen[key] = edgeEntry{
-				source:   e.Source,
-				target:   e.Target,
-				behavior: safeReadAttr(e.Properties.Attributes, "observation-behavior"),
+				source: e.Source,
+				target: e.Target,
+				answer: safeReadAttr(e.Properties.Attributes, "observation-answer"),
 			}
 		}
 	}
@@ -360,17 +365,17 @@ func MultiGraphExplainWithDepth(ctx context.Context, cog *COG, prov ObservationP
 	for _, v := range vlist {
 		if _, err := fmt.Fprintf(&expln, "%v does the following:\n%v\n",
 			nodeLocation(v.node),
-			v.behavior,
+			v.answer,
 		); err != nil {
 			return "", err
 		}
 	}
 
 	for _, e := range elist {
-		if _, err := fmt.Fprintf(&expln, "%v uses %v with the following behavior:\n%v\n",
+		if _, err := fmt.Fprintf(&expln, "%v uses %v with the following answer:\n%v\n",
 			nodeLocation(e.source),
 			nodeLocation(e.target),
-			e.behavior,
+			e.answer,
 		); err != nil {
 			return "", err
 		}

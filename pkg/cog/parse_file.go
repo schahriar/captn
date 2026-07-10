@@ -84,6 +84,14 @@ func (f COGFile) GetFilePath() string {
 	return f.Source.Path
 }
 
+func (f COGFile) GetFileRange() *common.FileRange {
+	return common.NewFileRange(
+		f.Source,
+		common.FirstPositionOfSource(f.Source),
+		common.LastPositionOfSource(f.Source),
+	)
+}
+
 func (f COGFile) GetStringSource() string {
 	return string(f.Source.Buffer)
 }

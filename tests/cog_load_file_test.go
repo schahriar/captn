@@ -15,7 +15,7 @@ func TestCOGLoadFilesDeduplicatesConcurrentLoads(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)
 
-	c := cog.NewCOG(cwd)
+	c := cog.NewWorkspace(cwd)
 	files := make([]string, 32)
 	for i := range files {
 		files[i] = "./fixtures/golang/baseproj/simple.go"
@@ -35,7 +35,7 @@ func TestCOGLoadFilesDeduplicatesConcurrentLoads(t *testing.T) {
 
 func TestCOGLoadFileClearsInflightAfterError(t *testing.T) {
 	workspace := t.TempDir()
-	c := cog.NewCOG(workspace)
+	c := cog.NewWorkspace(workspace)
 
 	_, err := c.LoadFile(t.Context(), "main.go")
 	assert.Error(t, err)
@@ -53,7 +53,7 @@ func TestCOGLoadFileClearsInflightAfterError(t *testing.T) {
 }
 
 func TestCOGPersistReturns(t *testing.T) {
-	c := cog.NewCOG(t.TempDir())
+	c := cog.NewWorkspace(t.TempDir())
 	done := make(chan error, 1)
 
 	go func() {
@@ -71,13 +71,14 @@ func TestCOGPersistReturns(t *testing.T) {
 func TestOpenCOGLoadsPersistedCache(t *testing.T) {
 	workspace := t.TempDir()
 	h := common.PrimaryHash("persisted-observation")
-	o := common.NewObservationSchema(h.String(), "persisted behavior")
+	o := common.NewObservationSchema(h.String(), "persisted answer")
+	co := cog.NewCOGObservation(o, []*common.FileRange{})
 
-	c := cog.NewCOG(workspace)
-	c.ObservationCache[h] = o
+	c := cog.NewWorkspace(workspace)
+	c.ObservationCache[h] = co
 	assert.NoError(t, c.Persist())
 
-	loaded, err := cog.OpenCOG(workspace)
+	loaded, err := cog.OpenWorkspace(workspace)
 	assert.NoError(t, err)
-	assert.Equal(t, o, loaded.ObservationCache[h])
+	assert.Equal(t, co, loaded.ObservationCache[h])
 }

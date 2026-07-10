@@ -14,6 +14,7 @@ import (
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/grep"
 	"github.com/schahriar/captn/pkg/providers"
+	"github.com/schahriar/captn/pkg/queries"
 )
 
 // Bounds on the fan-out. Each match triggers an LSP definition batch plus an
@@ -77,7 +78,7 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 		return nil, zero, fmt.Errorf("invalid CWD (current working directory) %w", err)
 	}
 
-	g, err := cog.OpenCOG(cwd)
+	g, err := cog.OpenWorkspace(cwd)
 
 	if err != nil {
 		return nil, zero, err
@@ -127,7 +128,7 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			og, start, err := g.QuerySnippet(ctx, rel, snippet)
+			og, start, err := g.SearchSnippet(ctx, rel, snippet)
 			if err != nil {
 				return
 			}
@@ -142,7 +143,7 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 
 	wg.Wait()
 
-	expln, err := cog.MultiGraphExplainWithDepth(ctx, g, prov, pairs, 1)
+	expln, err := cog.MultiGraphQueryWithDepth(ctx, g, prov, pairs, queries.NewExplainBehaviorQuery(), 1)
 	if err != nil {
 		return nil, zero, fmt.Errorf("failed to explain snippets: %w", err)
 	}

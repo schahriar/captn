@@ -16,6 +16,7 @@ type dotTestNode struct {
 	path     string
 	language string
 	label    string
+	src      *common.Source
 }
 
 func newDotTestNode(hash common.HashType, path, language, label string) dotTestNode {
@@ -24,6 +25,7 @@ func newDotTestNode(hash common.HashType, path, language, label string) dotTestN
 		path:     path,
 		language: language,
 		label:    label,
+		src:      common.NewSource("test", "/workspace/vendor/example/mod/file.go", []byte("package example\n\nfunc x() {\n\tfmt.Println(\"Hello, World!\")\n}\n")),
 	}
 }
 
@@ -33,6 +35,14 @@ func (n dotTestNode) GetHash() common.HashType {
 
 func (n dotTestNode) GetFilePath() string {
 	return n.path
+}
+
+func (n dotTestNode) GetFileRange() *common.FileRange {
+	return &common.FileRange{
+		Source: n.src,
+		Start:  common.NewFilePosition(n.src, 1, 0, 0),
+		End:    common.NewFilePosition(n.src, 1, 20, 0), // Arbitrary end position for testing
+	}
 }
 
 func (n dotTestNode) GetLanguage() string {

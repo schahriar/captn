@@ -16,7 +16,7 @@ func TestCOGRangeQueryModule(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	nodes := pf.QueryNodesWithinRange(common.NewFileRange(
+	nodes := pf.FindNodesWithinRange(common.NewFileRange(
 		pf.Source,
 		rng.Start,
 		rng.End,
@@ -35,7 +35,7 @@ func TestCOGRangeQueryModule(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	nodes = pf.QueryNodesWithinRange(common.NewFileRange(
+	nodes = pf.FindNodesWithinRange(common.NewFileRange(
 		pf.Source,
 		rng.Start,
 		rng.End,
@@ -57,7 +57,7 @@ func TestCOGRangeQueryFindsMethodDefinitionSymbol(t *testing.T) {
 	rng, err := common.NewFileRangeAutoBytePosition(pf.Source, 4, 17, 4, 25)
 	assert.NoError(t, err)
 
-	nodes := pf.QueryNodesWithinRange(rng)
+	nodes := pf.FindNodesWithinRange(rng)
 	if !assert.Len(t, nodes, 1) {
 		return
 	}

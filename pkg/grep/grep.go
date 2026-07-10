@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -128,37 +130,52 @@ func isDriveLetter(b byte) bool {
 }
 
 func SearchSource(ctx context.Context, workdir string, include string, pattern string) ([]Match, error) {
-	cmd := exec.CommandContext(
-		ctx,
-		"grep",
-		"-RInFZH",
-		fmt.Sprintf("--include=%s", include),
-		pattern,
-		workdir,
-	)
+	root, glob := resolveInclude(workdir, include)
 
-	out, err := cmd.Output()
-	if err != nil {
-		var exitErr *exec.ExitError
-		if errors.As(err, &exitErr) && exitErr.ExitCode() == 1 {
-			return nil, nil
-		}
-
-		return nil, err
+	args := []string{"-RInFZH"}
+	if glob != "" {
+		args = append(args, fmt.Sprintf("--include=%s", glob))
 	}
+	args = append(args, pattern, root)
 
-	return ParseGrepOutput(bytes.NewReader(out))
+	return runGrep(exec.CommandContext(ctx, "grep", args...))
 }
 
 func Search(ctx context.Context, workdir string, pattern string) ([]Match, error) {
-	cmd := exec.CommandContext(
-		ctx,
-		"grep",
-		"-RInFZH",
-		pattern,
-		workdir,
-	)
+	return runGrep(exec.CommandContext(ctx, "grep", "-RInFZH", pattern, workdir))
+}
 
+// resolveInclude maps a user-supplied include into a concrete search root and a
+// base-name --include glob. grep matches --include against the base name only,
+// so an include carrying directory components (e.g. "pkg/server/server.go" or
+// "pkg/tui/*.go") never matches when grep walks an absolute workdir. Rebasing
+// the search on the directory portion keeps only the base pattern for --include.
+func resolveInclude(workdir, include string) (root, glob string) {
+	full := include
+	if !filepath.IsAbs(full) {
+		full = filepath.Join(workdir, include)
+	}
+	if _, err := os.Stat(full); err == nil {
+		return full, ""
+	}
+
+	dir, base := filepath.Split(include)
+	if dir == "" {
+		return workdir, base
+	}
+
+	sub := dir
+	if !filepath.IsAbs(sub) {
+		sub = filepath.Join(workdir, dir)
+	}
+	if info, err := os.Stat(sub); err == nil && info.IsDir() {
+		return sub, base
+	}
+
+	return workdir, include
+}
+
+func runGrep(cmd *exec.Cmd) ([]Match, error) {
 	out, err := cmd.Output()
 	if err != nil {
 		var exitErr *exec.ExitError

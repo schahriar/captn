@@ -72,6 +72,52 @@ func TestSearchSource_RealGrep(t *testing.T) {
 	assert.Contains(t, colon.Text, "colons: here")
 }
 
+// TestSearchSource_PathInclude covers includes that carry directory components.
+// grep matches --include against the base name only, so a path-shaped include
+// must rebase the search root rather than be handed to --include verbatim.
+func TestSearchSource_PathInclude(t *testing.T) {
+	requireGrep(t)
+	root := writeTree(t)
+
+	rels := func(matches []Match) []string {
+		var out []string
+		for _, m := range matches {
+			rel, err := filepath.Rel(root, m.Path)
+			assert.NoError(t, err)
+			out = append(out, rel)
+		}
+		return out
+	}
+
+	t.Run("specific file path", func(t *testing.T) {
+		matches, err := SearchSource(context.Background(), root, filepath.Join("sub", "beta.go"), "needle")
+		assert.NoError(t, err)
+		assert.Equal(t, []string{filepath.Join("sub", "beta.go")}, rels(matches))
+	})
+
+	t.Run("directory scoped glob", func(t *testing.T) {
+		matches, err := SearchSource(context.Background(), root, filepath.Join("sub", "*.go"), "needle")
+		assert.NoError(t, err)
+		got := rels(matches)
+		assert.Len(t, got, 2)
+		assert.Contains(t, got, filepath.Join("sub", "beta.go"))
+		assert.Contains(t, got, filepath.Join("sub", "colon.go"))
+	})
+
+	t.Run("bare directory", func(t *testing.T) {
+		// No glob, so every file under sub/ is searched, including the .txt.
+		matches, err := SearchSource(context.Background(), root, "sub", "needle")
+		assert.NoError(t, err)
+		assert.Len(t, matches, 3)
+	})
+
+	t.Run("missing directory falls back cleanly", func(t *testing.T) {
+		matches, err := SearchSource(context.Background(), root, filepath.Join("does-not-exist", "*.go"), "needle")
+		assert.NoError(t, err)
+		assert.Empty(t, matches)
+	})
+}
+
 func TestSearch_RealGrep_NoIncludeFilter(t *testing.T) {
 	requireGrep(t)
 	root := writeTree(t)

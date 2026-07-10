@@ -96,7 +96,7 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 	return impLoc, nil
 }
 
-func (pf *COGFile) QueryNodesWithinRange(r *common.FileRange) []ast.ASTNode {
+func (pf *COGFile) FindNodesWithinRange(r *common.FileRange) []ast.ASTNode {
 	hashes, ok := pf.intervals.AllIntersections(r.Start, r.End)
 
 	if !ok {

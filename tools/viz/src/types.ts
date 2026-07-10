@@ -6,7 +6,7 @@ export interface GraphNode {
   id: string;
   label: string;
   type: NodeType | "unknown";
-  behavior?: string;
+  answer?: string;
   edgeCases?: string;
 }
 
@@ -17,7 +17,7 @@ export type SimNode = GraphNode & SimulationNodeDatum;
 export interface GraphLink {
   source: string | SimNode;
   target: string | SimNode;
-  behavior?: string;
+  answer?: string;
   edgeCases?: string;
 }
 

@@ -12,7 +12,7 @@ function unescapeGoString(s: string): string {
   );
 }
 
-// Handles both quoted keys ("observation-behavior"="val") and unquoted keys (import_type="val")
+// Handles both quoted keys ("observation-answer"="val") and unquoted keys (import_type="val")
 function extractAttr(attrs: string, name: string): string | undefined {
   const re = new RegExp(`(?:"${name}"|${name})="((?:[^"\\\\]|\\\\.)*)"`);
   const m = attrs.match(re);
@@ -29,7 +29,7 @@ function makeNode(
     id,
     label:     a['label'] ?? (id.split('/').pop() ?? id),
     type:      typeMap.get(id) ?? 'unknown',
-    behavior:  a['observation-behavior'],
+    answer:  a['observation-answer'],
     edgeCases: a['observation-edgecases'],
   };
 }
@@ -58,7 +58,7 @@ export function parseDOT(src: string): GraphData {
     }
 
     const collected: Record<string, string> = {};
-    for (const key of ['label', 'observation-behavior', 'observation-edgecases']) {
+    for (const key of ['label', 'observation-answer', 'observation-edgecases']) {
       const val = extractAttr(attrs, key);
       if (val !== undefined) collected[key] = val;
     }
@@ -77,7 +77,7 @@ export function parseDOT(src: string): GraphData {
       links.push({
         source:    a,
         target:    b,
-        behavior:  edgeAttrs ? extractAttr(edgeAttrs, 'observation-behavior') : undefined,
+        answer:  edgeAttrs ? extractAttr(edgeAttrs, 'observation-answer') : undefined,
         edgeCases: edgeAttrs ? extractAttr(edgeAttrs, 'observation-edgecases') : undefined,
       });
     }

@@ -72,6 +72,10 @@ func (cont *ASTNodeContainer) GetPosition() *common.FileRange {
 	return cont.Node.GetPosition()
 }
 
+func (cont *ASTNodeContainer) GetFileRange() *common.FileRange {
+	return cont.Node.GetPosition()
+}
+
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
 	hash := common.HashMany(
@@ -179,6 +183,7 @@ type ASTNode interface {
 	Kind() string
 	Accept(visitor ASTVisitor) interface{}
 	GetFilePath() string
+	GetFileRange() *common.FileRange
 	GetLanguage() string
 	GetStringSource() string
 }

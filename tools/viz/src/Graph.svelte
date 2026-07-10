@@ -43,7 +43,7 @@
     key: string;
     label: string;
     sub: string;
-    behavior?: string;
+    answer?: string;
     edgeCases?: string;
     deg?: number;
     pathToRoot?: string[] | null;
@@ -195,7 +195,7 @@
       const pathToRoot = rootId && d.id !== rootId ? bfsPath(d.id, rootId) : null;
       selectionList = [...selectionList, {
         kind: 'node', key: d.id, label: d.label, sub: d.type,
-        behavior: d.behavior, edgeCases: d.edgeCases, deg: degree.get(d.id), pathToRoot,
+        answer: d.answer, edgeCases: d.edgeCases, deg: degree.get(d.id), pathToRoot,
       }];
     }
     selectedNodeIds = next;
@@ -213,7 +213,7 @@
         kind: 'edge', key,
         label: `${sid.split('/').pop()} → ${tid.split('/').pop()}`,
         sub: `${linkEndType(l.source)} / ${linkEndType(l.target)}`,
-        behavior: l.behavior, edgeCases: l.edgeCases,
+        answer: l.answer, edgeCases: l.edgeCases,
       }];
     }
     selectedEdgeKeys = next;
@@ -575,8 +575,8 @@
         </div>
       {/if}
       <div class="tip-deg">{hoveredNode.deg} connection{hoveredNode.deg !== 1 ? 's' : ''}</div>
-      {#if hoveredNode.behavior}
-        <div class="tip-observation">{hoveredNode.behavior}</div>
+      {#if hoveredNode.answer}
+        <div class="tip-observation">{hoveredNode.answer}</div>
       {/if}
       {#if hoveredNode.edgeCases}
         <div class="tip-edgecases"><span class="tip-edgecases-label">edge cases</span>{hoveredNode.edgeCases}</div>
@@ -606,8 +606,8 @@
               {[...item.pathToRoot].reverse().map(id => id.split('/').pop()).join(' → ')}
             </div>
           {/if}
-          {#if item.behavior}
-            <div class="sel-observation">{item.behavior}</div>
+          {#if item.answer}
+            <div class="sel-observation">{item.answer}</div>
           {/if}
           {#if item.edgeCases}
             <div class="sel-edgecases"><span class="sel-edgecases-label">edge cases</span>{item.edgeCases}</div>
