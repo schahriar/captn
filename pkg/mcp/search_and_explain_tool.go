@@ -63,7 +63,7 @@ func (t *SearchAndExplainTool) Name() string {
 }
 
 func (t *SearchAndExplainTool) DisplayName() string {
-	return "Explaining Snippet of Code"
+	return "Explains a snippet of code"
 }
 
 func (t *SearchAndExplainTool) Description() string {
