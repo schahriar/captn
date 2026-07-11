@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/alecthomas/kong"
-	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/mcp"
 	"github.com/schahriar/captn/pkg/server"
 	"github.com/schahriar/captn/pkg/tui"
@@ -67,22 +66,29 @@ YOU SHOULD NEVER USE grep directly anymore, just use captn
 		ctx := tui.WithStatusProvider(context.Background(), overlay)
 		srv.Serve(ctx)
 
-		cwd, err := os.Getwd()
-
-		if err != nil {
-			panic(err)
-		}
-
-		g, err := cog.OpenWorkspace(cwd)
-		if err != nil {
-			panic(err)
-		}
-
 		go func() {
-			time.Sleep(1 * time.Second)
+			time.Sleep(1000 * time.Millisecond)
+			loader := tui.NewLoader()
 			overlay.SetStatus(
-				tui.Text(fmt.Sprintf("Author: %+v", g.ActiveAuthor)),
+				tui.Decorate(
+					tui.Group(
+						tui.Text(" captn "),
+						loader,
+					),
+					tui.ShimmerColor(tui.NewRGB(70, 130, 220), tui.NewRGB(180, 220, 255)),
+				),
 			)
+
+			overlay.SetSubStatus(
+				tui.Group(
+					tui.Text(tui.Dim("Ask anything and claude will coordinate with captn")),
+				),
+			)
+
+			time.Sleep(5 * time.Second)
+
+			overlay.SetSubStatus(tui.Group()) // Reset substatus after 5 seconds
+			overlay.Hide()
 		}()
 
 		if err := overlay.Run(); err != nil {

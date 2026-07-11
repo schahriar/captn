@@ -8,6 +8,7 @@ import (
 
 type Tool[In any, Out any] interface {
 	Name() string
+	DisplayName() string
 	Description() string
 	Call(ctx context.Context, req *mcp.CallToolRequest, input In) (*mcp.CallToolResult, Out, error)
 }

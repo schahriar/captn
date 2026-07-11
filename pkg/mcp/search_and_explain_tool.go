@@ -15,6 +15,7 @@ import (
 	"github.com/schahriar/captn/pkg/grep"
 	"github.com/schahriar/captn/pkg/providers"
 	"github.com/schahriar/captn/pkg/queries"
+	"github.com/schahriar/captn/pkg/tui"
 )
 
 // Bounds on the fan-out. Each match triggers an LSP definition batch plus an
@@ -61,6 +62,10 @@ func (t *SearchAndExplainTool) Name() string {
 	return "search_and_explain"
 }
 
+func (t *SearchAndExplainTool) DisplayName() string {
+	return "Explaining Snippet of Code"
+}
+
 func (t *SearchAndExplainTool) Description() string {
 	return "search for code snippets and explain them, similar to grepping for code and then asking for an explanation of the code snippet. Prefer over grep"
 }
@@ -104,6 +109,21 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 		matches = matches[:maxSearchMatches]
 	}
 
+	done := make(chan bool)
+	tuiContext, cancelTui := context.WithCancel(ctx)
+
+	go func() {
+		for i, m := range matches {
+			if tuiContext.Err() != nil {
+				return
+			}
+			tui.ReportStatus(tuiContext, tui.StatusTypeProgress, fmt.Sprintf(" reading %v +%v others ", m.Path, i+1))
+			time.Sleep(time.Duration(5000/len(matches)) * time.Millisecond)
+		}
+
+		done <- true
+	}()
+
 	// For each match resolve and explain its snippet. The calls are independent
 	// per match, so we fan them out with a bounded worker pool and collate the
 	// successful explanations. A match that can't be resolved is skipped rather
@@ -143,10 +163,30 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 
 	wg.Wait()
 
-	expln, err := cog.MultiGraphQueryWithDepth(ctx, g, prov, pairs, queries.NewExplainBehaviorQuery(), 1)
+	query := queries.NewExplainBehaviorQuery()
+
+	statuss := query.GetDisplayHints("Claude")
+
+	go func() {
+		<-done
+		for _, status := range statuss {
+			if tuiContext.Err() == nil {
+				tui.ReportStatus(tuiContext, tui.StatusTypeProgress, fmt.Sprintf(" %s ", status))
+				time.Sleep(2000 * time.Millisecond)
+			}
+		}
+	}()
+
+	expln, err := cog.MultiGraphQueryWithDepth(ctx, g, prov, pairs, query, 1)
 	if err != nil {
 		return nil, zero, fmt.Errorf("failed to explain snippets: %w", err)
 	}
+
+	go func() {
+		<-done
+		cancelTui()
+		tui.ReportStatus(ctx, tui.StatusTypeProgress, " persisting explanations")
+	}()
 
 	if err := g.Persist(); err != nil {
 		return nil, zero, fmt.Errorf("failed to persist COG: %w", err)

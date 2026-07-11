@@ -35,6 +35,26 @@ func WithStatusProvider(ctx context.Context, overlay *Overlay) context.Context {
 	return context.WithValue(ctx, statusContextKey, provider)
 }
 
+func ReportStatus(ctx context.Context, t StatusType, status string) {
+	provider, ok := GetStatusProvider(ctx)
+
+	if !ok {
+		return
+	}
+
+	provider.ReportStatus(t, status)
+}
+
+func PushStatusTask(ctx context.Context, t StatusType, status string) func() {
+	provider, ok := GetStatusProvider(ctx)
+
+	if !ok {
+		return func() {}
+	}
+
+	return provider.PushTask(t, status)
+}
+
 func GetStatusProvider(ctx context.Context) (*StatusProvider, bool) {
 	provider, ok := ctx.Value(statusContextKey).(*StatusProvider)
 

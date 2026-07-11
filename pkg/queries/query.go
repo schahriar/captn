@@ -1,10 +1,15 @@
 package queries
 
-import "github.com/schahriar/captn/pkg/common"
+import (
+	"fmt"
+
+	"github.com/schahriar/captn/pkg/common"
+)
 
 type PromptQuery interface {
 	GetIdentifier() string
 	GetPrompt() string
+	GetDisplayHints(provider string) []string
 }
 
 func defaultPromptIdentifierProvider(d string) string {
@@ -26,6 +31,17 @@ func (q ExplainBehaviorQuery) GetIdentifier() string {
 
 func (q ExplainBehaviorQuery) GetPrompt() string {
 	return "explain the behavior of the given code snippet in concise reasoning format"
+}
+
+func (q ExplainBehaviorQuery) GetDisplayHints(provider string) []string {
+	return []string{
+		fmt.Sprintf("reasoning with %s", provider),
+		"reading the code",
+		"reasoning about behavior",
+		"tracing the logic",
+		"providing an explanation",
+		fmt.Sprintf("reasoning with %s", provider),
+	}
 }
 
 func NewExplainBehaviorQuery() ExplainBehaviorQuery {

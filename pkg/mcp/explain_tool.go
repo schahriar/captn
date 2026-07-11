@@ -36,6 +36,10 @@ func (t *ExplainTool) Name() string {
 	return "explain"
 }
 
+func (t *ExplainTool) DisplayName() string {
+	return "Explaining Snippet of Code"
+}
+
 func (t *ExplainTool) Description() string {
 	return "explain a snippet of code in a file"
 }

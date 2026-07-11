@@ -73,7 +73,7 @@ func handleTask[In any, Out any](tool mcp.Tool[In, Out]) http.HandlerFunc {
 
 		ctx := r.Context()
 		if provider, ok := tui.GetStatusProvider(ctx); ok {
-			done := provider.PushTask(tui.StatusTypeProgress, fmt.Sprintf("-ing (%s) for ", tool.Name()))
+			done := provider.PushTask(tui.StatusTypeProgress, fmt.Sprintf(": %s for ", tool.DisplayName()))
 			defer done()
 		}
 

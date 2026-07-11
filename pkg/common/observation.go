@@ -41,6 +41,13 @@ type BatchObservationSchema struct {
 	ConnectionObservations []ObservationSchema `json:"connectionObservations" jsonschema:"description:If asked to explain relationship between two nodes, provide the answer taking into account that the first connection is the parent and second connection is imported / related code used by the parent. Each entry's id MUST match the corresponding input connection ID and connection IDs are always edge followed by link IDs."`
 }
 
+func NewBatchObservationSchema(observations []ObservationSchema, connectionObservations []ObservationSchema) BatchObservationSchema {
+	return BatchObservationSchema{
+		Observations:           observations,
+		ConnectionObservations: connectionObservations,
+	}
+}
+
 func (o *BatchObservationSchema) GetSchema() *jsonschema.Schema {
 	return jsonschema.Reflect(o)
 }

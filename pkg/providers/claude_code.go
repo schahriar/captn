@@ -9,6 +9,7 @@ import (
 	"github.com/dominikbraun/graph"
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/knownerr"
 	"github.com/schahriar/captn/pkg/queries"
 )
 
@@ -143,11 +144,11 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 	res := NewClaudeResult()
 
 	if err := json.Unmarshal(out, &res); err != nil {
-		return scma, fmt.Errorf("unexpected response from claude with error %w \n Received: %s", err, out)
+		return scma, knownerr.NewProviderOutputError(fmt.Errorf("unexpected response from claude with error %w \n Received: %s", err, out))
 	}
 
 	if err := json.Unmarshal([]byte(res.Result), &scma); err != nil {
-		return scma, fmt.Errorf("structured output did not match expected schema with error %w \n Received: %s", err, res.Result)
+		return scma, knownerr.NewProviderOutputError(fmt.Errorf("structured output did not match expected schema with error %w \n Received: %s", err, res.Result))
 	}
 
 	return scma, nil
@@ -297,12 +298,19 @@ func (p *ClaudeCodeProvider) Query(ctx context.Context, wspace *cog.Workspace, g
 		return fmt.Errorf("failed to serialize batch input for claude code %w", err)
 	}
 
-	prompt := fmt.Sprintf(`%v
+	bssample := common.NewBatchObservationSchema([]common.ObservationSchema{}, []common.ObservationSchema{})
+	bssamplebuf, err := bssample.Marshal()
+
+	if err != nil {
+		return fmt.Errorf("failed to serialize batch schema for claude code %w", err)
+	}
+
+	prompt := fmt.Sprintf(`%s
 
 Input shape: {"sources":[{"id","description"}],"connections":[{"id","description"}]}
-Output shape: {"observations":[{"id","answer"}],"connectionObservations":[{"id","answer"}]}
+Output shape must match: %s
 Input:
-%s`, q.GetPrompt(), encin)
+%s`, q.GetPrompt(), bssamplebuf, encin)
 
 	res, err := QueryClaudeCode[*common.BatchObservationSchema](ctx, systemPrompt, prompt, "high")
 
@@ -319,7 +327,7 @@ Input:
 		vdef, ok := verteximap[o.ID]
 		if !ok {
 			if responseErr == nil {
-				responseErr = fmt.Errorf("claude code returned observation for unknown source id %q", o.ID)
+				responseErr = knownerr.NewProviderOutputError(fmt.Errorf("claude code returned observation for unknown source id %q", o.ID))
 			}
 			continue
 		}
@@ -349,7 +357,7 @@ Input:
 		edef, ok := edgeimap[e.ID]
 		if !ok {
 			if responseErr == nil {
-				responseErr = fmt.Errorf("claude code returned observation for unknown connection id %q", e.ID)
+				responseErr = knownerr.NewProviderOutputError(fmt.Errorf("claude code returned observation for unknown connection id %q", e.ID))
 			}
 			continue
 		}

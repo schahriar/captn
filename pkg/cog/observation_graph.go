@@ -207,7 +207,7 @@ func (og *ObservationGraph) QueryWithDepth(ctx context.Context, wspace *Workspac
 
 	rog := NewRootedObservationGraph(og, n)
 
-	if err := prov.Query(ctx, wspace, rog, q); err != nil {
+	if err := QueryProviderWrapper(prov)(ctx, wspace, rog, q); err != nil {
 		return "", err
 	}
 
@@ -280,6 +280,8 @@ func MultiGraphQueryWithDepth(ctx context.Context, wspace *Workspace, prov Obser
 	vseen := map[common.HashType]vertexEntry{}
 	eseen := map[[2]common.HashType]edgeEntry{}
 
+	query := QueryProviderWrapper(prov)
+
 	for _, item := range items {
 		if item.Graph == nil || item.Root == nil {
 			continue
@@ -287,7 +289,7 @@ func MultiGraphQueryWithDepth(ctx context.Context, wspace *Workspace, prov Obser
 
 		rog := NewRootedObservationGraph(item.Graph, item.Root)
 
-		if err := prov.Query(ctx, wspace, rog, q); err != nil {
+		if err := query(ctx, wspace, rog, q); err != nil {
 			return "", err
 		}
 
