@@ -5,6 +5,7 @@ import (
 
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/schahriar/captn/pkg/ast"
+	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/common"
 	"github.com/stretchr/testify/assert"
 )
@@ -65,6 +66,30 @@ func TestCOGRangeQueryFindsMethodDefinitionSymbol(t *testing.T) {
 	sym, ok := nodes[0].(*ast.ASTSymbol)
 	if assert.True(t, ok, "expected definition range to resolve to symbol") {
 		assert.Equal(t, "Describe", sym.Name)
+	}
+}
+
+func TestCOGFindTightestEnclosingNode(t *testing.T) {
+	pf := parseSimple(t)
+
+	rng, err := common.NewFileRangeAutoBytePosition(pf.Source, 3, 1, 3, 7)
+
+	assert.NoError(t, err)
+
+	node := pf.FindTightestEnclosingNode(rng, cog.IsNodeOfInterest)
+
+	if assert.NotNil(t, node) {
+		assert.Equal(t, "FuncExpression", node.Kind())
+	}
+
+	rng, err = common.NewFileRangeAutoBytePosition(pf.Source, 0, 0, 4, 1)
+
+	assert.NoError(t, err)
+
+	node = pf.FindTightestEnclosingNode(rng, cog.IsNodeOfInterest)
+
+	if assert.NotNil(t, node) {
+		assert.Equal(t, "Module", node.Kind())
 	}
 }
 

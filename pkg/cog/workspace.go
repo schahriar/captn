@@ -542,7 +542,13 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 	}
 
 	chlds := f.FindNodesWithinRange(r)
-	root := f.Module
+
+	// Root at the tightest node of interest enclosing the snippet so the graph
+	// doesn't duplicate coarse file-level context; fall back to the module
+	var root ast.ASTNode = f.Module
+	if tight := f.FindTightestEnclosingNode(r, IsNodeOfInterest); tight != nil {
+		root = tight
+	}
 
 	defs := map[ast.ASTNode]*common.FileRange{}
 
@@ -657,14 +663,29 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 
 	og.Graph.AddVertex(root)
 
+	rootHash := ast.GetHash(root)
+
+	// Add all vertices first so edge insertion doesn't depend on iteration order
 	for n := range interests {
+		// Root is already a vertex; avoid a self-loop
+		if ast.GetHash(n) == rootHash {
+			continue
+		}
+
 		og.Graph.AddVertex(n)
+	}
+
+	for n := range interests {
+		if ast.GetHash(n) == rootHash {
+			continue
+		}
+
 		// If the node exists in a chain then map it to its upstream
 		// Otherwise map to root
 		if sib, ok := ichains[n]; ok {
 			og.Graph.AddEdge(ast.GetHash(sib), ast.GetHash(n))
 		} else {
-			og.Graph.AddEdge(ast.GetHash(root), ast.GetHash(n))
+			og.Graph.AddEdge(rootHash, ast.GetHash(n))
 		}
 	}
 

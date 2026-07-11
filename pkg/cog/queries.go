@@ -120,3 +120,50 @@ func (pf *COGFile) FindNodesWithinRange(r *common.FileRange) []ast.ASTNode {
 
 	return nodes
 }
+
+// FindTightestEnclosingNode returns the smallest node that fully encloses the
+// given range and passes the filter (nil filter accepts all nodes).
+func (pf *COGFile) FindTightestEnclosingNode(r *common.FileRange, filter func(ast.ASTNode) bool) ast.ASTNode {
+	var tightest ast.ASTNode
+	tightestSpan := 0
+
+	consider := func(node ast.ASTNode) {
+		pos := node.GetPosition()
+
+		if pos == nil || !r.ContainedBy(*pos) {
+			return
+		}
+
+		if filter != nil && !filter(node) {
+			return
+		}
+
+		span := pos.End.BytePosition - pos.Start.BytePosition
+
+		if tightest == nil || span < tightestSpan {
+			tightest = node
+			tightestSpan = span
+		}
+	}
+
+	// The interval index keeps a single value per exact interval, so the module
+	// is shadowed by its own block; consider it directly
+	consider(pf.Module)
+
+	hashes, ok := pf.intervals.AllIntersections(r.Start, r.End)
+
+	if !ok {
+		return tightest
+	}
+
+	for _, hash := range hashes {
+		node, ok := pf.lookupTable[hash]
+		if !ok {
+			continue
+		}
+
+		consider(node)
+	}
+
+	return tightest
+}
