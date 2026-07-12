@@ -24,7 +24,6 @@ type Server struct {
 func NewServer() *Server {
 	mux := http.NewServeMux()
 	registerTask(mux, mcp.NewSearchAndExplainTool())
-	registerTask(mux, mcp.NewExplainTool())
 
 	// banstructlit:ignore
 	return &Server{srv: &http.Server{Handler: mux}}

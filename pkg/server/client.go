@@ -16,10 +16,6 @@ func Search(ctx context.Context, input mcp.SearchAndExplainInput) (mcp.SearchAnd
 	return call[mcp.SearchAndExplainInput, mcp.SearchAndExplainOutput](ctx, mcp.NewSearchAndExplainTool().Name(), input)
 }
 
-func Explain(ctx context.Context, input mcp.ExplainInput) (mcp.ExplainOutput, error) {
-	return call[mcp.ExplainInput, mcp.ExplainOutput](ctx, mcp.NewExplainTool().Name(), input)
-}
-
 func call[In any, Out any](ctx context.Context, task string, input In) (Out, error) {
 	var out Out
 

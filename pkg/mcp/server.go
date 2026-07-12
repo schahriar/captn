@@ -13,11 +13,8 @@ import (
 func StartServer(ctx context.Context, addr string) error {
 	server := mcp.NewServer(&mcp.Implementation{Name: "captn", Version: common.Version}, nil)
 
-	def, tool := ToMCPTool(explainTool)
-	mcp.AddTool(server, def, tool)
-
-	def2, tool2 := ToMCPTool(searchAndExplainTool)
-	mcp.AddTool(server, def2, tool2)
+	defse, toolse := ToMCPTool(searchAndExplainTool)
+	mcp.AddTool(server, defse, toolse)
 
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
 		return server
