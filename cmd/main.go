@@ -11,6 +11,8 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/schahriar/captn/pkg/mcp"
+	"github.com/schahriar/captn/pkg/providers"
+	"github.com/schahriar/captn/pkg/queries"
 	"github.com/schahriar/captn/pkg/server"
 	"github.com/schahriar/captn/pkg/tui"
 )
@@ -19,6 +21,7 @@ var CLI struct {
 	Search struct {
 		Main    string `arg:"" name:"path" help:"Path to main file" type:"path"`
 		Snippet string `arg:"snippet" name:"snippet" help:"Snippet to focus on in the main file" type:"string"`
+		QueryID string `arg:"" optional:"" name:"queryId" help:"ID of the supported query to run against the matched snippets" type:"string"`
 	} `cmd:"search" help:"Evaluate from main file"`
 
 	Claude struct{} `cmd:"" help:"Run Claude Claude using Captn"`
@@ -48,12 +51,13 @@ func main() {
 		}
 		defer srv.Close()
 
-		args := []string{"--append-system-prompt", `
+		args := []string{"--append-system-prompt", fmt.Sprintf(`
 Instead of calling Read tool, use the "captn" binary.
-Replace all calls to grep and reads with "captn search <path> <snippet>"
-Where path can be a glob pattern like *.go or a specific file path, and snippet is the code snippet you want explained.
+Replace all calls to grep and reads with "captn search <path> <snippet> <queryId>"
+Where path can be a glob pattern like *.go or a specific file path, and snippet is the code snippet of interest.
+%s
 YOU SHOULD NEVER USE grep directly anymore, just use captn
-		`}
+		`, providers.QueryRoutingSystemPrompt(queries.Supported()))}
 		args = append(args, claudeArgs...)
 
 		cmd := exec.Command("claude", args...)
@@ -97,17 +101,18 @@ YOU SHOULD NEVER USE grep directly anymore, just use captn
 			}
 			panic(err)
 		}
-	case "search <path> <snippet>":
+	case "search <path> <snippet>", "search <path> <snippet> <queryId>":
 		ctx := context.Background()
 
 		// banstructlit:ignore
-		o, err := server.Search(ctx, mcp.SearchAndExplainInput{
+		o, err := server.Search(ctx, mcp.SearchAndQueryInput{
 			Include: cli.Args[1],
 			Snippet: cli.Args[2],
+			QueryID: CLI.Search.QueryID,
 		})
 
 		if err != nil {
-			log.Fatalf("failed to explain: %v", err)
+			log.Fatalf("failed to run query: %v", err)
 		}
 
 		b, err := json.Marshal(o.Explanations)

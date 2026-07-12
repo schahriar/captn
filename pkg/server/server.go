@@ -23,7 +23,7 @@ type Server struct {
 // Acts as a repeater of CLI commands since Claude spends less tokens / time on deciding on a CLI call vs MCP tool call
 func NewServer() *Server {
 	mux := http.NewServeMux()
-	registerTask(mux, mcp.NewSearchAndExplainTool())
+	registerTask(mux, mcp.NewSearchAndQueryTool())
 
 	// banstructlit:ignore
 	return &Server{srv: &http.Server{Handler: mux}}

@@ -12,8 +12,8 @@ import (
 	"github.com/schahriar/captn/pkg/mcp"
 )
 
-func Search(ctx context.Context, input mcp.SearchAndExplainInput) (mcp.SearchAndExplainOutput, error) {
-	return call[mcp.SearchAndExplainInput, mcp.SearchAndExplainOutput](ctx, mcp.NewSearchAndExplainTool().Name(), input)
+func Search(ctx context.Context, input mcp.SearchAndQueryInput) (mcp.SearchAndQueryOutput, error) {
+	return call[mcp.SearchAndQueryInput, mcp.SearchAndQueryOutput](ctx, mcp.NewSearchAndQueryTool().Name(), input)
 }
 
 func call[In any, Out any](ctx context.Context, task string, input In) (Out, error) {

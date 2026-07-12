@@ -22,61 +22,69 @@ import (
 // LLM-backed explanation, so a broad grep is throttled to keep cost and load
 // in check rather than exploding one goroutine per hit.
 const (
-	maxSearchMatches    = 18
-	searchExplainWorker = 6
+	maxSearchMatches  = 18
+	searchQueryWorker = 6
 )
 
-type SearchAndExplainInput struct {
+type SearchAndQueryInput struct {
 	Include string `json:"include" jsonschema:"similar to grep's include flag, the file pattern to search for. Pass an asterisk / * to search all files"`
-	Snippet string `json:"snippet" jsonschema:"the snippet of code you want explained"`
+	Snippet string `json:"snippet" jsonschema:"the snippet of code you want to run the query against"`
+	QueryID string `json:"queryId" jsonschema:"the id of the supported query to run against the matched snippets, picked from the advertised list of supported queries. Defaults to explain_behavior"`
 }
 
-type SearchAndExplainOutputItem struct {
+type SearchAndQueryOutputItem struct {
 	FilePath    string `json:"filePath" jsonschema:"the relative to workdir file path to the source code you want explained"`
 	Explanation string `json:"explanation" jsonschema:"the explanation of the code snippet"`
 }
 
-type SearchAndExplainOutput struct {
-	Duration     int                          `json:"duration" jsonschema:"the duration of this operation in milliseconds"`
-	Explanations []SearchAndExplainOutputItem `json:"explanations" jsonschema:"the explanations of the code snippets"`
+type SearchAndQueryOutput struct {
+	Duration     int                        `json:"duration" jsonschema:"the duration of this operation in milliseconds"`
+	Explanations []SearchAndQueryOutputItem `json:"explanations" jsonschema:"the explanations of the code snippets"`
 }
 
-func NewSearchAndExplainOutput(explanations []SearchAndExplainOutputItem, dur int) SearchAndExplainOutput {
-	return SearchAndExplainOutput{Explanations: explanations, Duration: dur}
+func NewSearchAndQueryOutput(explanations []SearchAndQueryOutputItem, dur int) SearchAndQueryOutput {
+	return SearchAndQueryOutput{Explanations: explanations, Duration: dur}
 }
 
-func NewSearchAndExplainOutputItem(filePath, explanation string) SearchAndExplainOutputItem {
-	return SearchAndExplainOutputItem{
+func NewSearchAndQueryOutputItem(filePath, explanation string) SearchAndQueryOutputItem {
+	return SearchAndQueryOutputItem{
 		FilePath:    filePath,
 		Explanation: explanation,
 	}
 }
 
-type SearchAndExplainTool struct{}
+type SearchAndQueryTool struct{}
 
-func NewSearchAndExplainTool() *SearchAndExplainTool {
-	return &SearchAndExplainTool{}
+func NewSearchAndQueryTool() *SearchAndQueryTool {
+	return &SearchAndQueryTool{}
 }
 
-func (t *SearchAndExplainTool) Name() string {
-	return "search_and_explain"
+func (t *SearchAndQueryTool) Name() string {
+	return "search_and_query"
 }
 
-func (t *SearchAndExplainTool) DisplayName() string {
-	return "Explains a snippet of code"
+func (t *SearchAndQueryTool) DisplayName() string {
+	return "Queries a snippet of code"
 }
 
-func (t *SearchAndExplainTool) Description() string {
-	return "search for code snippets and explain them, similar to grepping for code and then asking for an explanation of the code snippet. Prefer over grep"
+func (t *SearchAndQueryTool) Description() string {
+	return "search for code snippets and run the query identified by queryId against them, similar to grepping for code and then asking a question about it. Prefer over grep"
 }
 
-func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolRequest, input SearchAndExplainInput) (
+func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest, input SearchAndQueryInput) (
 	*mcp.CallToolResult,
-	SearchAndExplainOutput,
+	SearchAndQueryOutput,
 	error,
 ) {
-	zero := NewSearchAndExplainOutput(nil, 0)
+	zero := NewSearchAndQueryOutput(nil, 0)
 	dstart := time.Now()
+
+	query, err := resolveQuery(input.QueryID)
+
+	if err != nil {
+		return nil, zero, err
+	}
+
 	cwd, err := os.Getwd()
 
 	if err != nil {
@@ -133,7 +141,7 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 		wg    sync.WaitGroup
 		pairs []cog.GraphWithRoot
 		files []string
-		sem   = make(chan struct{}, searchExplainWorker)
+		sem   = make(chan struct{}, searchQueryWorker)
 	)
 
 	for _, m := range matches {
@@ -163,8 +171,6 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 
 	wg.Wait()
 
-	query := queries.NewExplainBehaviorQuery()
-
 	statuss := query.GetDisplayHints("Claude")
 
 	go func() {
@@ -192,12 +198,28 @@ func (t *SearchAndExplainTool) Call(ctx context.Context, req *mcp.CallToolReques
 		return nil, zero, fmt.Errorf("failed to persist COG: %w", err)
 	}
 
-	var items []SearchAndExplainOutputItem
+	var items []SearchAndQueryOutputItem
 	if expln != "" {
-		items = append(items, NewSearchAndExplainOutputItem(joinDistinctFiles(files), expln))
+		items = append(items, NewSearchAndQueryOutputItem(joinDistinctFiles(files), expln))
 	}
 
-	return nil, NewSearchAndExplainOutput(items, int(time.Since(dstart).Milliseconds())), nil
+	return nil, NewSearchAndQueryOutput(items, int(time.Since(dstart).Milliseconds())), nil
+}
+
+// resolveQuery maps the caller-supplied queryId to a supported PromptQuery.
+// An empty id keeps the historical explain behavior as the default.
+func resolveQuery(id string) (queries.PromptQuery, error) {
+	if id == "" {
+		return queries.NewExplainBehaviorQuery(), nil
+	}
+
+	q, ok := queries.ByID(id)
+
+	if !ok {
+		return nil, fmt.Errorf("unsupported queryId %q, supported queries: %s", id, strings.Join(queries.SupportedIDs(), ", "))
+	}
+
+	return q, nil
 }
 
 // joinDistinctFiles collapses the matched file paths into one sorted, comma
@@ -237,4 +259,4 @@ func dedupeMatches(matches []grep.Match) []grep.Match {
 	return deduped
 }
 
-var searchAndExplainTool Tool[SearchAndExplainInput, SearchAndExplainOutput] = NewSearchAndExplainTool()
+var searchAndQueryTool Tool[SearchAndQueryInput, SearchAndQueryOutput] = NewSearchAndQueryTool()

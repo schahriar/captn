@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/dominikbraun/graph"
 	"github.com/schahriar/captn/pkg/cog"
@@ -12,6 +13,23 @@ import (
 	"github.com/schahriar/captn/pkg/knownerr"
 	"github.com/schahriar/captn/pkg/queries"
 )
+
+// QueryRoutingSystemPrompt advertises the supported PromptQueries to Claude
+// Code so it can return the queryId of interest, which is then run by the
+// search_and_query tool.
+func QueryRoutingSystemPrompt(qs []queries.PromptQuery) string {
+	var sb strings.Builder
+
+	sb.WriteString("captn supports the following queries, listed as queryId: description\n")
+
+	for _, q := range qs {
+		fmt.Fprintf(&sb, "- %s: %s\n", q.GetID(), q.GetRoutingDescription())
+	}
+
+	sb.WriteString("Pick the queryId whose description best matches what you want to learn and return it as the queryId argument so it can be run by search_and_query.")
+
+	return sb.String()
+}
 
 type ClaudeCodeProvider struct{}
 
