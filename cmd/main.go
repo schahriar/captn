@@ -56,6 +56,11 @@ Instead of calling Read tool, use the "captn" binary.
 Replace all calls to grep and reads with "captn search <path> <snippet> <queryId>"
 Where path can be a glob pattern like *.go or a specific file path, and snippet is the code snippet of interest.
 %s
+captn responses include fileRanges for the code it observed, serialized as "<filePath>:<startLine>:<startColumn>-<endLine>:<endColumn>"
+where filePath is relative to the working directory and lines and columns are 1-based, e.g. "pkg/mcp/tool.go:16:1-21:2"
+means lines 16 through 21 of pkg/mcp/tool.go. filePath may itself contain ':' or '-', so parse positions from the right.
+You may use a fileRange to Read an exact region or to scope further commands when you need the raw source (e.g. to make an edit),
+but prefer running captn again with another queryId over reading the files yourself.
 YOU SHOULD NEVER USE grep directly anymore, just use captn
 		`, providers.QueryRoutingSystemPrompt(queries.Supported()))}
 		args = append(args, claudeArgs...)

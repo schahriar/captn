@@ -12,6 +12,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/schahriar/captn/pkg/cog"
+	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/grep"
 	"github.com/schahriar/captn/pkg/providers"
 	"github.com/schahriar/captn/pkg/queries"
@@ -33,8 +34,9 @@ type SearchAndQueryInput struct {
 }
 
 type SearchAndQueryOutputItem struct {
-	FilePath    string `json:"filePath" jsonschema:"the relative to workdir file path to the source code you want explained"`
-	Explanation string `json:"explanation" jsonschema:"the explanation of the code snippet"`
+	FilePath    string   `json:"filePath" jsonschema:"the relative to workdir file path to the source code you want explained"`
+	Explanation string   `json:"explanation" jsonschema:"the explanation of the code snippet"`
+	FileRanges  []string `json:"fileRanges" jsonschema:"the file ranges of every node observed to produce this explanation, serialized as filePath:startLine:startColumn-endLine:endColumn with a workdir-relative path and 1-based lines and columns"`
 }
 
 type SearchAndQueryOutput struct {
@@ -46,10 +48,11 @@ func NewSearchAndQueryOutput(explanations []SearchAndQueryOutputItem, dur int) S
 	return SearchAndQueryOutput{Explanations: explanations, Duration: dur}
 }
 
-func NewSearchAndQueryOutputItem(filePath, explanation string) SearchAndQueryOutputItem {
+func NewSearchAndQueryOutputItem(filePath, explanation string, fileRanges []string) SearchAndQueryOutputItem {
 	return SearchAndQueryOutputItem{
 		FilePath:    filePath,
 		Explanation: explanation,
+		FileRanges:  fileRanges,
 	}
 }
 
@@ -200,7 +203,7 @@ func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest,
 
 	var items []SearchAndQueryOutputItem
 	if expln != "" {
-		items = append(items, NewSearchAndQueryOutputItem(joinDistinctFiles(files), expln))
+		items = append(items, NewSearchAndQueryOutputItem(joinDistinctFiles(files), expln, collectFileRanges(cwd, pairs)))
 	}
 
 	return nil, NewSearchAndQueryOutput(items, int(time.Since(dstart).Milliseconds())), nil
@@ -220,6 +223,88 @@ func resolveQuery(id string) (queries.PromptQuery, error) {
 	}
 
 	return q, nil
+}
+
+// serializeFileRange renders a range in the format shared with
+// common.FileRange.String and UnmarshalFileRange, but with a workdir-relative
+// path so the caller can act on it directly.
+func serializeFileRange(path string, r *common.FileRange) string {
+	return fmt.Sprintf("%s:%s-%s", path, r.Start.String(), r.End.String())
+}
+
+// collectFileRanges gathers the current ranges of every node observed across
+// the matched graphs. Ranges are resolved from the live parse rather than the
+// observation cache so positions always reflect the file on disk.
+func collectFileRanges(cwd string, pairs []cog.GraphWithRoot) []string {
+	type entry struct {
+		path string
+		r    *common.FileRange
+	}
+
+	entries := []entry{}
+
+	for _, pair := range pairs {
+		if pair.Graph == nil {
+			continue
+		}
+
+		adj, err := pair.Graph.Graph.AdjacencyMap()
+
+		if err != nil {
+			continue
+		}
+
+		for h := range adj {
+			node, err := pair.Graph.Graph.Vertex(h)
+
+			if err != nil {
+				continue
+			}
+
+			r := node.GetFileRange()
+
+			if r == nil {
+				continue
+			}
+
+			path := node.GetFilePath()
+
+			if filepath.IsAbs(path) {
+				if rel, err := filepath.Rel(cwd, path); err == nil {
+					path = rel
+				}
+			}
+
+			// banstructlit:ignore
+			entries = append(entries, entry{path: path, r: r})
+		}
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].path != entries[j].path {
+			return entries[i].path < entries[j].path
+		}
+		if entries[i].r.Start.BytePosition != entries[j].r.Start.BytePosition {
+			return entries[i].r.Start.BytePosition < entries[j].r.Start.BytePosition
+		}
+		return entries[i].r.End.BytePosition < entries[j].r.End.BytePosition
+	})
+
+	seen := map[string]bool{}
+	ranges := make([]string, 0, len(entries))
+
+	for _, e := range entries {
+		s := serializeFileRange(e.path, e.r)
+
+		if seen[s] {
+			continue
+		}
+
+		seen[s] = true
+		ranges = append(ranges, s)
+	}
+
+	return ranges
 }
 
 // joinDistinctFiles collapses the matched file paths into one sorted, comma

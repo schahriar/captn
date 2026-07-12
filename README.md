@@ -1,8 +1,6 @@
 # captn
 
 ## TODO:
-- [ ] Add and advertise multiple queries to backend (Claude)
-  - [ ] Ideally at system prompt level
 - [ ] Benchmark using predefined set of changes in popular git repos
 - [ ] Add subgraph exporter to debug behavior
 - [ ] A new cog per directory
