@@ -22,8 +22,8 @@ import (
 // LLM-backed explanation, so a broad grep is throttled to keep cost and load
 // in check rather than exploding one goroutine per hit.
 const (
-	maxSearchMatches    = 32
-	searchExplainWorker = 8
+	maxSearchMatches    = 18
+	searchExplainWorker = 6
 )
 
 type SearchAndExplainInput struct {

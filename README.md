@@ -1,13 +1,10 @@
 # captn
 
 ## TODO:
-- [ ] Have graph exploration without resolution
-  - [ ] Provides a semantic tree to frontend to query
-  - [ ] Allow for Claude to call different questions
-- [ ] Add subgraph exporter to debug behavior
 - [ ] Add and advertise multiple queries to backend (Claude)
   - [ ] Ideally at system prompt level
 - [ ] Benchmark using predefined set of changes in popular git repos
+- [ ] Add subgraph exporter to debug behavior
 - [ ] A new cog per directory
 - [ ] Add support for python, typescript, Java, TSX, Swift, Rust, C, C++, Ruby, PHP, CSS, Shell, HTML
 - [ ] Add tests for freshness checks
