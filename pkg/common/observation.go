@@ -48,8 +48,13 @@ func NewBatchObservationSchema(observations []ObservationSchema, connectionObser
 	}
 }
 
+// The claude CLI's --json-schema validator rejects a $schema header and the
+// API rejects a root-level $ref, so the schema must be inlined and header-free.
 func (o *BatchObservationSchema) GetSchema() *jsonschema.Schema {
-	return jsonschema.Reflect(o)
+	r := &jsonschema.Reflector{DoNotReference: true, ExpandedStruct: true, Anonymous: true}
+	scma := r.Reflect(o)
+	scma.Version = ""
+	return scma
 }
 
 func (o *BatchObservationSchema) Marshal() ([]byte, error) {

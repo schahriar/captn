@@ -1,8 +1,9 @@
 # captn
 
 ## TODO:
-- [ ] Benchmark using predefined set of changes in popular git repos
 - [ ] Add subgraph exporter to debug behavior
+- [ ] Add tool to collect automated chat sessions for experimentation
+- [ ] Benchmark using predefined set of changes in popular git repos
 - [ ] A new cog per directory
 - [ ] Add support for python, typescript, Java, TSX, Swift, Rust, C, C++, Ruby, PHP, CSS, Shell, HTML
 - [ ] Add tests for freshness checks

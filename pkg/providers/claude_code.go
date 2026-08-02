@@ -1,9 +1,11 @@
 package providers
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -29,6 +31,33 @@ func QueryRoutingSystemPrompt(qs []queries.PromptQuery) string {
 	sb.WriteString("Pick the queryId whose description best matches what you want to learn and return it as the queryId argument so it can be run by search_and_query.")
 
 	return sb.String()
+}
+
+// UseAPIKey lets ANTHROPIC_API_KEY reach the claude subprocesses captn spawns.
+// It is off by default so claude uses its own credentials, and is turned on by
+// the --use-api-key flag.
+var UseAPIKey bool
+
+// ClaudeEnv is the environment for a claude subprocess. It drops
+// ANTHROPIC_API_KEY unless UseAPIKey is set, in which case it returns nil to
+// inherit the current environment unchanged.
+func ClaudeEnv() []string {
+	if UseAPIKey {
+		return nil
+	}
+
+	env := os.Environ()
+	out := make([]string, 0, len(env))
+
+	for _, kv := range env {
+		if strings.HasPrefix(kv, "ANTHROPIC_API_KEY=") {
+			continue
+		}
+
+		out = append(out, kv)
+	}
+
+	return out
 }
 
 type ClaudeCodeProvider struct{}
@@ -153,10 +182,15 @@ func QueryClaudeCode[T common.ObservationSchemaType](ctx context.Context, system
 		"--json-schema", string(sscma),
 	)
 
-	out, err := cmd.CombinedOutput()
+	cmd.Env = ClaudeEnv()
+
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	out, err := cmd.Output()
 
 	if err != nil {
-		return scma, fmt.Errorf("failed to run claude code with error %w", err)
+		return scma, fmt.Errorf("failed to run claude code with error %w: %s", err, strings.TrimSpace(stderr.String()))
 	}
 
 	res := NewClaudeResult()

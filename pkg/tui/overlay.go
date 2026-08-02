@@ -25,11 +25,12 @@ type Overlay struct {
 	ptmx *os.File
 	out  *os.File
 
-	mu      sync.Mutex
-	height  int
-	visible bool
-	swRow   int
-	cols    int
+	mu          sync.Mutex
+	height      int
+	visible     bool
+	swRow       int
+	cols        int
+	childBottom int
 
 	status []Section
 	sub    []Section
@@ -111,10 +112,14 @@ func (o *Overlay) Show() {
 	o.mu.Lock()
 	changed := !o.visible
 	o.visible = true
-	height := o.height
+	prog := o.prog
 	o.mu.Unlock()
-	if changed {
-		o.applyLayout(height)
+	if !changed {
+		return
+	}
+	o.drawDivider()
+	if prog != nil {
+		prog.Send(visibleMsg(true))
 	}
 }
 
@@ -123,9 +128,14 @@ func (o *Overlay) Hide() {
 	changed := o.visible
 	o.visible = false
 	height := o.height
+	prog := o.prog
 	o.mu.Unlock()
-	if changed {
-		o.applyLayout(height)
+	if !changed {
+		return
+	}
+	o.clearBottomRows(height)
+	if prog != nil {
+		prog.Send(visibleMsg(false))
 	}
 }
 
@@ -161,20 +171,28 @@ func (o *Overlay) clearBottomRows(height int) {
 	}
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	_, _ = fmt.Fprintf(o.out, ansiMoveRowFmt+ansiEraseBelow, top)
+	_, _ = fmt.Fprintf(o.out, ansiSaveCursor+ansiMoveRowFmt+ansiEraseBelow+ansiRestoreCursor, top)
 }
 
+func (o *Overlay) drawDivider() {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	if o.height < 2 || o.swRow < 2 || o.cols < 1 {
+		return
+	}
+	_, _ = fmt.Fprintf(o.out, ansiSaveCursor+ansiMoveRowFmt+"%s"+ansiRestoreCursor, o.swRow-1, strings.Repeat("─", o.cols))
+}
+
+// The bottom rows stay reserved while the overlay is hidden so that toggling
+// visibility never resizes the child pty, which would trigger a full repaint.
 func (o *Overlay) reservedRows() int {
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	if !o.visible {
-		return 0
-	}
 	return o.height
 }
 
 func (o *Overlay) start() {
-	o.clearScreen()
+	o.writeOut(ansiEnterAltScreen + ansiClearScreen)
 	o.setScrollRegion()
 	o.startProgram()
 }
@@ -190,6 +208,7 @@ func (o *Overlay) stop() {
 		<-done
 	}
 	o.resetScrollRegion()
+	o.writeOut(ansiShowCursor + ansiExitAltScreen)
 }
 
 func (o *Overlay) resizePty() {
@@ -204,16 +223,16 @@ func (o *Overlay) resizePty() {
 		h = 1
 	}
 
-	_ = pty.Setsize(o.ptmx, &pty.Winsize{Rows: uint16(h), Cols: uint16(cols), Y: uint16(reserved)})
+	_ = pty.Setsize(o.ptmx, &pty.Winsize{Rows: uint16(h), Cols: uint16(cols)})
 	if o.cmd.Process != nil {
 		_ = o.cmd.Process.Signal(syscall.SIGWINCH)
 	}
 }
 
-func (o *Overlay) clearScreen() {
+func (o *Overlay) writeOut(s string) {
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	_, _ = io.WriteString(o.out, ansiClearScreen)
+	_, _ = io.WriteString(o.out, s)
 }
 
 func (o *Overlay) setScrollRegion() {
@@ -222,7 +241,11 @@ func (o *Overlay) setScrollRegion() {
 		return
 	}
 
-	reserved := o.reservedRows()
+	o.mu.Lock()
+	reserved := o.height
+	visible := o.visible
+	o.mu.Unlock()
+
 	bottom := rows - reserved // last row the child may use
 	if bottom < 1 {
 		bottom = 1
@@ -232,7 +255,9 @@ func (o *Overlay) setScrollRegion() {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, ansiScrollRegionFmt, bottom) // confine the child to the top rows
 	if reserved >= 2 {
-		fmt.Fprintf(&b, ansiMoveRowFmt+"%s", swRow, strings.Repeat("─", cols))
+		if visible {
+			fmt.Fprintf(&b, ansiMoveRowFmt+"%s", swRow, strings.Repeat("─", cols))
+		}
 		swRow++
 	}
 	fmt.Fprintf(&b, ansiMoveRowFmt, bottom) // park the cursor back in the child's region
@@ -240,6 +265,7 @@ func (o *Overlay) setScrollRegion() {
 	o.mu.Lock()
 	o.swRow = swRow
 	o.cols = cols
+	o.childBottom = bottom
 	prog := o.prog
 	_, _ = o.out.Write(b.Bytes())
 	o.mu.Unlock()
@@ -264,7 +290,7 @@ func (o *Overlay) startProgram() {
 
 	o.mu.Lock()
 	// banstructlit:ignore
-	m := barModel{status: o.status, sub: o.sub, width: o.cols}
+	m := barModel{status: o.status, sub: o.sub, width: o.cols, visible: o.visible, ticking: o.visible}
 	o.mu.Unlock()
 
 	p := tea.NewProgram(
@@ -290,7 +316,7 @@ func (o *Overlay) startProgram() {
 
 func (o *Overlay) writer() io.Writer {
 	// banstructlit:ignore
-	return &lockedWriter{mu: &o.mu, out: o.out}
+	return &childWriter{o: o}
 }
 
 type statusMsg []Section
@@ -299,13 +325,17 @@ type subStatusMsg []Section
 
 type widthMsg int
 
+type visibleMsg bool
+
 type shimmerTickMsg struct{}
 
 type barModel struct {
-	status []Section
-	sub    []Section
-	phase  float64
-	width  int
+	status  []Section
+	sub     []Section
+	phase   float64
+	width   int
+	visible bool
+	ticking bool
 }
 
 func shimmerTick() tea.Cmd {
@@ -315,7 +345,12 @@ func shimmerTick() tea.Cmd {
 	})
 }
 
-func (m barModel) Init() tea.Cmd { return shimmerTick() }
+func (m barModel) Init() tea.Cmd {
+	if m.ticking {
+		return shimmerTick()
+	}
+	return nil
+}
 
 func (m barModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -328,7 +363,18 @@ func (m barModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case widthMsg:
 		m.width = int(msg)
 		return m, nil
+	case visibleMsg:
+		m.visible = bool(msg)
+		if m.visible && !m.ticking {
+			m.ticking = true
+			return m, shimmerTick()
+		}
+		return m, nil
 	case shimmerTickMsg:
+		if !m.visible {
+			m.ticking = false
+			return m, nil
+		}
 		m.phase = advanceShimmer(m.phase)
 		return m, shimmerTick()
 	}
@@ -336,7 +382,13 @@ func (m barModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+// View renders empty while hidden so the renderer's frame cache is
+// invalidated across Hide/Show and the first visible frame always flushes.
 func (m barModel) View() string {
+	if !m.visible {
+		return ""
+	}
+
 	status := renderSections(m.status)
 	sub := renderSections(m.sub)
 	if status == "" && sub == "" {
@@ -375,15 +427,29 @@ func lineWidth(s string) int {
 	return w
 }
 
-type lockedWriter struct {
-	mu  *sync.Mutex
-	out io.Writer
+type childWriter struct {
+	o    *Overlay
+	pend []byte
 }
 
-func (w *lockedWriter) Write(p []byte) (int, error) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	return w.out.Write(p)
+func (w *childWriter) Write(p []byte) (int, error) {
+	data := p
+	if len(w.pend) > 0 {
+		data = append(w.pend, p...)
+		w.pend = nil
+	}
+
+	w.o.mu.Lock()
+	defer w.o.mu.Unlock()
+
+	out, pend := ClampScrollRegions(data, w.o.childBottom)
+	w.pend = pend
+	if len(out) == 0 {
+		return len(p), nil
+	}
+
+	_, err := w.o.out.Write(out)
+	return len(p), err
 }
 
 type regionWriter struct {

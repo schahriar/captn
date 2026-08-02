@@ -148,6 +148,8 @@ func writeShimmered(b *strings.Builder, part shimmerPart, total int, center floa
 	s := part.text
 	idx := 0
 	var state byte
+	var last RGB
+	hasLast := false
 	for len(s) > 0 {
 		seq, width, adv, newState := ansi.DecodeSequence(s, state, nil)
 		if adv == 0 {
@@ -161,8 +163,15 @@ func writeShimmered(b *strings.Builder, part shimmerPart, total int, center floa
 			d := (p - center) / shimmerBand
 			intensity := math.Exp(-d * d)
 			c := lerpRGB(part.base, part.peak, intensity)
-			fmt.Fprintf(b, ansiFgTrueColorFmt, c.r, c.g, c.b)
+			if !hasLast || c != last {
+				fmt.Fprintf(b, ansiFgTrueColorFmt, c.r, c.g, c.b)
+				last = c
+				hasLast = true
+			}
 			idx++
+		} else if strings.HasPrefix(seq, "\x1b[") && strings.HasSuffix(seq, "m") {
+			// An embedded SGR sequence may reset the foreground; re-emit after it.
+			hasLast = false
 		}
 		b.WriteString(seq)
 		state = newState

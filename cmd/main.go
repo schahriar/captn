@@ -18,6 +18,8 @@ import (
 )
 
 var CLI struct {
+	UseAPIKey bool `name:"use-api-key" help:"Pass ANTHROPIC_API_KEY through to claude instead of stripping it"`
+
 	Search struct {
 		Main    string `arg:"" name:"path" help:"Path to main file" type:"path"`
 		Snippet string `arg:"snippet" name:"snippet" help:"Snippet to focus on in the main file" type:"string"`
@@ -43,6 +45,8 @@ func main() {
 	cli, err := parser.Parse(captnArgs)
 	parser.FatalIfErrorf(err)
 
+	providers.UseAPIKey = CLI.UseAPIKey
+
 	switch cli.Command() {
 	case "claude":
 		srv := server.NewServer()
@@ -66,6 +70,7 @@ YOU SHOULD NEVER USE grep directly anymore, just use captn
 		args = append(args, claudeArgs...)
 
 		cmd := exec.Command("claude", args...)
+		cmd.Env = providers.ClaudeEnv()
 
 		overlay, err := tui.NewOverlay(cmd)
 		if err != nil {
