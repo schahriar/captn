@@ -32,6 +32,10 @@ build: mod vet
 	@$(GO_ENV) go build -mod=mod -v -o bin/$(BINARY) cmd/main.go
 	make sign
 
+# Keep -count=1 static as snapshot tests shouldn't be cached
+test:
+	@$(GO_ENV) go test -count=1 -v -failfast ./pkg/tests
+
 accept_snapshots:
 	UPDATE_SNAPS=true $(MAKE) test
 
