@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
@@ -257,16 +256,21 @@ func (glsd *GolangLanguageSupportDefinition) ClassifyImportType(s *common.Source
 	return common.LocalDependency
 }
 
+func (glsd *GolangLanguageSupportDefinition) GetLSPServerRequirement() lsp.ServerRequirement {
+	// banstructlit:ignore
+	return lsp.ServerRequirement{
+		Name:           goplsName,
+		InstallCommand: goplsInstallCommand,
+		Locate:         goplsPath,
+	}
+}
+
 func (glsd *GolangLanguageSupportDefinition) NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error) {
-	gpcmd := exec.Command("go", "env", "GOPATH")
-	gopathraw, err := gpcmd.Output()
+	execPath, err := goplsPath(ctx)
 
 	if err != nil {
 		return nil, err
 	}
-
-	gopath := strings.TrimSpace(string(gopathraw))
-	execPath := filepath.Join(string(gopath), "./bin/gopls")
 
 	cmd := exec.CommandContext(ctx, execPath)
 	cmd.Stderr = os.Stderr

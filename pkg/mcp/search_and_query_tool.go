@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"github.com/schahriar/captn/pkg/cog"
 	"github.com/schahriar/captn/pkg/common"
 	"github.com/schahriar/captn/pkg/grep"
+	"github.com/schahriar/captn/pkg/lsp"
 	"github.com/schahriar/captn/pkg/providers"
 	"github.com/schahriar/captn/pkg/queries"
 	"github.com/schahriar/captn/pkg/tui"
@@ -140,11 +142,12 @@ func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest,
 	// successful explanations. A match that can't be resolved is skipped rather
 	// than failing the whole search.
 	var (
-		mu    sync.Mutex
-		wg    sync.WaitGroup
-		pairs []cog.GraphWithRoot
-		files []string
-		sem   = make(chan struct{}, searchQueryWorker)
+		mu      sync.Mutex
+		wg      sync.WaitGroup
+		pairs   []cog.GraphWithRoot
+		files   []string
+		missing error
+		sem     = make(chan struct{}, searchQueryWorker)
 	)
 
 	for _, m := range matches {
@@ -161,6 +164,15 @@ func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest,
 
 			og, start, err := g.SearchSnippet(ctx, rel, snippet)
 			if err != nil {
+				// A missing language server is not specific to this match, it
+				// fails every one of them, so it is kept to answer with instead
+				// of reporting an empty search the caller cannot act on.
+				if errors.Is(err, lsp.ErrServerMissing) {
+					mu.Lock()
+					missing = err
+					mu.Unlock()
+				}
+
 				return
 			}
 
@@ -173,6 +185,11 @@ func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest,
 	}
 
 	wg.Wait()
+
+	if missing != nil {
+		cancelTui()
+		return nil, zero, missing
+	}
 
 	statuss := query.GetDisplayHints("Claude")
 
@@ -201,7 +218,7 @@ func (t *SearchAndQueryTool) Call(ctx context.Context, req *mcp.CallToolRequest,
 		return nil, zero, fmt.Errorf("failed to persist COG: %w", err)
 	}
 
-	var items []SearchAndQueryOutputItem
+	items := []SearchAndQueryOutputItem{}
 	if expln != "" {
 		items = append(items, NewSearchAndQueryOutputItem(joinDistinctFiles(files), expln, collectFileRanges(cwd, pairs)))
 	}

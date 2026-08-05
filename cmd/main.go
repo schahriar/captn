@@ -4,17 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"os/exec"
-	"time"
 
 	"github.com/alecthomas/kong"
+	"github.com/schahriar/captn/pkg/initialize"
 	"github.com/schahriar/captn/pkg/mcp"
 	"github.com/schahriar/captn/pkg/providers"
-	"github.com/schahriar/captn/pkg/queries"
 	"github.com/schahriar/captn/pkg/server"
-	"github.com/schahriar/captn/pkg/tui"
+	"github.com/spf13/pflag"
 )
 
 var CLI struct {
@@ -32,6 +31,8 @@ var CLI struct {
 func splitPassthroughArgs(args []string) ([]string, []string) {
 	for i, arg := range args {
 		if arg == "--" {
+			// argv is already tokenized by the shell, so the tail passes through
+			// untouched; re-joining and re-splitting would break args containing spaces
 			return args[:i], args[i+1:]
 		}
 	}
@@ -49,67 +50,27 @@ func main() {
 
 	switch cli.Command() {
 	case "claude":
-		srv := server.NewServer()
-		if err := srv.Listen(); err != nil {
-			log.Fatalf("failed to start captn server: %v", err)
-		}
-		defer srv.Close()
+		flags := pflag.NewFlagSet("claude", pflag.ContinueOnError)
+		flags.ParseErrorsAllowlist.UnknownFlags = true
+		flags.SetOutput(io.Discard)
 
-		args := []string{"--append-system-prompt", fmt.Sprintf(`
-Instead of calling Read tool, use the "captn" binary.
-Replace all calls to grep and reads with "captn search <path> <snippet> <queryId>"
-Where path can be a glob pattern like *.go or a specific file path, and snippet is the code snippet of interest.
-%s
-captn responses include fileRanges for the code it observed, serialized as "<filePath>:<startLine>:<startColumn>-<endLine>:<endColumn>"
-where filePath is relative to the working directory and lines and columns are 1-based, e.g. "pkg/mcp/tool.go:16:1-21:2"
-means lines 16 through 21 of pkg/mcp/tool.go. filePath may itself contain ':' or '-', so parse positions from the right.
-You may use a fileRange to Read an exact region or to scope further commands when you need the raw source (e.g. to make an edit),
-but prefer running captn again with another queryId over reading the files yourself.
-YOU SHOULD NEVER USE grep directly anymore, just use captn
-		`, providers.QueryRoutingSystemPrompt(queries.Supported()))}
-		args = append(args, claudeArgs...)
+		print := flags.BoolP("print", "p", false, "")
+		outputFormat := flags.String("output-format", "", "")
 
-		cmd := exec.Command("claude", args...)
-		cmd.Env = providers.ClaudeEnv()
-
-		overlay, err := tui.NewOverlay(cmd)
-		if err != nil {
-			panic(err)
+		if err := flags.Parse(claudeArgs); err != nil {
+			log.Fatalf("failed to parse claude args: %v", err)
 		}
 
-		ctx := tui.WithStatusProvider(context.Background(), overlay)
-		srv.Serve(ctx)
-
-		go func() {
-			time.Sleep(1000 * time.Millisecond)
-			loader := tui.NewLoader()
-			overlay.SetStatus(
-				tui.Decorate(
-					tui.Group(
-						tui.Text(" captn "),
-						loader,
-					),
-					tui.ShimmerColor(tui.NewRGB(70, 130, 220), tui.NewRGB(180, 220, 255)),
-				),
-			)
-
-			overlay.SetSubStatus(
-				tui.Group(
-					tui.Text(tui.Dim("Ask anything and claude will coordinate with captn")),
-				),
-			)
-
-			time.Sleep(5 * time.Second)
-
-			overlay.SetSubStatus(tui.Group()) // Reset substatus after 5 seconds
-			overlay.Hide()
-		}()
-
-		if err := overlay.Run(); err != nil {
-			if exitErr, ok := err.(*exec.ExitError); ok {
-				os.Exit(exitErr.ExitCode())
+		// Dedicated --print mode, no TUI just answer
+		if *print || len(*outputFormat) > 0 {
+			if err := initialize.Init(claudeArgs); err != nil {
+				log.Fatalf("failed to initialize: %v", err)
 			}
-			panic(err)
+		} else {
+			// TUI
+			if err := initialize.InitWithTUI(context.Background(), claudeArgs); err != nil {
+				log.Fatalf("failed to initialize with TUI: %v", err)
+			}
 		}
 	case "search <path> <snippet>", "search <path> <snippet> <queryId>":
 		ctx := context.Background()

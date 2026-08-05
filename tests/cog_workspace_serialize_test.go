@@ -65,8 +65,51 @@ func TestWorkspaceMarshalUnmarshalRoundTrip(t *testing.T) {
 	assert.Empty(t, o2.Metadata.Anchors)
 
 	o3 := decoded.ObservationCache[h3]
-	assert.Equal(t, "a multi-line answer\nwith a second line\n\nand a trailing newline\n", o3.Answer.Answer)
+	assert.Equal(t, "a multi-line answer - with a second line -  - and a trailing newline - ", o3.Answer.Answer)
 	assert.Len(t, o3.Metadata.Anchors, 1)
+}
+
+func TestWorkspaceMarshalFlattensMultiLineAnswers(t *testing.T) {
+	dir := t.TempDir()
+	wspace := cog.NewWorkspace(dir)
+
+	answers := map[string]string{
+		"lf":   "line one\nline two",
+		"crlf": "line one\r\nline two",
+		"cr":   "line one\rline two",
+	}
+	hashes := map[string]common.HashType{}
+
+	for name, answer := range answers {
+		h := common.PrimaryHash(name)
+		hashes[name] = h
+		wspace.SetObservation(h, cog.NewCOGObservation(
+			common.NewObservationSchema(name, answer),
+			[]*common.FileRange{newTestAnchor(dir, "cmd/main.go", 0, 0, 1, 1)},
+		))
+	}
+
+	b, err := wspace.Marshal()
+	assert.NoError(t, err)
+
+	// One record per observation, so every answer must occupy a single line
+	lines := strings.Split(strings.TrimSuffix(string(b), "\n"), "\n")
+	assert.Len(t, lines, len(answers))
+	assert.NotContains(t, string(b), "\r")
+
+	for _, line := range lines {
+		assert.True(t, strings.HasSuffix(line, "line one - line two"), line)
+	}
+
+	decoded := cog.NewWorkspace(dir)
+	assert.NoError(t, decoded.Unmarshal(b))
+	assert.Len(t, decoded.ObservationCache, len(answers))
+
+	for name, h := range hashes {
+		o := decoded.ObservationCache[h]
+		assert.Equal(t, "line one - line two", o.Answer.Answer, name)
+		assert.Len(t, o.Metadata.Anchors, 1, name)
+	}
 }
 
 func TestWorkspaceUnmarshalRejectsTruncatedAnswer(t *testing.T) {

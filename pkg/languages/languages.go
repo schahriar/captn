@@ -11,9 +11,9 @@ import (
 )
 
 type LanguageSupport interface {
-	// TODO: Add LSP installer
 	Parse(ctx context.Context, src *common.Source, tree *tree_sitter.Tree) (*ast.ASTModule, error)
 	NewLSPServer(ctx context.Context) (*lsp.ServerProcess, error)
+	GetLSPServerRequirement() lsp.ServerRequirement
 	GetLanguageID() string
 	ClassifyImportType(*common.Source) common.DependencyType
 	GetTreeSitterLanguage() *tree_sitter.Language

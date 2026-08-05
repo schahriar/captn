@@ -358,7 +358,7 @@ func (wspace *Workspace) marshalLocked() ([]byte, error) {
 
 	for _, h := range keys {
 		o := wspace.ObservationCache[h]
-		answer := o.Serialize()
+		answer := ReplaceNewlines([]byte(o.Serialize()), []byte(" - "))
 		meta, err := encodeMetadata(o.Metadata, len(answer))
 
 		if err != nil {
@@ -404,8 +404,8 @@ func (wspace *Workspace) Unmarshal(data []byte) error {
 }
 
 // unmarshalLocked reads observations sequentially rather than line by line;
-// answers are consumed by the length recorded in the metadata so they can
-// contain newlines.
+// answers are consumed by the length recorded in the metadata, which counts
+// the flattened answer written by marshalLocked.
 func (wspace *Workspace) unmarshalLocked(data []byte) error {
 	rest := string(data)
 
@@ -553,7 +553,7 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 	defs := map[ast.ASTNode]*common.FileRange{}
 
 	// TODO: We may need to breakdown refs by language for cross-language references
-	client, err := loadLSPServerForLanguage(f.Language, f.Source.Workspace)
+	client, err := loadLSPServerForLanguage(ctx, f.Language, f.Source.Workspace)
 
 	if err != nil {
 		return nil, nil, err

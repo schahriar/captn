@@ -17,7 +17,7 @@ import (
 var lspServerCache map[string]*lsp.Client = map[string]*lsp.Client{}
 var lspServerCacheMu sync.Mutex
 
-func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) (*lsp.Client, error) {
+func loadLSPServerForLanguage(ctx context.Context, lang languages.LanguageSupport, workspace string) (*lsp.Client, error) {
 	serkey := fmt.Sprintf("%v:%v", lang.GetLanguageID(), workspace)
 
 	// Held across lsp.Start so concurrent callers for the same language share a
@@ -29,6 +29,12 @@ func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) 
 		return server, nil
 	}
 
+	if err := RequireLSPServer(ctx, lang.GetLSPServerRequirement()); err != nil {
+		return nil, err
+	}
+
+	// The server is cached beyond the request that spawned it, so it is started
+	// on a background context while the install above still follows the caller.
 	client, err := lsp.Start(context.Background(), lsp.NewStartOptions(workspace, "captn-lsp-client", "0.1.0", lang.NewLSPServer))
 
 	if err != nil {
@@ -43,7 +49,7 @@ func loadLSPServerForLanguage(lang languages.LanguageSupport, workspace string) 
 func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
 	reg := trace.StartRegion(ctx, "ListDependencies:LSPServerLoad")
 
-	client, err := loadLSPServerForLanguage(pf.Language, pf.Source.Workspace)
+	client, err := loadLSPServerForLanguage(ctx, pf.Language, pf.Source.Workspace)
 
 	if err != nil {
 		return []common.ResolvedDependency{}, err
