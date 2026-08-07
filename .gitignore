@@ -45,12 +45,5 @@ node_modules
 dist
 *.gv
 
-# You do you, Claude is used but generally struggles in this repo as most of it's training
-# is biased to implement a programming language parser / pass / compiler best practices
-# rather than what we are trying to achieve with COG here, so as unfortunate as it is
-# it currently doesn't get much use in this repo until we dogfood COG in Claude and get
-# some consistency in patterns
-.claude
-
 .gocache
 out.txt
