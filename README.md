@@ -3,6 +3,7 @@
 ## TODO:
 - [x] Auto-install LSP servers
 - [x] Have `captn` work with `--prompt` in no TUI mode
+- [ ] Fix port already in use error
 - [ ] Fix `captn` system prompt not propagating to sub-agents
   - [ ] Use hooks + (system prompts and skill) to ensure Claude doesn't get shocked on the non-grep outputs
   - [ ] Explore modifying `agents` explorer config
