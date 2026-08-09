@@ -7,6 +7,8 @@ description: Add captn support for a new tree-sitter language, or review/change 
 
 Language support means mapping a tree-sitter grammar's node kinds onto captn's closed AST vocabulary, plus LSP wiring and import classification. The reference implementation is `pkg/languages/golang/` (~380 lines across two files) — read both files first; a new language should look like them.
 
+> Note that `pkg/languages/golang/` is the reference implementation written by a human, including the latest best practices and the overall design rationale to the entire system. While you should reference other implementations for consistency, the golang implementation is the one that is correct and should be followed.
+
 ## The AST vocabulary is closed — keep it that way
 
 Exactly nine node kinds exist: Module, Block, Import, FuncExpression, FuncArgument, Declaration, CallExpression, ReturnStatement, Symbol (the `ASTVisitor` interface in `pkg/ast/tree.go`). Map grammar constructs onto these; let everything else fall through to the default walk. Do not add a tenth kind, and do not add wrapper nodes to "preserve structure". Block is never emitted by a transformer — it exists only as the auto-created container you narrow inside FuncExpression; control-flow and block statements fall through.
