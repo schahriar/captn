@@ -12,6 +12,7 @@ import (
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/languages"
 	"github.com/schahriar/captn/pkg/queries"
 )
 
@@ -123,15 +124,21 @@ func observationGraphImportType(node COGNode, current string) string {
 		return "dependency"
 	}
 
-	path := filepath.ToSlash(filepath.Clean(node.GetFilePath()))
-	switch {
-	case strings.Contains(path, "/pkg/mod/golang.org/toolchain@") && strings.Contains(path, "/src/"):
-		return string(common.StandardLibraryDependency)
-	case strings.Contains(path, "/pkg/mod/"), strings.Contains(path, "/vendor/"):
-		return "dependency"
-	default:
-		return string(common.LocalDependency)
+	// Vertices added without an import_type attribute are classified by
+	// their language from the file path alone
+	path := node.GetFilePath()
+
+	if lang, ok := languages.ForExtension(filepath.Ext(path)); ok {
+		classified := lang.ClassifyImportType(common.NewSource("", path, nil))
+
+		if classified == common.PackageDependency {
+			return "dependency"
+		}
+
+		return string(classified)
 	}
+
+	return string(common.LocalDependency)
 }
 
 func formatDOTAttrs(attrs map[string]string) string {

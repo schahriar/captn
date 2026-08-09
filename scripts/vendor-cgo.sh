@@ -10,14 +10,16 @@ version_of() {
 }
 
 TS_GO_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-go")
+TS_PYTHON_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-python")
 GO_TS_VERSION=$(version_of "github.com/tree-sitter/go-tree-sitter")
 
-if [ -z "$TS_GO_VERSION" ] || [ -z "$GO_TS_VERSION" ]; then
+if [ -z "$TS_GO_VERSION" ] || [ -z "$TS_PYTHON_VERSION" ] || [ -z "$GO_TS_VERSION" ]; then
   echo "error: could not detect tree-sitter versions from go.mod" >&2
   exit 1
 fi
 
 echo "tree-sitter/tree-sitter-go: $TS_GO_VERSION"
+echo "tree-sitter/tree-sitter-python: $TS_PYTHON_VERSION"
 echo "tree-sitter/go-tree-sitter: $GO_TS_VERSION"
 
 vendor_copy() {
@@ -30,6 +32,9 @@ vendor_copy() {
 
 vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/tree-sitter-go@$TS_GO_VERSION/src" \
   vendor/github.com/tree-sitter/tree-sitter-go/src
+
+vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/tree-sitter-python@$TS_PYTHON_VERSION/src" \
+  vendor/github.com/tree-sitter/tree-sitter-python/src
 
 vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/go-tree-sitter@$GO_TS_VERSION/include" \
   vendor/github.com/tree-sitter/go-tree-sitter/include

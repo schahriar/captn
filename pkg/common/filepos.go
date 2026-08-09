@@ -136,6 +136,12 @@ func (fr FileRange) String() string {
 	return fmt.Sprintf("%v:%v-%v", fr.Source.Path, fr.Start.String(), fr.End.String())
 }
 
+// RelativeString is the String() form with a workspace-relative path; cache
+// identity is derived from it so observations survive checkout relocation
+func (fr FileRange) RelativeString() string {
+	return fmt.Sprintf("%v:%v-%v", fr.Source.RelativePath(), fr.Start.String(), fr.End.String())
+}
+
 func (fr FileRange) GetByteRange() [2]int {
 	return [2]int{fr.Start.BytePosition, fr.End.BytePosition}
 }

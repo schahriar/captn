@@ -77,7 +77,7 @@ func (f *COGFile) FindSnippetRange(snippet []byte) (*common.FileRange, error) {
 }
 
 func (f COGFile) GetHash() common.HashType {
-	return common.PrimaryHash(f.Source.Path)
+	return common.PrimaryHash(f.Source.RelativePath())
 }
 
 func (f COGFile) GetFilePath() string {
@@ -104,11 +104,9 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	ctx, task := trace.NewTask(ctx, "treeSitterParse")
 	ext := filepath.Ext(src.Path)
 
-	var lang languages.LanguageSupport
+	lang, ok := languages.ForExtension(ext)
 
-	if ext == ".go" {
-		lang = languages.Golang
-	} else {
+	if !ok {
 		return nil, errors.New("unsupported file type") // TODO: Use knownerrors
 	}
 
@@ -126,7 +124,7 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 	root, err := lang.Parse(ctx, src, tree)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse Go code: %w", err)
+		return nil, fmt.Errorf("failed to parse %v file: %w", ext, err)
 	}
 
 	pf := NewCOGFile(src, root, lang)

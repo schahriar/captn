@@ -2,74 +2,74 @@
 [TestParserSimpleFuncParse - 1]
   - ASTNodeContainer:
       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:1:1-6:1
-        sourcehash: -z8DCndYMbrRiPswmtmQE4x7hrwLNT7gXo5i4C2EvPc
+        sourcehash: n0xZvXLzQvzRiPswmtmQE13h1c33y2qXXo5i4C2EvPc
   - Name:
       - fixture_main
   - Block:
       - - ASTNodeContainer:
             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:1:1-6:1
-              sourcehash: 9n4GFO6wY3SjEfZhNbMgJhj3DXgWan3AH7HkiSueEOM
+              sourcehash: PpizeuXmhfijEfZhNbMgJrvDq5vvltUuH7HkiSueEOM
         - Virtual:
             - ASTFuncExpression:
                 - - ASTNodeContainer:
                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:1-5:2
-                        sourcehash: 8b0JH2YIlS5l-NM1tsv1QuVNDXlxTAq1_2DInzsKsto
+                        sourcehash: 3eUNOFjZyPRl-NM1tsv1QogFqpPqlonL_2DInzsKsto
                   - Name:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:6-3:7
-                              sourcehash: 7PwMKd1gxujCeZPMOdAGZQqH_hEcry3rJPtXwuwVmPk
+                              sourcehash: fTFm9cvNC_DCeZPMOdAGZeje7YahiQKaJPtXwuwVmPk
                         - Name:
                             - x
                   - Arguments:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:8-3:13
-                              sourcehash: 7PwMKd1gxuj8C8-oCALScD6I1VLcMn5zx9odKzEWsSM
+                              sourcehash: fTFm9cvNC_D8C8-oCALScMILe3AOterEx9odKzEWsSM
                         - Identifier:
                             - - ASTNodeContainer:
                                   - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:8-3:9
-                                    sourcehash: 6DsPNFS4-KKen6PeSfRRMbnN6Marijhp7XSsTuIhl0I
+                                    sourcehash: HH3Asz7ATuyen6PeSfRRMd4I-AUCcks57XSsTuIhl0I
                               - Name:
                                   - v
                         - Type:
                             - - ASTNodeContainer:
                                   - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:10-3:13
-                                    sourcehash: 6DsPNFS4-KJc_hM-_3MqM7NhU_0Tamki7XSsTuIhl0I
+                                    sourcehash: HH3Asz7ATuxc_hM-_3MqM76jX_tzxRQc7XSsTuIhl0I
                               - Name:
                                   - int
                   - ReturnType:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:15-3:21
-                              sourcehash: 7PwMKd1gxui7GiI9NtGRRknenajKDmP-JPtXwuwVmPk
+                              sourcehash: fTFm9cvNC_C7GiI9NtGRRoQv6BLhHRBsJPtXwuwVmPk
                         - Name:
                             - string
                   - Block:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:3:22-5:2
-                              sourcehash: 7PwMKd1gxuifz8lxVmuw7jXM3i5NFhgQwIRKSDkkBsY
+                              sourcehash: fTFm9cvNC_Cfz8lxVmuw7o-vjilMs3LrwIRKSDkkBsY
                         - Virtual:
                             - ASTReturnStatement:
                                 - - ASTNodeContainer:
                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:2-4:22
-                                        sourcehash: 6DsPNFS4-KJfE6YIkTUsRi6VgbwV5X3i8fQSeme6l2g
+                                        sourcehash: HH3Asz7ATuxfE6YIkTUsRporxBGTNR-s8fQSeme6l2g
                                   - Virtual:
                                       - ASTCallExpression:
                                           - - ASTNodeContainer:
                                                 - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:9-4:22
-                                                  sourcehash: 43oSPswRKlzK6ep6ZpLNpJSKj4sikcrHBl8VuPnXVUs
+                                                  sourcehash: u8oacLGzkejK6ep6ZpLNpG6Me6cp0T_zBl8VuPnXVUs
                                             - Symbol:
                                                 - - ASTNodeContainer:
                                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:9-4:15
-                                                        sourcehash: 3rkVSUNpXBYgCzmB5phpqMFsD_zy3AVoK_mk3KriO2o
+                                                        sourcehash: WxZ0LiSm1OQgCzmB5phpqHODmO0i6LoVK_mk3KriO2o
                                                   - Name:
                                                       - string
                                             - Arguments:
                                                 - - ASTNodeContainer:
                                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:17
-                                                        sourcehash: 3rkVSUNpXBZtfb6wqIRMZVd6jwU6PF7UzthqRO_jU5Q
+                                                        sourcehash: WxZ0LiSm1ORtfb6wqIRMZVWiiLi61XcIzthqRO_jU5Q
                                                   - Identifier:
                                                       - - ASTNodeContainer:
                                                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/baseproj/simple.go:4:16-4:17
-                                                              sourcehash: 2fgYU7rBjdAQEZLm6nXLJhpqjn9R5vLh9HL5aKDuObM
+                                                              sourcehash: -mLN65eaF-AQEZLm6nXLJjy4lcpL2a4d9HL5aKDuObM
                                                         - Name:
                                                             - v
                                             - Virtual: []
@@ -79,97 +79,97 @@
 [TestParserMultiDepParse - 1]
   - ASTNodeContainer:
       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:1:1-12:1
-        sourcehash: TgmcSSWkDCYxM0XJOT6WYzZXkKtVrp5MXo5i4C2EvPc
+        sourcehash: K02A2ZLJ-x8xM0XJOT6WY5uFKWPD-55bXo5i4C2EvPc
   - Name:
       - main
   - Block:
       - - ASTNodeContainer:
             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:1:1-12:1
-              sourcehash: nBM4kktIGExiZouScn0sxmyvIVarXTyYH7HkiSueEOM
+              sourcehash: VpsBsyWT9j5iZouScn0sxjcKUseH9zy2H7HkiSueEOM
         - Virtual:
             - ASTImportStatement:
                 - - ASTNodeContainer:
                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:4:2-4:7
-                        sourcehash: 6hzU23DsJHJgILaYMc8b1-7lTCsdZepwPyG8awEvwCw
+                        sourcehash: geiCjLhd8V1gILaYMc8b159nE969_XrbPyG8awEvwCw
                   - Reference:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:4:2-4:7
-                              sourcehash: OCZxJJaQMJhd2uGd8SEK6HEbdv-PbphIZLxLjrI6pks
+                              sourcehash: rTYDZksn7Hxd2uGd8SEK6AfD1PX0A7kAZLxLjrI6pks
                         - Name:
                             - fmt
             - ASTImportStatement:
                 - - ASTNodeContainer:
                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:2-6:83
-                        sourcehash: 6hzU23DsJHJnOsFHhSusaOYi0ttuP0FLPyG8awEvwCw
+                        sourcehash: geiCjLhd8V1nOsFHhSusaD1_iaW0QiU0PyG8awEvwCw
                   - Namespace:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:2-6:14
-                              sourcehash: OCZxJJaQMJhgtJOS-KkxmH2KXJFIVDarZLxLjrI6pks
+                              sourcehash: rTYDZksn7HxgtJOS-KkxmDYv_AlEnTKQZLxLjrI6pks
                         - Name:
                             - fixture_dep1
                   - Reference:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:6:15-6:83
-                              sourcehash: OCZxJJaQMJj6IbhY8Fa3w5t2yii6mp71ZLxLjrI6pks
+                              sourcehash: rTYDZksn7Hz6IbhY8Fa3wxySPQpRo5DtZLxLjrI6pks
                         - Name:
                             - github.com/schahriar/captn/tests/fixtures/golang/multidep/pkg/dep1
             - ASTFuncExpression:
                 - - ASTNodeContainer:
                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:1-11:2
-                        sourcehash: 6hzU23DsJHKpy1Itr_5_DmKDyjPZVWfD_2DInzsKsto
+                        sourcehash: geiCjLhd8V2py1Itr_5_DtWz4UW9k3gb_2DInzsKsto
                   - Name:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:6-9:10
-                              sourcehash: OCZxJJaQMJi59bpljg9tFLEESSwHrd2mJPtXwuwVmPk
+                              sourcehash: rTYDZksn7Hy59bpljg9tFGjyJtjIuPsyJPtXwuwVmPk
                         - Name:
                             - main
                   - Arguments: []
                   - Block:
                       - - ASTNodeContainer:
                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:9:13-11:2
-                              sourcehash: OCZxJJaQMJizvTaNlTxlxuDeo9J9Zfi3wIRKSDkkBsY
+                              sourcehash: rTYDZksn7HyzvTaNlTxlxubVpSOAyqQUwIRKSDkkBsY
                         - Virtual:
                             - ASTCallExpression:
                                 - - ASTNodeContainer:
                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:2-10:44
-                                        sourcehash: hjANbbw0PL4IuG7YoOL4xzV4t0NFT74i1O9NhstAxKk
+                                        sourcehash: 2IOEP93x55sIuG7YoOL4xzzSs_cve1mi1O9NhstAxKk
                                   - Namespace:
                                       - - ASTNodeContainer:
                                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:2-10:5
-                                              sourcehash: 1DmptuHYSOQli82rN9OxvmI8WRZ4h0Zo-oncqnxLqsg
+                                              sourcehash: A9EFGXC74roli82rN9OxvoCxPH-PL85w-oncqnxLqsg
                                         - Name:
                                             - fmt
                                   - Symbol:
                                       - - ASTNodeContainer:
                                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:6-10:13
-                                              sourcehash: 1DmptuHYSORBeFXHCDf6AqchHNyfQJ94-oncqnxLqsg
+                                              sourcehash: A9EFGXC74rpBeFXHCDf6Aie7doPq4eE_-oncqnxLqsg
                                         - Name:
                                             - Println
                                   - Arguments:
                                       - - ASTNodeContainer:
                                             - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
-                                              sourcehash: 1DmptuHYSOQCMkEkFGB99xr1FVrCexYvnWiiEsFMwvI
+                                              sourcehash: A9EFGXC74roCMkEkFGB993iHO4orRhZAnWiiEsFMwvI
                                         - Identifier:
                                             - - ASTNodeContainer:
                                                   - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
-                                                    sourcehash: IkNGAAd8VQr7rBNvh94DJwBxc3I_pm48wwMxNnJXqRE
+                                                    sourcehash: Lx6F8wOF3dn7rBNvh94DJ7Q7wx0nENLewwMxNnJXqRE
                                               - Name:
                                                   - fixture_dep1
                                   - Virtual:
                                       - ASTCallExpression:
                                           - - ASTNodeContainer:
                                                 - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:43
-                                                  sourcehash: 1DmptuHYSORHQRoZ4nAq8mujLP7Lk0n16VpQxV1dgow
+                                                  sourcehash: A9EFGXC74rpHQRoZ4nAq8pNf6OhOkhBs6VpQxV1dgow
                                             - Namespace:
                                                 - - ASTNodeContainer:
                                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:14-10:26
-                                                        sourcehash: IkNGAAd8VQpAuuxlVe2wIlEfixZIvqICDvTf6Q5oaKs
+                                                        sourcehash: Lx6F8wOF3dlAuuxlVe2wIs8UcHtKXM0KDvTf6Q5oaKs
                                                   - Name:
                                                       - fixture_dep1
                                             - Symbol:
                                                 - - ASTNodeContainer:
                                                       - position: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go:10:27-10:41
-                                                        sourcehash: IkNGAAd8VQrHARgZBsL5cYoMYUR5CB37DvTf6Q5oaKs
+                                                        sourcehash: Lx6F8wOF3dnHARgZBsL5cUMOwYVpEI2HDvTf6Q5oaKs
                                                   - Name:
                                                       - GetExampleText
                                             - Arguments: []
@@ -412,5 +412,178 @@
         line: 5
         column: 69
         byteposition: 100
+
+---
+
+[TestParserPythonSimpleParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:1-3:1
+        sourcehash: tpbuirO6n3nKY9qPO_uxeviGB76tbRGYXo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:1-3:1
+              sourcehash: bS3dFWd1PvKUx7Ued_di9PEMD31a2iMwH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:1-2:22
+                        sourcehash: I8TLoBsv3mt8wBP0QI4Ds8xe00e3h6p5_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:5-1:6
+                              sourcehash: 2lu6Ks7qfeTZQNSKw5IU1sJn4o9pjC1eJPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:7-1:13
+                              sourcehash: 2lu6Ks7qfeTeIpLjcy0E4sc80Zp1Nv5_x9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:7-1:8
+                                    sourcehash: kPKotYKlHV2AtmcZtR6Do0U6MRz75EeT7XSsTuIhl0I
+                              - Name:
+                                  - v
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:10-1:13
+                                    sourcehash: kPKotYKlHV0_FNZ6ap1cpeFDUc--HgPV7XSsTuIhl0I
+                              - Name:
+                                  - int
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:1:18-1:21
+                              sourcehash: 2lu6Ks7qfeT1c2gnSDnR9kjwRjjipkmtJPtXwuwVmPk
+                        - Name:
+                            - str
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:2:5-2:22
+                              sourcehash: 2lu6Ks7qfeTQWzj0htxdS3mYcXPngQW8wIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:2:12-2:22
+                                        sourcehash: kPKotYKlHV08bOeJ2s6pW8O_Fo-sBOlf1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/baseproj/simple.py:2:12-2:15
+                                              sourcehash: R4mXQDZfvNa1IDu84np3nv-wKVjMRnpM-oncqnxLqsg
+                                        - Name:
+                                            - str
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestParserPythonMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:1:1-7:1
+        sourcehash: r5IIE0FFMd_5tK-t_ml37gYMuQ3zTV3kXo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:1:1-7:1
+              sourcehash: XyQQJoKKY77zaV9b_NLv3AwZchvmmrvIH7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:1:8-1:12
+                        sourcehash: DrYYOcPPlZ1Ovq5qBe2Lk5pT-SX3_d_wPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:1:8-1:12
+                              sourcehash: vkggTQUUx3yqE_14DwgnSiiOgDAJYQQYZLxLjrI6pks
+                        - Name:
+                            - json
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:2:8-2:32
+                        sourcehash: DrYYOcPPlZ0QAV0FkS_CpjRg15hSD4NdPyG8awEvwCw
+                  - Namespace:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:2:20-2:32
+                              sourcehash: vkggTQUUx3wJey9RBK1H1ni_RtFfX3xVZLxLjrI6pks
+                        - Name:
+                            - fixture_dep1
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:2:8-2:16
+                              sourcehash: vkggTQUUx3xg276VhSoZYq3pqm4bQY0FZLxLjrI6pks
+                        - Name:
+                            - pkg.dep1
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:5:1-6:55
+                        sourcehash: DrYYOcPPlZ2BEsXNfmQdtGhpltMjGZtJ_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:5:5-5:9
+                              sourcehash: vkggTQUUx3yRPS4FXHULuotR6APnAWw7JPtXwuwVmPk
+                        - Name:
+                            - main
+                  - Arguments: []
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:5:15-5:19
+                              sourcehash: vkggTQUUx3y99PiLcJD5QyAyR7729KkJJPtXwuwVmPk
+                        - Name:
+                            - None
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:5-6:55
+                              sourcehash: vkggTQUUx3wdIc-zA6bFKSBHRXfY8WAywIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:5-6:55
+                                        sourcehash: bdooYEZZ-Vu5MNmYiOlsntgk9ByOySUb1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:5-6:10
+                                              sourcehash: HWwwc4efKzq7TJUssYLeUpBgeJ4HHo8_-oncqnxLqsg
+                                        - Name:
+                                            - print
+                                  - Arguments: []
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:11-6:54
+                                                  sourcehash: HWwwc4efKzqKLequ2IdaK2gos2mWUYU66VpQxV1dgow
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:11-6:15
+                                                        sourcehash: zP44hsjkXRnlgzm84aH14jufa7ko5ReHDvTf6Q5oaKs
+                                                  - Name:
+                                                      - json
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:16-6:21
+                                                        sourcehash: zP44hsjkXRkuN8qNJLLKTYtvVqZUkluuDvTf6Q5oaKs
+                                                  - Name:
+                                                      - dumps
+                                            - Arguments: []
+                                            - Virtual:
+                                                - ASTCallExpression:
+                                                    - - ASTNodeContainer:
+                                                          - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:22-6:53
+                                                            sourcehash: zP44hsjkXRn8mPvpruBCbfphBgZooW5b_cVUA-96QG8
+                                                      - Namespace:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:22-6:34
+                                                                  sourcehash: fJBAmgopjvj2Es41Il3Hnfo6la-Q7VEqI1_jJ6CFJo4
+                                                            - Name:
+                                                                - fixture_dep1
+                                                      - Symbol:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/workspace/Workspace/captn/tests/fixtures/python/multidep/main.py:6:35-6:51
+                                                                  sourcehash: fJBAmgopjvjjdZSBqkHdvlS5xYzopFQvI1_jJ6CFJo4
+                                                            - Name:
+                                                                - get_example_text
+                                                      - Arguments: []
+                                                      - Virtual: []
 
 ---

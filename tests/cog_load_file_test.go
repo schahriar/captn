@@ -80,5 +80,9 @@ func TestOpenCOGLoadsPersistedCache(t *testing.T) {
 
 	loaded, err := cog.OpenWorkspace(workspace)
 	assert.NoError(t, err)
-	assert.Equal(t, co, loaded.ObservationCache[h])
+
+	got := loaded.ObservationCache[h]
+	assert.NotEmpty(t, got.Author, "persisted records carry their author stamp")
+	got.Author = ""
+	assert.Equal(t, co, got)
 }

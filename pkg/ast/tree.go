@@ -22,11 +22,14 @@ type ASTNodeSourcePosition struct {
 	SourceHash string
 }
 
+// GetHash derives cache identity from workspace-relative paths so the same
+// node hashes identically across checkout locations and operating systems
 func GetHash(node ASTNode) common.HashType {
+	pos := node.GetPosition()
 	hash := common.HashMany(
-		[]byte(node.GetFilePath()),
+		[]byte(pos.Source.RelativePath()),
 		node.GetRawSource(),
-		[]byte(node.GetPosition().String()),
+		[]byte(pos.RelativeString()),
 		[]byte(node.Kind()),
 	)
 
@@ -79,9 +82,9 @@ func (cont *ASTNodeContainer) GetFileRange() *common.FileRange {
 func (cont *ASTNodeContainer) DebugPosition() ASTNodeSourcePosition {
 	pos := cont.Node.GetPosition()
 	hash := common.HashMany(
-		[]byte(cont.GetFilePath()),
+		[]byte(pos.Source.RelativePath()),
 		cont.GetRawSource(),
-		[]byte(pos.String()),
+		[]byte(pos.RelativeString()),
 	)
 	if cont.parent != nil {
 		hash = hash.Add(GetHash(cont.parent))

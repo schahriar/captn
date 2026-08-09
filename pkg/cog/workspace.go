@@ -44,6 +44,12 @@ func NewCOGObservationMetadata(anchors []*common.FileRange) COGObservationMetada
 type COGObservation struct {
 	Answer   common.ObservationSchema
 	Metadata COGObservationMetadata
+
+	// Author is the serialized author hash this observation was first
+	// recorded with; it is provenance only and never part of identity.
+	// Empty means the observation was created in this session and the
+	// active author is stamped at marshal time.
+	Author string
 }
 
 func NewCOGObservation(ans common.ObservationSchema, anchors []*common.FileRange) COGObservation {
@@ -170,6 +176,10 @@ func OpenWorkspace(workspace string) (*Workspace, error) {
 		fmt.Printf("Failed to initialize git repository at %v with error %v\nCaptn will continue to operate without git.", workspace, err)
 	} else {
 		wspace.Repository = r
+
+		if err := ensureUnionMergeAttribute(workspace); err != nil {
+			fmt.Printf("Failed to register the captn.cog merge attribute with error %v\nCaptn will continue; concurrent captn.cog edits may need manual merges.", err)
+		}
 	}
 
 	loader, err := plugin.Get(plugin.ConfigLoader())
@@ -228,6 +238,67 @@ func OpenWorkspace(workspace string) (*Workspace, error) {
 	wspaceCacheMux.Unlock()
 
 	return wspace, nil
+}
+
+const unionMergeAttribute = "captn.cog merge=union"
+
+// ensureUnionMergeAttribute registers captn.cog for union merges in the
+// repository's local attributes file. Observations tolerate the duplicate
+// lines a union merge can produce, so this keeps captn.cog from ever
+// surfacing merge conflicts without captn touching any tracked file.
+func ensureUnionMergeAttribute(workspace string) error {
+	gitPath := filepath.Join(workspace, ".git")
+	info, err := os.Stat(gitPath)
+
+	if err != nil {
+		return err
+	}
+
+	// Worktrees and submodules keep a gitfile pointing at the real git dir
+	if !info.IsDir() {
+		b, err := os.ReadFile(gitPath)
+
+		if err != nil {
+			return err
+		}
+
+		dir, ok := strings.CutPrefix(strings.TrimSpace(string(b)), "gitdir: ")
+
+		if !ok {
+			return fmt.Errorf("unrecognized gitfile at %v", gitPath)
+		}
+
+		if !filepath.IsAbs(dir) {
+			dir = filepath.Join(workspace, dir)
+		}
+
+		gitPath = dir
+	}
+
+	attributesPath := filepath.Join(gitPath, "info", "attributes")
+
+	if b, err := os.ReadFile(attributesPath); err == nil {
+		for _, line := range strings.Split(string(b), "\n") {
+			if strings.TrimSpace(line) == unionMergeAttribute {
+				return nil
+			}
+		}
+	}
+
+	if err := os.MkdirAll(filepath.Dir(attributesPath), 0755); err != nil {
+		return err
+	}
+
+	f, err := os.OpenFile(attributesPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	_, err = fmt.Fprintf(f, "%s\n", unionMergeAttribute)
+	return err
 }
 
 func (wspace *Workspace) Marshal() ([]byte, error) {
@@ -329,7 +400,7 @@ func authorHash(author string) string {
 
 func (wspace *Workspace) marshalLocked() ([]byte, error) {
 	var builder strings.Builder
-	author := authorHash(wspace.ActiveAuthor)
+	activeAuthor := authorHash(wspace.ActiveAuthor)
 
 	// Observations written to the cache directly rather than through
 	// SetObservation have no index yet; assign them deterministically
@@ -363,6 +434,11 @@ func (wspace *Workspace) marshalLocked() ([]byte, error) {
 
 		if err != nil {
 			return nil, fmt.Errorf("failed to encode metadata for observation %v with error %w", h.String(), err)
+		}
+
+		author := o.Author
+		if author == "" {
+			author = activeAuthor
 		}
 
 		fmt.Fprintf(&builder, "%s %s %s %s\n", author, h.String(), meta, answer)
@@ -451,15 +527,43 @@ func (wspace *Workspace) unmarshalLocked(data []byte) error {
 			return fmt.Errorf("missing record separator after observation %v", hashPart)
 		}
 
-		wspace.SetObservationLocked(*h, NewCOGObservation(common.NewObservationSchema(hashPart, answer), meta.Anchors))
+		// Two authors can record the same observation on separate branches;
+		// the first record wins and later duplicates are ignored
+		if _, exists := wspace.ObservationCache[*h]; exists {
+			continue
+		}
+
+		o := NewCOGObservation(common.NewObservationSchema(hashPart, answer), meta.Anchors)
+		o.Author = authorPart
+
+		wspace.SetObservationLocked(*h, o)
 	}
 
 	return nil
 }
 
 func (wspace *Workspace) Persist() error {
+	// Lock order mirrors Unmarshal: file lock before workspace mutex
+	fileLock := flock.New(wspace.FilePath())
+
+	if err := fileLock.Lock(); err != nil {
+		return fmt.Errorf("failed to acquire file lock %w", err)
+	}
+
+	defer fileLock.Unlock()
+
 	wspace.Mux.Lock()
 	defer wspace.Mux.Unlock()
+
+	// Records that reached disk after this workspace was opened (a git pull,
+	// another captn process) are merged in rather than clobbered; in-memory
+	// records win on duplicate keys. An unreadable file is overwritten so a
+	// broken merge resolution cannot block persisting forever.
+	if data, err := os.ReadFile(wspace.FilePath()); err == nil {
+		if err := wspace.unmarshalLocked(data); err != nil {
+			fmt.Printf("Persisting over unreadable observations at %v with error %v\n", wspace.FilePath(), err)
+		}
+	}
 
 	b, err := wspace.marshalLocked()
 

@@ -78,11 +78,28 @@ func (src *Source) BytePositionForLineColumn(line int, col int) (int, error) {
 	return 0, fmt.Errorf("line %d is out of range", line)
 }
 
+// RelativePath returns Path relative to the workspace root with forward
+// slashes, so identity derived from it is stable across checkout locations
+// and operating systems. Paths outside the workspace or with no workspace
+// fall back to the slash-normalized Path.
+func (src *Source) RelativePath() string {
+	if src.Workspace != "" {
+		if rel, err := filepath.Rel(src.Workspace, src.Path); err == nil {
+			return filepath.ToSlash(rel)
+		}
+	}
+
+	return filepath.ToSlash(src.Path)
+}
+
 func (src *Source) GetLanguage() string {
 	// TODO: Implement a better version
-	if filepath.Ext(src.Path) == ".go" {
+	switch filepath.Ext(src.Path) {
+	case ".go":
 		return "golang"
-	} else {
+	case ".py", ".pyi":
+		return "python"
+	default:
 		return "unknown"
 	}
 }

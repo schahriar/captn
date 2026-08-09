@@ -1,0 +1,3 @@
+# Observations append one line per record and tolerate duplicate keys on
+# load (first record wins), so concurrent branches merge cleanly by union
+captn.cog merge=union
