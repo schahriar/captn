@@ -16,9 +16,14 @@ BANSTRUCTLIT_SRCS := $(wildcard tools/banstructlit/*.go tools/banstructlit/go.mo
 
 all: mod build generate init debug graphviz
 
+# -e tolerates one unresolvable import: alex-pinkus/tree-sitter-swift ships a
+# bindings/go/binding_test.go on its with-generated-files branch that still
+# imports the archived tree-sitter/tree-sitter-swift. tidy follows test imports
+# of dependencies, so it fails without -e. The error is still printed. Main has
+# fixed it upstream; drop -e once that branch is regenerated past v0.7.3.
 mod:
 	chmod -R u+w vendor/ 2>/dev/null || true
-	go mod tidy
+	go mod tidy -e
 	go mod vendor
 	bash scripts/vendor-cgo.sh
 

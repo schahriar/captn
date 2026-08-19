@@ -99,6 +99,8 @@ func (src *Source) GetLanguage() string {
 		return "golang"
 	case ".py", ".pyi":
 		return "python"
+	case ".swift", ".swiftinterface":
+		return "swift"
 	default:
 		return "unknown"
 	}

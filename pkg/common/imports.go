@@ -39,6 +39,7 @@ func NewResolvedDependencyFromURI(
 	endLine int,
 	endColumn int,
 	classify func(*Source) DependencyType,
+	normalize func(*Source, *FileRange) *FileRange,
 ) (ResolvedDependency, error) {
 	zero := NewResolvedDependency(LocalDependency, nil, nil)
 	refp, err := AbsolutePathFromURI(uri)
@@ -63,6 +64,12 @@ func NewResolvedDependencyFromURI(
 	external, err := NewFileRangeAutoBytePosition(src, startLine, startColumn, endLine, endColumn)
 	if err != nil {
 		return zero, err
+	}
+
+	// Language servers disagree about the shape of a definition range, so the
+	// language repairs its own before anything tries to resolve it to a node
+	if normalize != nil {
+		external = normalize(src, external)
 	}
 
 	dependencyType := LocalDependency

@@ -5,6 +5,7 @@ go 1.26.3
 require (
 	github.com/OneOfOne/xxhash v1.2.2
 	github.com/alecthomas/kong v1.15.0
+	github.com/alex-pinkus/tree-sitter-swift v0.0.0-20260601004120-31d17fe7e818
 	github.com/cespare/xxhash v1.1.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/x/ansi v0.11.6

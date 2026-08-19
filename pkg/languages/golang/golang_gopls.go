@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 const (
@@ -69,4 +71,10 @@ func goInstallDir(ctx context.Context) string {
 	}
 
 	return ""
+}
+
+// NormalizeDefinitionRange answers unchanged: gopls already spans the
+// identifier in a textDocument/definition reply.
+func (glsd *GolangLanguageSupportDefinition) NormalizeDefinitionRange(_ *common.Source, r *common.FileRange) *common.FileRange {
+	return r
 }

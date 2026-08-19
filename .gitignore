@@ -37,6 +37,11 @@ vendor
 
 bin
 .DS_Store
+
+# SwiftPM build products; sourcekit-lsp writes these into the Swift fixtures
+# when it indexes them in the background
+.build
+.swiftpm
 Why.md
 out.yaml
 

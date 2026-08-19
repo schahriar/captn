@@ -113,7 +113,21 @@ func PrimaryHash[T StringConvertible](v T) HashType {
 func HashMany[T StringConvertible](v ...T) HashType {
 	hashes := [4]uint64{0, 0, 0, 0}
 	for i, item := range v {
-		hashes[i%4] += xxhash.Sum64([]byte(string(item)))
+		hashes[i%4] += hashOne(item)
 	}
 	return hashes
+}
+
+// hashOne hashes the same bytes the plain []byte(string(v)) conversion would,
+// without its two copies. Node identity hashes whole source ranges, so on a
+// large file those copies dominate both time and allocation.
+func hashOne[T StringConvertible](v T) uint64 {
+	switch t := any(v).(type) {
+	case []byte:
+		return xxhash.Sum64(t)
+	case string:
+		return xxhash.Sum64String(t)
+	}
+
+	return xxhash.Sum64([]byte(string(v)))
 }

@@ -26,10 +26,12 @@ func autoIndex(vis *nodeIndexerVisitor, node ast.ASTNode) interface{} {
 	}
 
 	vis.pf.lookupTable[hash] = node
-	err := vis.pf.intervals.Insert(pos.Start, pos.End, hash)
 
-	if err != nil {
-		panic(knownerr.IntervalInsertError(node, err))
+	// Empty nodes can be skipped
+	if pos.Start.BytePosition < pos.End.BytePosition {
+		if err := vis.pf.intervals.Insert(pos.Start, pos.End, hash); err != nil {
+			panic(knownerr.IntervalInsertError(node, err))
+		}
 	}
 
 	return ast.AutoVisit(vis, node)

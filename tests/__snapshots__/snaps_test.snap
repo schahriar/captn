@@ -587,3 +587,152 @@
                                                       - Virtual: []
 
 ---
+
+[TestParserSwiftSimpleParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:1-4:1
+        sourcehash: KXPVZ77NyW54P9LYIncpWaogL9wxaN1LXo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:1-4:1
+              sourcehash: Uueqz32bktzwf6WwRO5SslRAX7hi0bqWH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:1-3:2
+                        sourcehash: fFuANzxpXEpUSeXFHfG_Txz1Bfqbrio__2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:6-1:7
+                              sourcehash: pc9Vnvs3JbiwyqZboPXQcu-NIbUvwzbWJPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:8-1:14
+                              sourcehash: pc9Vnvs3JbhvBTZlS-uhQRQgqwGBGjTqx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:8-1:9
+                                    sourcehash: z0MrBroE7yYRmQqbjd0gAq0p08LyBO9x7XSsTuIhl0I
+                              - Name:
+                                  - v
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:11-1:14
+                                    sourcehash: z0MrBroE7yYZu8XNuVNQ01wl3xFZKkQ97XSsTuIhl0I
+                              - Name:
+                                  - Int
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:19-1:25
+                              sourcehash: pc9Vnvs3JbjvhKn0W0kLdm04oBi0WV5sJPtXwuwVmPk
+                        - Name:
+                            - String
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:1:26-3:2
+                              sourcehash: pc9Vnvs3JbhGdpSFeZzyZupKidFkuF07wIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:2:12-2:25
+                                        sourcehash: z0MrBroE7yYMxcv2MuGDRrhqGJ2trlh11O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/baseproj/Sources/BaseProj/simple.swift:2:12-2:18
+                                              sourcehash: -LcAbnjSuJSoAJAlcDjPbRPxsW3pIsrt-oncqnxLqsg
+                                        - Name:
+                                            - String
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestParserSwiftMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:1:1-7:1
+        sourcehash: 1eyrTHw24RgCvaWwSHF5lUzZx3xmzJRaXo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:1:1-7:1
+              sourcehash: q9lWmPhtwjAFe0tgkOLzKpmzjvjNmSi0H7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:1:8-1:18
+                        sourcehash: gcYB5XSko0hvjFwo-G0EZqLkC6641ZK6PyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:1:8-1:18
+                              sourcehash: V7KtMfDbhGDZnWzxX_cVoqwUiGSkEfzAZLxLjrI6pks
+                        - Name:
+                            - Foundation
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:2:8-2:12
+                        sourcehash: gcYB5XSko0hc9Fe6Z9ujtMAGw92U0DIFPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:2:8-2:12
+                              sourcehash: V7KtMfDbhGC0bWQUPtRUPuZZ-MJcBztWZLxLjrI6pks
+                        - Name:
+                            - Dep1
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:4:1-6:2
+                        sourcehash: gcYB5XSko0ja1TfGVmn5WiDC5coW_wH3_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:4:6-4:10
+                              sourcehash: V7KtMfDbhGDq_5_-NHrnYG0uxRWvaN0QJPtXwuwVmPk
+                        - Name:
+                            - main
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:4:13-6:2
+                              sourcehash: V7KtMfDbhGCRaKmTCUJecG3BeiZ3Sd_nwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:5-5:41
+                                        sourcehash: LZ9Yfm0SZXiLCJrfCQ8XB8xZcCS45CdJ1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:5-5:10
+                                              sourcehash: A4wDyulJRpCNJFZzMaiIu5FygwXzbzXo-oncqnxLqsg
+                                        - Name:
+                                            - print
+                                  - Arguments: []
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:11-5:40
+                                                  sourcehash: A4wDyulJRpDY6K69DLqI21xyax24EKvY6VpQxV1dgow
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:28-5:38
+                                                        sourcehash: 2XivF2WAJ6iowSDSQ6uLRPiZ4mPiBidDDvTf6Q5oaKs
+                                                  - Name:
+                                                      - uppercased
+                                            - Arguments: []
+                                            - Virtual:
+                                                - ASTCallExpression:
+                                                    - - ASTNodeContainer:
+                                                          - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:11-5:27
+                                                            sourcehash: 2XivF2WAJ6hViDF6-NSrqWEAqjmbLqKW_cVUA-96QG8
+                                                      - Symbol:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/swift/multidep/Sources/App/main.swift:5:11-5:25
+                                                                  sourcehash: r2VaY-G3CMBO9YTsxXEXJiKzqQxX4Oj7I1_jJ6CFJo4
+                                                            - Name:
+                                                                - getExampleText
+                                                      - Arguments: []
+                                                      - Virtual: []
+
+---

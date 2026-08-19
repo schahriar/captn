@@ -33,6 +33,7 @@ func NewResolvedDependencyFromURIFromCOGFile(
 		ref.Range.End.Line,
 		ref.Range.End.Character,
 		file.Language.ClassifyImportType,
+		file.Language.NormalizeDefinitionRange,
 	)
 }
 

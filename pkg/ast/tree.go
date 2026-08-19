@@ -10,6 +10,10 @@ import (
 type ASTNodeContainer struct {
 	Node   ASTParserNode
 	parent ASTNode
+
+	// Identity cache
+	hash   common.HashType
+	hashed bool
 }
 
 type ASTParserNode interface {
@@ -25,6 +29,12 @@ type ASTNodeSourcePosition struct {
 // GetHash derives cache identity from workspace-relative paths so the same
 // node hashes identically across checkout locations and operating systems
 func GetHash(node ASTNode) common.HashType {
+	cont := node.GetContainer()
+
+	if cont != nil && cont.hashed {
+		return cont.hash
+	}
+
 	pos := node.GetPosition()
 	hash := common.HashMany(
 		[]byte(pos.Source.RelativePath()),
@@ -33,11 +43,17 @@ func GetHash(node ASTNode) common.HashType {
 		[]byte(node.Kind()),
 	)
 
-	if node.GetParent() == nil {
-		return hash
+	if parent := node.GetParent(); parent != nil {
+		hash = hash.Add(GetHash(parent))
 	}
 
-	hash = hash.Add(GetHash(node.GetParent()))
+	// Parents are attached before any hashing happens, so a memo can never
+	// capture an identity from a half-built tree
+	if cont != nil {
+		cont.hash = hash
+		cont.hashed = true
+	}
+
 	return hash
 }
 

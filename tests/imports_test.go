@@ -34,6 +34,7 @@ func TestNewResolvedDependencyFromURIUsesExactExternalRange(t *testing.T) {
 			assert.Equal(t, "dep.go", src.Path)
 			return common.LocalDependency
 		},
+		nil,
 	)
 
 	assert.NoError(t, err)

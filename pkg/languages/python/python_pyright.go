@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/schahriar/captn/pkg/common"
 )
 
 const (
@@ -64,4 +66,10 @@ func npmGlobalBinDir(ctx context.Context) string {
 	}
 
 	return filepath.Join(prefix, "bin")
+}
+
+// NormalizeDefinitionRange answers unchanged: pyright already spans the
+// identifier in a textDocument/definition reply.
+func (plsd *PythonLanguageSupportDefinition) NormalizeDefinitionRange(_ *common.Source, r *common.FileRange) *common.FileRange {
+	return r
 }
