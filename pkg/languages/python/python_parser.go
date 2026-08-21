@@ -131,6 +131,141 @@ func hasSourceWidth(node parsers.ParserNode) bool {
 	return node.Range.StartByte < node.Range.EndByte
 }
 
+// typeExpression maps an annotation onto the identifier a definition resolves
+// to. The first named type inside is the head and the rest are its arguments.
+func typeExpression(node parsers.ParserNode) *ast.ASTTypeExpression {
+	return foldTypes(collectTypes(node))
+}
+
+func foldTypes(types []*ast.ASTTypeExpression) *ast.ASTTypeExpression {
+	if len(types) == 0 {
+		return nil
+	}
+
+	types[0].Arguments = append(types[0].Arguments, types[1:]...)
+
+	return types[0]
+}
+
+func collectTypes(node parsers.ParserNode) []*ast.ASTTypeExpression {
+	switch node.Kind {
+	case "identifier":
+		if !hasSourceWidth(node) {
+			return nil
+		}
+
+		return []*ast.ASTTypeExpression{ast.NewASTTypeExpression(ast.NewASTNodeContainer(node), node.GetTextContent())}
+
+	case "attribute":
+		attr, ok := node.ChildByFieldName("attribute")
+
+		if !ok || !hasSourceWidth(attr) {
+			return nil
+		}
+
+		texpr := ast.NewASTTypeExpression(ast.NewASTNodeContainer(attr), attr.GetTextContent())
+
+		if object, ok := node.ChildByFieldName("object"); ok && object.Kind == "identifier" {
+			texpr.Namespace = ast.NewASTSymbol(ast.NewASTNodeContainer(object), object.GetTextContent())
+		}
+
+		return []*ast.ASTTypeExpression{texpr}
+
+	case "call":
+		// `Annotated[int, Field(gt=0)]` carries metadata, not types
+		return nil
+	}
+
+	var types []*ast.ASTTypeExpression
+
+	node.IterateChildren(func(child parsers.ParserNode) (bool, error) {
+		types = append(types, collectTypes(child)...)
+		return true, nil
+	})
+
+	if node.Kind == "generic_type" || node.Kind == "subscript" {
+		if head := foldTypes(types); head != nil {
+			return []*ast.ASTTypeExpression{head}
+		}
+
+		return nil
+	}
+
+	return types
+}
+
+func typeParameters(node parsers.ParserNode) []*ast.ASTFuncArgument {
+	var args []*ast.ASTFuncArgument
+
+	node.IterateChildren(func(param parsers.ParserNode) (bool, error) {
+		if param.Kind != "type" {
+			return true, nil
+		}
+
+		nameNode, ok := typeParameterName(param)
+
+		if !ok || !hasSourceWidth(nameNode) {
+			return true, nil
+		}
+
+		name := ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
+
+		var bound *ast.ASTTypeExpression
+
+		if constrained, ok := param.GetNthChildByKind("constrained_type", 0); ok {
+			if boundNode, ok := constrained.GetNthChildByKind("type", 1); ok {
+				bound = typeExpression(boundNode)
+			}
+		}
+
+		args = append(args, ast.NewASTFuncArgument(ast.NewASTNodeContainer(param), name, bound))
+
+		return true, nil
+	})
+
+	return args
+}
+
+// A constrained `T: int` spells the name as its first type; the second is the bound
+func typeParameterName(param parsers.ParserNode) (parsers.ParserNode, bool) {
+	if inner, ok := param.GetNthChildByKind("constrained_type", 0); ok {
+		if first, ok := inner.GetNthChildByKind("type", 0); ok {
+			return first.GetNthChildByKind("identifier", 0)
+		}
+	}
+
+	if inner, ok := param.GetNthChildByKind("splat_type", 0); ok {
+		return inner.GetNthChildByKind("identifier", 0)
+	}
+
+	return param.GetNthChildByKind("identifier", 0)
+}
+
+func aliasNames(left parsers.ParserNode) []*ast.ASTSymbol {
+	head := left
+
+	if generic, ok := left.GetNthChildByKind("generic_type", 0); ok {
+		head = generic
+	}
+
+	var names []*ast.ASTSymbol
+
+	if id, ok := head.GetNthChildByKind("identifier", 0); ok && hasSourceWidth(id) {
+		names = append(names, ast.NewASTSymbol(ast.NewASTNodeContainer(id), id.GetTextContent()))
+	}
+
+	if params, ok := head.GetNthChildByKind("type_parameter", 0); ok {
+		params.IterateChildren(func(param parsers.ParserNode) (bool, error) {
+			if id, ok := typeParameterName(param); ok && hasSourceWidth(id) {
+				names = append(names, ast.NewASTSymbol(ast.NewASTNodeContainer(id), id.GetTextContent()))
+			}
+			return true, nil
+		})
+	}
+
+	return names
+}
+
 func PythonTransformer(ctx context.Context, trx *parsers.TransformContext, node parsers.ParserNode) error {
 	switch node.Kind {
 	case "import_statement":
@@ -191,8 +326,12 @@ func PythonTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 			fn.Name = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
 		}
 
+		if paramsNode, ok := node.ChildByFieldName("type_parameters"); ok {
+			fn.Arguments = append(fn.Arguments, typeParameters(paramsNode)...)
+		}
+
 		if retNode, ok := node.ChildByFieldName("return_type"); ok {
-			fn.ReturnType = ast.NewASTSymbol(ast.NewASTNodeContainer(retNode), retNode.GetTextContent())
+			fn.ReturnType = typeExpression(retNode)
 		}
 
 		// Functions auto-assign a block but we want to narrow down the block
@@ -237,12 +376,12 @@ func PythonTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 
 				idSym := ast.NewASTSymbol(ast.NewASTNodeContainer(idNode), idNode.GetTextContent())
 
-				var typeSym *ast.ASTSymbol
+				var typeExpr *ast.ASTTypeExpression
 				if typeNode, ok := pn.ChildByFieldName("type"); ok {
-					typeSym = ast.NewASTSymbol(ast.NewASTNodeContainer(typeNode), typeNode.GetTextContent())
+					typeExpr = typeExpression(typeNode)
 				}
 
-				fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, typeSym))
+				fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, typeExpr))
 
 				return true, nil
 			})
@@ -265,6 +404,10 @@ func PythonTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 		decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(node))
 		decl.Names = names
 
+		if typeNode, ok := node.ChildByFieldName("type"); ok {
+			decl.Type = typeExpression(typeNode)
+		}
+
 		if err := trx.Emit(decl); err != nil {
 			return err
 		}
@@ -272,6 +415,24 @@ func PythonTransformer(ctx context.Context, trx *parsers.TransformContext, node 
 		// RHS: walk into decl so call expressions on the right-hand side
 		// land in Virtual
 		return trx.WalkChildrenInto(ctx, decl)
+
+	case "type_alias_statement":
+		// A member-less alias needs only a declaration on its name
+		decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(node))
+
+		if leftNode, ok := node.ChildByFieldName("left"); ok {
+			decl.Names = aliasNames(leftNode)
+		}
+
+		if len(decl.Names) == 0 {
+			return trx.WalkChildren(ctx)
+		}
+
+		if rightNode, ok := node.ChildByFieldName("right"); ok {
+			decl.Type = typeExpression(rightNode)
+		}
+
+		return trx.Emit(decl)
 
 	case "for_statement", "for_in_clause":
 		if leftNode, ok := node.ChildByFieldName("left"); ok {

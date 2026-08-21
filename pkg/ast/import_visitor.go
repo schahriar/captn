@@ -37,6 +37,10 @@ func (vis *ImportVisitor) VisitDeclaration(node *ASTDeclaration) interface{} {
 	return AutoVisit(vis, node)
 }
 
+func (vis *ImportVisitor) VisitTypeExpression(node *ASTTypeExpression) interface{} {
+	return nil
+}
+
 func (vis *ImportVisitor) VisitReturn(node *ASTReturnStatement) interface{} {
 	return nil
 }

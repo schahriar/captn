@@ -667,8 +667,11 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 	for _, chld := range chlds {
 		switch v := chld.(type) {
 		case *ast.ASTCallExpression:
-			defs[v] = v.Symbol.GetPosition()
-			break
+			if v.Symbol != nil {
+				defs[v] = v.Symbol.GetPosition()
+			}
+		case *ast.ASTTypeExpression:
+			defs[v] = v.GetPosition()
 		}
 	}
 
@@ -727,6 +730,12 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 		}
 
 		inode := nodes[0]
+
+		// A zero-width definition (e.g. sourcekit-lsp on some initializers)
+		// cannot contain a node, so there is nothing to link to
+		if dep.External.Start.BytePosition == dep.External.End.BytePosition {
+			continue
+		}
 
 		// This load file is going to use the cache since we prefetched
 		ef, err := wspace.LoadFile(ctx, dep.External.Source.Path)

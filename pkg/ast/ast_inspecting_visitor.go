@@ -134,6 +134,10 @@ func (vis *InspectingVisitor) VisitDeclaration(node *ASTDeclaration) interface{}
 	return inspectingVisit(vis, node)
 }
 
+func (vis *InspectingVisitor) VisitTypeExpression(node *ASTTypeExpression) interface{} {
+	return inspectingVisit(vis, node)
+}
+
 func (vis *InspectingVisitor) VisitReturn(node *ASTReturnStatement) interface{} {
 	return inspectingVisit(vis, node)
 }

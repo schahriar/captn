@@ -12,7 +12,8 @@ type ASTDeclaration struct {
 
 	// Multi-name allows for destruction or Go / python multi-value returns
 	Names   []*ASTSymbol
-	Virtual []ASTNode // RHS expressions
+	Type    *ASTTypeExpression // Annotation, nil where the language has none or infers it
+	Virtual []ASTNode          // RHS expressions
 }
 
 func (node *ASTDeclaration) Kind() string {
@@ -44,6 +45,9 @@ func (node *ASTDeclaration) Children() []ASTNode {
 	list := []ASTNode{}
 	for _, n := range node.Names {
 		list = append(list, n)
+	}
+	if node.Type != nil {
+		list = append(list, node.Type)
 	}
 	return append(list, node.Virtual...)
 }

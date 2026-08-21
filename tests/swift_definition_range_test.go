@@ -73,7 +73,7 @@ func TestSwiftNormalizeDefinitionRangeLeavesNonIdentifiersAlone(t *testing.T) {
 	}
 }
 
-// A server that already sends a span must survive untouched.
+// A server that already sends the name's span must see it survive untouched
 func TestNormalizeDefinitionRangeKeepsExistingSpans(t *testing.T) {
 	for _, lang := range []struct {
 		name string
@@ -83,7 +83,7 @@ func TestNormalizeDefinitionRangeKeepsExistingSpans(t *testing.T) {
 	}{
 		{"swift", languages.Swift, "n.swift", "func widen() {}\n"},
 		{"golang", languages.Golang, "n.go", "package main\n"},
-		{"python", languages.Python, "n.py", "def widen():\n    pass\n"},
+		{"python", languages.Python, "n.py", "wide = 1\n"},
 	} {
 		t.Run(lang.name, func(t *testing.T) {
 			src := common.NewSource(t.TempDir(), lang.file, []byte(lang.body))
@@ -97,8 +97,7 @@ func TestNormalizeDefinitionRangeKeepsExistingSpans(t *testing.T) {
 	}
 }
 
-// gopls and pyright never send a zero-width definition range; if one arrives
-// it must pass through rather than be silently widened by the wrong language.
+// A zero-width range must pass through rather than be widened by the wrong language
 func TestNonSwiftNormalizeDefinitionRangeIsIdentity(t *testing.T) {
 	src := common.NewSource(t.TempDir(), "n.go", []byte("package main\n"))
 	point := pointAt(src, 8)

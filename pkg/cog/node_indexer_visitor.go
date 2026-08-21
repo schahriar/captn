@@ -65,6 +65,10 @@ func (vis *nodeIndexerVisitor) VisitDeclaration(node *ast.ASTDeclaration) interf
 	return autoIndex(vis, node)
 }
 
+func (vis *nodeIndexerVisitor) VisitTypeExpression(node *ast.ASTTypeExpression) interface{} {
+	return autoIndex(vis, node)
+}
+
 func (vis *nodeIndexerVisitor) VisitReturn(node *ast.ASTReturnStatement) interface{} {
 	return autoIndex(vis, node)
 }

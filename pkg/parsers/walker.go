@@ -45,38 +45,68 @@ func (apn ParserNode) GetPosition() *common.FileRange {
 }
 
 func (apn ParserNode) IterateChildren(iterator func(ParserNode) (bool, error)) error {
-	var e error
-	for i := uint(0); i < apn.raw.NamedChildCount(); i++ {
-		child := apn.raw.NamedChild(i)
-		node := NewParserNode(apn.Source, child)
+	cursor := apn.raw.Walk()
+	defer cursor.Close()
 
-		shouldContinue, err := iterator(node)
+	for ok := cursor.GotoFirstChild(); ok; ok = cursor.GotoNextSibling() {
+		child := cursor.Node()
+
+		if !child.IsNamed() {
+			continue
+		}
+
+		shouldContinue, err := iterator(NewParserNode(apn.Source, child))
 
 		if err != nil {
-			e = err
-			break
+			return err
 		}
 
 		if !shouldContinue {
-			break
+			return nil
 		}
 	}
 
-	return e
+	return nil
+}
+
+// Anonymous tokens included
+func (apn ParserNode) IterateAllChildren(iterator func(child ParserNode, field string) (bool, error)) error {
+	cursor := apn.raw.Walk()
+	defer cursor.Close()
+
+	for ok := cursor.GotoFirstChild(); ok; ok = cursor.GotoNextSibling() {
+		shouldContinue, err := iterator(NewParserNode(apn.Source, cursor.Node()), cursor.FieldName())
+
+		if err != nil {
+			return err
+		}
+
+		if !shouldContinue {
+			return nil
+		}
+	}
+
+	return nil
 }
 
 func (apn ParserNode) GetNthChildByKind(kind string, n int) (ParserNode, bool) {
+	cursor := apn.raw.Walk()
+	defer cursor.Close()
+
 	matches := 0
 
-	for i := uint(0); i < apn.raw.NamedChildCount(); i++ {
-		child := apn.raw.NamedChild(i)
-		if child != nil && child.Kind() == kind {
-			matches++
+	for ok := cursor.GotoFirstChild(); ok; ok = cursor.GotoNextSibling() {
+		child := cursor.Node()
 
-			if matches > n { // n is always an index so matches = 1 is n = 0 therefore matches > n is what we want
-				node := NewParserNode(apn.Source, child)
-				return node, true
-			}
+		if !child.IsNamed() || child.Kind() != kind {
+			continue
+		}
+
+		matches++
+
+		// n is an index, so the (n+1)th match is the one
+		if matches > n {
+			return NewParserNode(apn.Source, child), true
 		}
 	}
 
@@ -85,23 +115,27 @@ func (apn ParserNode) GetNthChildByKind(kind string, n int) (ParserNode, bool) {
 }
 
 func (apn ParserNode) IterateChildrenByFieldName(fieldName string, iterator func(ParserNode) (bool, error)) error {
-	count := uint32(apn.raw.NamedChildCount())
-	for i := uint32(0); i < count; i++ {
-		if apn.raw.FieldNameForNamedChild(i) == fieldName {
-			child := apn.raw.NamedChild(uint(i))
-			if child == nil {
-				continue
-			}
-			node := NewParserNode(apn.Source, child)
-			shouldContinue, err := iterator(node)
-			if err != nil {
-				return err
-			}
-			if !shouldContinue {
-				break
-			}
+	cursor := apn.raw.Walk()
+	defer cursor.Close()
+
+	for ok := cursor.GotoFirstChild(); ok; ok = cursor.GotoNextSibling() {
+		child := cursor.Node()
+
+		if !child.IsNamed() || cursor.FieldName() != fieldName {
+			continue
+		}
+
+		shouldContinue, err := iterator(NewParserNode(apn.Source, child))
+
+		if err != nil {
+			return err
+		}
+
+		if !shouldContinue {
+			return nil
 		}
 	}
+
 	return nil
 }
 
@@ -120,6 +154,27 @@ func (apn ParserNode) ChildByFieldName(name string) (ParserNode, bool) {
 
 func (apn ParserNode) GetTextContent() string {
 	return apn.raw.Utf8Text(apn.Source.Buffer)
+}
+
+func (apn ParserNode) ParentKind() (string, bool) {
+	parent := apn.raw.Parent()
+
+	if parent == nil {
+		return "", false
+	}
+
+	return parent.Kind(), true
+}
+
+func (apn ParserNode) NextNamedSibling() (ParserNode, bool) {
+	next := apn.raw.NextNamedSibling()
+
+	if next == nil {
+		var zero ParserNode
+		return zero, false
+	}
+
+	return NewParserNode(apn.Source, next), true
 }
 
 var _ ast.ASTParserNode = (*ParserNode)(nil)

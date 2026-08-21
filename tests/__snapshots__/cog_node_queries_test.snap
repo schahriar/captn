@@ -3,221 +3,221 @@
   - type: stdlib
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 1
         byteposition: 24
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 6
         byteposition: 29
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/doc.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/doc.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/doc.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/doc.go
         line: 398
         column: 0
         byteposition: 15815
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/doc.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/doc.go
         line: 398
         column: 11
         byteposition: 15826
   - type: stdlib
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 1
         byteposition: 24
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 6
         byteposition: 29
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/errors.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/errors.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/errors.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/errors.go
         line: 4
         column: 0
         byteposition: 160
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/errors.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/errors.go
         line: 10
         column: 1
         byteposition: 227
   - type: stdlib
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 1
         byteposition: 24
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 6
         byteposition: 29
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/format.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/format.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/format.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/format.go
         line: 4
         column: 0
         byteposition: 160
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/format.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/format.go
         line: 9
         column: 1
         byteposition: 210
   - type: stdlib
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 1
         byteposition: 24
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 6
         byteposition: 29
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/print.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/print.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/print.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/print.go
         line: 4
         column: 0
         byteposition: 160
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/print.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/print.go
         line: 14
         column: 1
         byteposition: 261
   - type: stdlib
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 1
         byteposition: 24
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 3
         column: 6
         byteposition: 29
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/scan.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/scan.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/scan.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/scan.go
         line: 4
         column: 0
         byteposition: 160
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: ../../../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.darwin-arm64/src/fmt/scan.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: ../../../../../opt/homebrew/Cellar/go/1.26.5/libexec/src/fmt/scan.go
         line: 15
         column: 1
         byteposition: 259
   - type: local
     internal:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
-        path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+        path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 5
         column: 1
         byteposition: 32
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
-          path: /Users/workspace/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
+          path: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/golang/multidep/cmd/main.go
         line: 5
         column: 82
         byteposition: 113
     external:
       source:
-        workspace: /Users/workspace/Workspace/captn/tests
+        workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
         path: fixtures/golang/multidep/cmd/main.go
       start:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
           path: fixtures/golang/multidep/cmd/main.go
         line: 5
         column: 1
         byteposition: 32
       end:
         source:
-          workspace: /Users/workspace/Workspace/captn/tests
+          workspace: /Users/shawnsaffarshargh/Workspace/captn/tests
           path: fixtures/golang/multidep/cmd/main.go
         line: 5
         column: 69

@@ -14,7 +14,7 @@ type ASTFuncArgument struct {
 	*ASTNodeContainer
 	// It's possible for both ID and Symbol to be nil in cases where arguments are read by index
 	Identifier *ASTSymbol
-	Type       *ASTSymbol
+	Type       *ASTTypeExpression
 }
 
 func (node *ASTFuncArgument) Kind() string {
@@ -25,7 +25,7 @@ func (node *ASTFuncArgument) NearestOrSelf(filt func(ASTNode) bool) ASTNode {
 	return node.ASTNodeContainer.NearestOrSelf(node, filt)
 }
 
-func NewASTFuncArgument(cont *ASTNodeContainer, nid *ASTSymbol, nt *ASTSymbol) *ASTFuncArgument {
+func NewASTFuncArgument(cont *ASTNodeContainer, nid *ASTSymbol, nt *ASTTypeExpression) *ASTFuncArgument {
 	node := &ASTFuncArgument{
 		ASTNodeContainer: cont.Clone(),
 		Identifier:       nid,
@@ -84,7 +84,7 @@ type ASTFuncExpression struct {
 	// Assigned as a pointer to force support for null type (anonymous / unnamed functions)
 	Name       *ASTSymbol
 	Arguments  []*ASTFuncArgument
-	ReturnType *ASTSymbol
+	ReturnType *ASTTypeExpression
 	Block      *ASTBlock
 }
 

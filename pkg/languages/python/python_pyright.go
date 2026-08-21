@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/schahriar/captn/pkg/common"
 )
@@ -68,8 +70,74 @@ func npmGlobalBinDir(ctx context.Context) string {
 	return filepath.Join(prefix, "bin")
 }
 
-// NormalizeDefinitionRange answers unchanged: pyright already spans the
-// identifier in a textDocument/definition reply.
-func (plsd *PythonLanguageSupportDefinition) NormalizeDefinitionRange(_ *common.Source, r *common.FileRange) *common.FileRange {
-	return r
+// NormalizeDefinitionRange narrows pyright's reply to the first name in it.
+// pyright answers most definitions with the declared name's span but a
+// parameter, a typing special form or a type parameter list with the whole
+// node, and a range holding several nodes resolves to none of them. Empty
+// ranges pass through: an import resolves to 0:0 of its module.
+func (plsd *PythonLanguageSupportDefinition) NormalizeDefinitionRange(src *common.Source, r *common.FileRange) *common.FileRange {
+	if src == nil || r == nil || r.Start.BytePosition >= r.End.BytePosition {
+		return r
+	}
+
+	at, width := firstIdentifier(src.Buffer, r.Start.BytePosition, r.End.BytePosition)
+
+	if width == 0 || (at == r.Start.BytePosition && at+width == r.End.BytePosition) {
+		return r
+	}
+
+	start := advance(src.Buffer, r.Start, at)
+	end := advance(src.Buffer, start, at+width)
+
+	return common.NewFileRange(r.Source, start, end)
+}
+
+// Returns the identifier's start and byte width, width 0 when there is none
+func firstIdentifier(buf []byte, from int, to int) (int, int) {
+	to = min(to, len(buf))
+	at := max(from, 0)
+
+	for at < to {
+		r, size := utf8.DecodeRune(buf[at:to])
+
+		if isIdentifierRune(r) {
+			break
+		}
+
+		at += size
+	}
+
+	width := 0
+
+	for at+width < to {
+		r, size := utf8.DecodeRune(buf[at+width : to])
+
+		if !isIdentifierRune(r) {
+			break
+		}
+
+		width += size
+	}
+
+	return at, width
+}
+
+func isIdentifierRune(r rune) bool {
+	return unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_'
+}
+
+// Source treats columns as bytes into the line, see BytePositionForLineColumn
+func advance(buf []byte, pos common.FilePosition, to int) common.FilePosition {
+	for pos.BytePosition < to {
+		if buf[pos.BytePosition] == '\n' {
+			pos.Line++
+			pos.Column = 0
+		} else {
+			pos.Column++
+		}
+
+		pos.BytePosition++
+	}
+
+	return pos
 }

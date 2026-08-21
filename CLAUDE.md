@@ -31,6 +31,25 @@ And a few technical rules to follow:
 
 Things that were expensive to discover. Each one cost a wrong turn.
 
+### Comments mark traps, never narrate
+
+A comment earns its place only where the code would otherwise be "fixed" by a reader — a
+deliberate skip, a grammar quirk worked around, a flag that must stay — and says it in one or two
+lines at the spot. Everything else is noise to delete before review: doc comments restating a
+function's name or signature (`IterateChildren` needs no explainer), essays on why an
+implementation is shaped the way it is, justifications addressed to a reviewer ("without this X
+failed"), and prose duplicating what CLAUDE.md or the language skill already documents. Design
+rationale that must survive belongs in those documents, not above the function.
+
+### Loops belong where they run
+
+Do not lift a loop into a helper that takes the loop body as a callback so several functions can
+share it (`eachChild(visit)` beneath `IterateChildren`, `GetNthChildByKind` and
+`IterateChildrenByFieldName` was one). Write the loop in each function that needs it, even at the
+cost of a few repeated lines: a reader should see what a function iterates over without following
+a closure into another function. `ParserNode.IterateChildren` and its siblings are the transformer's
+API onto the grammar tree, not a pattern to build on.
+
 ### The graph is the explanation
 
 `ObservationGraph.QueryWithDepth` builds its answer from *every vertex* ("X does the following") and
@@ -68,6 +87,11 @@ Never write `ClassifyImportType` from documentation. Run the server against a fi
 the paths it actually returns — sourcekit-lsp resolves every cross-module definition into a
 generated interface under a temp directory, which no plausible guess would have matched.
 
+pyright answers most definitions with the name's extent, but a typing special form
+(`Optional: _SpecialForm` in typeshed) with the whole statement, which holds three indexed nodes.
+Python's `NormalizeDefinitionRange` narrows to the leading identifier for that reason; a probe
+against local fixtures alone would never have shown it.
+
 ### Measuring
 
 Benchmark `B/op` is allocation churn, not size; a parse that reported 34 GB retained 4 MB. Go's
@@ -77,7 +101,17 @@ C memory is not returned to the OS.
 
 ### Grammars have holes; do not paper over them
 
-tree-sitter-swift cannot parse a function without a body, so every declaration in a `.swiftinterface`
-is an ERROR node. Error recovery groups an arbitrary run of declarations, so reading structure back
+tree-sitter-swift cannot parse a function without a body, so every bodyless function in a
+`.swiftinterface` -- most of what its type bodies hold -- is an ERROR node. Error recovery groups an arbitrary run of declarations, so reading structure back
 out of it invents relationships the grammar never established. Keep the name so definitions still
 resolve, accept the coarse vertex, and say so.
+
+Inside an ERROR node a swallowed declaration keeps its name directly after the keyword token, but
+with no promise of a kind: `struct Int` leaves a `simple_identifier`, `struct Range` an ERROR node,
+`func prefix` the keyword token `prefix`, `protocol Sequence` a leading fragment `Seq`. Identifiers
+after `->`, `:` or a modifier are references, and even `public` shows up as one. Only what follows a
+declaring keyword is a name, and its spelling, not its kind, is what to check.
+
+tree-sitter-swift labels fields inconsistently: `ChildByFieldName("return_type")` returns the
+leading `type_modifiers` of an attributed type (`-> @MainActor Widget`) and reports the actual
+type under field `name`, so iterating the field never reaches it. Step to the next named sibling.

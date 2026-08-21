@@ -157,7 +157,7 @@ func TestASTFuncArgumentFields(t *testing.T) {
 	src := &common.Source{Path: "test.go", Buffer: []byte("x int")}
 	cont := newTestContainer(src, 0, 5)
 	id := ast.NewASTSymbol(cont, "x")
-	tp := ast.NewASTSymbol(cont, "int")
+	tp := ast.NewASTTypeExpression(cont, "int")
 	arg := ast.NewASTFuncArgument(cont, id, tp)
 	assert.Equal(t, id, arg.Identifier)
 	assert.Equal(t, tp, arg.Type)

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode"
 
 	tree_sitter_swift "github.com/alex-pinkus/tree-sitter-swift/bindings/go"
 	"github.com/schahriar/captn/pkg/ast"
@@ -22,13 +23,14 @@ import (
 // all map to ASTFuncExpression, because only FuncExpression and Module become
 // observation-graph vertices and a Swift type is where its members live.
 //
-// The grammar cannot parse a declaration without a body: function_declaration
+// The grammar cannot parse a function without a body: function_declaration
 // requires a body field, so a bodyless `public func f()` becomes an ERROR node.
-// That makes .swiftinterface files -- which are nothing but bodyless
-// declarations -- parse into little more than their module. It costs nothing
-// today because SearchSnippet keeps only local dependencies and every generated
-// interface classifies as stdlib or package, but a caller that parses one
-// directly should expect a module and not much else.
+// That makes .swiftinterface files -- where sourcekit-lsp resolves every
+// standard library and package definition, and whose type bodies hold little
+// else -- parse into whatever recovery left healthy plus the names recovered
+// from ERROR nodes. Those names are what definitions resolve onto; the vertex a
+// standard library definition contributes is the healthy declaration recovery
+// nested it under, or the module when the name was recovered at the root.
 
 // hasSourceWidth reports whether a node spans any bytes; tree-sitter error
 // recovery produces zero-width nodes that must never become AST nodes (the
@@ -73,6 +75,94 @@ func collectPatternIdentifiers(node parsers.ParserNode) []*ast.ASTSymbol {
 	return names
 }
 
+func fieldNames(node parsers.ParserNode, field string) []*ast.ASTSymbol {
+	var names []*ast.ASTSymbol
+
+	node.IterateChildrenByFieldName(field, func(pn parsers.ParserNode) (bool, error) {
+		names = append(names, collectPatternIdentifiers(pn)...)
+		return true, nil
+	})
+
+	return names
+}
+
+// Tokens whose next sibling inside an ERROR node is a swallowed declaration's name
+var declaringKeywords = map[string]bool{
+	"struct":         true,
+	"class":          true,
+	"enum":           true,
+	"protocol":       true,
+	"actor":          true,
+	"typealias":      true,
+	"associatedtype": true,
+	"func":           true,
+}
+
+// Recovery does not promise a kind for a swallowed name, so the text is what
+// is checked, not the kind
+func spelledLikeIdentifier(node parsers.ParserNode) bool {
+	text := node.GetTextContent()
+
+	if text == "" {
+		return false
+	}
+
+	for i, r := range text {
+		if r == '_' || unicode.IsLetter(r) || (i > 0 && unicode.IsDigit(r)) {
+			continue
+		}
+
+		return false
+	}
+
+	return true
+}
+
+// An identifier after `->`, `:` or a modifier is a reference, so the keyword
+// is what tells a declared name from a use
+func declaredAfterKeyword(node parsers.ParserNode, prevKind string) (*ast.ASTSymbol, bool) {
+	if !declaringKeywords[prevKind] || !hasSourceWidth(node) || !spelledLikeIdentifier(node) {
+		return nil, false
+	}
+
+	return ast.NewASTSymbol(ast.NewASTNodeContainer(node), node.GetTextContent()), true
+}
+
+// recoveredNames collects the names an ERROR node still declares: whatever
+// recovery filed under the name field, plus every bare identifier that
+// follows a declaring keyword
+func recoveredNames(node parsers.ParserNode) []*ast.ASTSymbol {
+	var names []*ast.ASTSymbol
+	prevKind := ""
+
+	node.IterateAllChildren(func(child parsers.ParserNode, field string) (bool, error) {
+		var filed []*ast.ASTSymbol
+
+		if field == "name" {
+			filed = collectPatternIdentifiers(child)
+		}
+
+		if len(filed) == 0 {
+			if name, ok := declaredAfterKeyword(child, prevKind); ok {
+				filed = append(filed, name)
+			}
+		}
+
+		names = append(names, filed...)
+		prevKind = child.Kind
+
+		return true, nil
+	})
+
+	// A swallowed `init` becomes an ERROR node spanning exactly the keyword,
+	// which is where constructor calls resolve, so it stands in for the name
+	if node.GetTextContent() == "init" {
+		names = append(names, ast.NewASTSymbol(ast.NewASTNodeContainer(node), "init"))
+	}
+
+	return names
+}
+
 // emitBindingDeclaration emits an ASTDeclaration over a binding target (loop
 // item, optional binding, catch alias) so LSP-resolved definition ranges always
 // contain a symbol
@@ -89,21 +179,139 @@ func emitBindingDeclaration(trx *parsers.TransformContext, target parsers.Parser
 	return trx.Emit(decl)
 }
 
+// typeExpression maps a type onto the identifiers definitions resolve to.
+// Nameless composites (optionals, dictionaries, function types) fold flat:
+// the first named type inside is the head and the rest are its arguments.
+func typeExpression(node parsers.ParserNode) *ast.ASTTypeExpression {
+	types := collectTypes(node)
+
+	if len(types) == 0 {
+		return nil
+	}
+
+	types[0].Arguments = append(types[0].Arguments, types[1:]...)
+
+	return types[0]
+}
+
+// An attribute (`@MainActor`) spells its name as a user_type but never
+// denotes one, so it contributes nothing
+func collectTypes(node parsers.ParserNode) []*ast.ASTTypeExpression {
+	switch node.Kind {
+	case "type_identifier":
+		if !hasSourceWidth(node) {
+			return nil
+		}
+
+		return []*ast.ASTTypeExpression{ast.NewASTTypeExpression(ast.NewASTNodeContainer(node), node.GetTextContent())}
+
+	case "user_type":
+		if texpr := userTypeExpression(node); texpr != nil {
+			return []*ast.ASTTypeExpression{texpr}
+		}
+
+		return nil
+
+	case "type_modifiers", "attribute":
+		return nil
+	}
+
+	var types []*ast.ASTTypeExpression
+
+	node.IterateChildren(func(child parsers.ParserNode) (bool, error) {
+		types = append(types, collectTypes(child)...)
+		return true, nil
+	})
+
+	return types
+}
+
+// userTypeExpression maps a dotted, possibly generic user_type. The head is
+// the last segment, except that a trailing Type or Protocol is the metatype
+// marker and is dropped (Gadget.Type is about Gadget).
+func userTypeExpression(node parsers.ParserNode) *ast.ASTTypeExpression {
+	var segments []parsers.ParserNode
+	var args []*ast.ASTTypeExpression
+
+	node.IterateChildren(func(child parsers.ParserNode) (bool, error) {
+		switch child.Kind {
+		case "type_identifier":
+			if hasSourceWidth(child) {
+				segments = append(segments, child)
+			}
+
+		case "type_arguments":
+			child.IterateChildren(func(arg parsers.ParserNode) (bool, error) {
+				if texpr := typeExpression(arg); texpr != nil {
+					args = append(args, texpr)
+				}
+				return true, nil
+			})
+		}
+
+		return true, nil
+	})
+
+	if len(segments) > 1 {
+		if marker := segments[len(segments)-1].GetTextContent(); marker == "Type" || marker == "Protocol" {
+			segments = segments[:len(segments)-1]
+		}
+	}
+
+	if len(segments) == 0 {
+		return nil
+	}
+
+	head := segments[len(segments)-1]
+	texpr := ast.NewASTTypeExpression(ast.NewASTNodeContainer(head), head.GetTextContent())
+	texpr.Arguments = append(texpr.Arguments, args...)
+
+	if len(segments) > 1 {
+		qual := segments[len(segments)-2]
+		texpr.Namespace = ast.NewASTSymbol(ast.NewASTNodeContainer(qual), qual.GetTextContent())
+	}
+
+	return texpr
+}
+
+// The grammar files an attributed type's `@MainActor` under the type field and
+// the type itself as its next sibling, so type_modifiers is stepped over
+func annotatedType(node parsers.ParserNode, field string) *ast.ASTTypeExpression {
+	typeNode, ok := node.ChildByFieldName(field)
+
+	if !ok {
+		return nil
+	}
+
+	if typeNode.Kind == "type_modifiers" {
+		if typeNode, ok = typeNode.NextNamedSibling(); !ok {
+			return nil
+		}
+	}
+
+	return typeExpression(typeNode)
+}
+
+func bindingType(node parsers.ParserNode) *ast.ASTTypeExpression {
+	annotation, ok := node.GetNthChildByKind("type_annotation", 0)
+
+	if !ok {
+		return nil
+	}
+
+	return annotatedType(annotation, "type")
+}
+
 func appendArgument(fn *ast.ASTFuncExpression, pn parsers.ParserNode) {
 	var idSym *ast.ASTSymbol
-	var typeSym *ast.ASTSymbol
 
 	// The name field also accepts types in this grammar, so the kind is checked
 	// rather than trusted
-	if nameNode, ok := pn.ChildByFieldName("name"); ok && nameNode.Kind == "simple_identifier" {
+	if nameNode, ok := pn.ChildByFieldName("name"); ok && nameNode.Kind == "simple_identifier" && hasSourceWidth(nameNode) {
 		idSym = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
 	}
 
-	if typeNode, ok := pn.ChildByFieldName("type"); ok {
-		typeSym = ast.NewASTSymbol(ast.NewASTNodeContainer(typeNode), typeNode.GetTextContent())
-	}
-
-	fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, typeSym))
+	fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, annotatedType(pn, "type")))
 }
 
 // collectParameters reads the parameters of a function-like declaration. Swift
@@ -117,6 +325,55 @@ func collectParameters(node parsers.ParserNode, fn *ast.ASTFuncExpression) {
 
 		return true, nil
 	})
+}
+
+func collectTypeParameters(node parsers.ParserNode, fn *ast.ASTFuncExpression) {
+	params, ok := node.GetNthChildByKind("type_parameters", 0)
+
+	if !ok {
+		return
+	}
+
+	params.IterateChildren(func(pn parsers.ParserNode) (bool, error) {
+		if pn.Kind != "type_parameter" {
+			return true, nil
+		}
+
+		nameNode, ok := pn.GetNthChildByKind("type_identifier", 0)
+
+		if !ok || !hasSourceWidth(nameNode) {
+			return true, nil
+		}
+
+		idSym := ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
+		fn.Arguments = append(fn.Arguments, ast.NewASTFuncArgument(ast.NewASTNodeContainer(pn), idSym, annotatedType(pn, "name")))
+
+		return true, nil
+	})
+}
+
+func typeParameterNames(node parsers.ParserNode) []*ast.ASTSymbol {
+	params, ok := node.GetNthChildByKind("type_parameters", 0)
+
+	if !ok {
+		return nil
+	}
+
+	var names []*ast.ASTSymbol
+
+	params.IterateChildren(func(pn parsers.ParserNode) (bool, error) {
+		if pn.Kind != "type_parameter" {
+			return true, nil
+		}
+
+		if nameNode, ok := pn.GetNthChildByKind("type_identifier", 0); ok && hasSourceWidth(nameNode) {
+			names = append(names, ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent()))
+		}
+
+		return true, nil
+	})
+
+	return names
 }
 
 func collectLambdaParameters(typeNode parsers.ParserNode, fn *ast.ASTFuncExpression) {
@@ -156,7 +413,9 @@ func emitBodylessFunction(ctx context.Context, trx *parsers.TransformContext, no
 
 	fn := ast.NewASTFuncExpression(ast.NewASTNodeContainer(node))
 	fn.Name = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
+	fn.ReturnType = annotatedType(node, "return_type")
 
+	collectTypeParameters(node, fn)
 	collectParameters(node, fn)
 
 	if err := trx.Emit(fn); err != nil {
@@ -166,25 +425,17 @@ func emitBodylessFunction(ctx context.Context, trx *parsers.TransformContext, no
 	return true, trx.WalkChildrenInto(ctx, fn)
 }
 
-// emitNamedDeclaration emits an ASTDeclaration carrying every name found under
-// the repeated field, used for the declaration forms that have no body to
-// narrow a function block down to
-func emitNamedDeclaration(ctx context.Context, trx *parsers.TransformContext, node parsers.ParserNode, field string) error {
-	var names []*ast.ASTSymbol
-
-	if err := node.IterateChildrenByFieldName(field, func(pn parsers.ParserNode) (bool, error) {
-		names = append(names, collectPatternIdentifiers(pn)...)
-		return true, nil
-	}); err != nil {
-		return err
-	}
-
+// emitDeclaration emits an ASTDeclaration carrying the given names, used for
+// the declaration forms that have no body to narrow a function block down to.
+// A node that declares nothing is walked in place instead.
+func emitDeclaration(ctx context.Context, trx *parsers.TransformContext, node parsers.ParserNode, names []*ast.ASTSymbol, typeExpr *ast.ASTTypeExpression) error {
 	if len(names) == 0 {
 		return trx.WalkChildren(ctx)
 	}
 
 	decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(node))
 	decl.Names = names
+	decl.Type = typeExpr
 
 	if err := trx.Emit(decl); err != nil {
 		return err
@@ -219,10 +470,9 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 			fn.Name = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
 		}
 
-		if retNode, ok := node.ChildByFieldName("return_type"); ok {
-			fn.ReturnType = ast.NewASTSymbol(ast.NewASTNodeContainer(retNode), retNode.GetTextContent())
-		}
+		fn.ReturnType = annotatedType(node, "return_type")
 
+		collectTypeParameters(node, fn)
 		collectParameters(node, fn)
 
 		// Functions auto-assign a block spanning the whole declaration; narrow
@@ -247,6 +497,8 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 		if nameNode, ok := node.ChildByFieldName("name"); ok && hasSourceWidth(nameNode) {
 			fn.Name = ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())
 		}
+
+		collectTypeParameters(node, fn)
 
 		if bodyNode, ok := node.ChildByFieldName("body"); ok && hasSourceWidth(bodyNode) {
 			fn.Block = ast.NewASTBlock(ast.NewASTNodeContainer(bodyNode))
@@ -278,11 +530,40 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 		return trx.WalkChildrenInto(ctx, fn)
 
 	case "property_declaration", "protocol_property_declaration":
-		return emitNamedDeclaration(ctx, trx, node, "name")
+		return emitDeclaration(ctx, trx, node, fieldNames(node, "name"), bindingType(node))
+
+	case "typealias_declaration", "associatedtype_declaration":
+		// A member-less named type needs only a declaration on its name, with
+		// the aliased type, constraint and default hanging off it as its type
+		nameNode, ok := node.ChildByFieldName("name")
+
+		if !ok || nameNode.Kind != "type_identifier" || !hasSourceWidth(nameNode) {
+			return trx.WalkChildren(ctx)
+		}
+
+		names := []*ast.ASTSymbol{ast.NewASTSymbol(ast.NewASTNodeContainer(nameNode), nameNode.GetTextContent())}
+		names = append(names, typeParameterNames(node)...)
+
+		var types []*ast.ASTTypeExpression
+
+		for _, field := range []string{"value", "must_inherit", "default_value"} {
+			if texpr := annotatedType(node, field); texpr != nil {
+				types = append(types, texpr)
+			}
+		}
+
+		var declared *ast.ASTTypeExpression
+
+		if len(types) > 0 {
+			declared = types[0]
+			declared.Arguments = append(declared.Arguments, types[1:]...)
+		}
+
+		return emitDeclaration(ctx, trx, node, names, declared)
 
 	case "enum_entry":
 		// Cases with associated values are callable, so definitions resolve here
-		return emitNamedDeclaration(ctx, trx, node, "name")
+		return emitDeclaration(ctx, trx, node, fieldNames(node, "name"), nil)
 
 	case "protocol_function_declaration":
 		if emitted, err := emitBodylessFunction(ctx, trx, node); emitted {
@@ -291,7 +572,7 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 
 		// Operator requirements name themselves with something other than a
 		// plain identifier; those still declare a name worth resolving onto
-		return emitNamedDeclaration(ctx, trx, node, "name")
+		return emitDeclaration(ctx, trx, node, fieldNames(node, "name"), nil)
 
 	case "for_statement":
 		if itemNode, ok := node.ChildByFieldName("item"); ok {
@@ -364,8 +645,9 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 
 	case "ERROR":
 		// The grammar has no production for a function without a body outside a
-		// protocol, so `public func f() -> Int` -- every declaration in a
-		// .swiftinterface, and any half-typed one being edited -- lands here.
+		// protocol, so `public func f() -> Int` -- most of what a .swiftinterface
+		// holds inside its type bodies, and any half-typed one being edited --
+		// lands here.
 		// Recovery keeps the name field, and the return type is spelled
 		// user_type rather than simple_identifier, so reading the name picks up
 		// the declaration and not its type. Without this the name is dropped and
@@ -374,9 +656,9 @@ func SwiftTransformer(ctx context.Context, trx *parsers.TransformContext, node p
 		// A Declaration and not a function: recovery groups whatever it could
 		// not parse, so an ERROR spans an arbitrary run of declarations rather
 		// than one. Reading a function out of that shape guesses at structure
-		// the grammar never established. The name is kept, so a definition still
-		// resolves; the enclosing vertex is the module.
-		return emitNamedDeclaration(ctx, trx, node, "name")
+		// the grammar never established. The names are kept, so a definition
+		// still resolves; the enclosing vertex is the module.
+		return emitDeclaration(ctx, trx, node, recoveredNames(node), nil)
 
 	default:
 		return trx.WalkChildren(ctx)
@@ -480,9 +762,19 @@ func (slsd *SwiftLanguageSupportDefinition) Parse(ctx context.Context, src *comm
 	// single file carries
 	name := strings.TrimSuffix(filepath.Base(src.Path), filepath.Ext(src.Path))
 
-	root := ast.NewASTModule(ast.NewASTNodeContainer(
-		parsers.NewParserNode(src, tree.RootNode()),
-	), name)
+	rootNode := parsers.NewParserNode(src, tree.RootNode())
+	root := ast.NewASTModule(ast.NewASTNodeContainer(rootNode), name)
+
+	// Recovery often makes a generated interface one ERROR node that is the
+	// root itself, and the walk never visits the root, so the names it declares
+	// directly (`struct Int`, `struct String`) are read here
+	if rootNode.Kind == "ERROR" {
+		if names := recoveredNames(rootNode); len(names) > 0 {
+			decl := ast.NewASTDeclaration(ast.NewASTNodeContainer(rootNode))
+			decl.Names = names
+			root.AppendChild(decl)
+		}
+	}
 
 	if err := parsers.WalkTransformTree(ctx, src, tree, root, SwiftTransformer); err != nil {
 		return nil, err

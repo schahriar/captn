@@ -222,6 +222,7 @@ var _ ASTNode = (*ASTBlock)(nil)
 var _ ASTNode = (*ASTReturnStatement)(nil)
 var _ ASTNode = (*ASTCallExpression)(nil)
 var _ ASTNode = (*ASTDeclaration)(nil)
+var _ ASTNode = (*ASTTypeExpression)(nil)
 var _ ASTNode = (*ASTSymbol)(nil)
 
 type ASTVisitor interface {
@@ -231,6 +232,7 @@ type ASTVisitor interface {
 	VisitFuncExpression(*ASTFuncExpression) interface{}
 	VisitFuncArgument(*ASTFuncArgument) interface{}
 	VisitDeclaration(*ASTDeclaration) interface{}
+	VisitTypeExpression(*ASTTypeExpression) interface{}
 	VisitBlock(*ASTBlock) interface{}
 	VisitReturn(*ASTReturnStatement) interface{}
 	VisitSymbol(*ASTSymbol) interface{}
