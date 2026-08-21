@@ -3,7 +3,8 @@
 ## TODO:
 - [x] Auto-install LSP servers
 - [x] Have `captn` work with `--prompt` in no TUI mode
-- [ ] Add support for CSS, HTML, Java, Rust, C, C++, Ruby, PHP, JSON
+- [ ] Add support for Java, Rust, C, C++, Ruby, PHP, JSON
+- [ ] For unsupported files add file level node observations
 - [ ] Add tool to collect automated chat sessions for experimentation
 - [ ] Benchmark using predefined set of changes in popular git repos
 - [ ] Fix port already in use error

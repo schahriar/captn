@@ -1,0 +1,9 @@
+$accent: #f60;
+
+.button {
+  color: $accent;
+
+  &:hover {
+    color: darken($accent, 10%);
+  }
+}

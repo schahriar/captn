@@ -1,0 +1,13 @@
+:root {
+  --accent: #f60;
+  --gap: 8px;
+}
+
+.button {
+  color: var(--accent);
+  padding: calc(var(--gap) * 2);
+}
+
+.button .label {
+  color: var(--accent, black);
+}

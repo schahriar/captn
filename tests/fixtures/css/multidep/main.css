@@ -1,0 +1,5 @@
+@import "./theme.css";
+
+.banner {
+  background: var(--brand);
+}

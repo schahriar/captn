@@ -5,7 +5,9 @@ import (
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
+	languages_css "github.com/schahriar/captn/pkg/languages/css"
 	languages_golang "github.com/schahriar/captn/pkg/languages/golang"
+	languages_html "github.com/schahriar/captn/pkg/languages/html"
 	languages_python "github.com/schahriar/captn/pkg/languages/python"
 	languages_swift "github.com/schahriar/captn/pkg/languages/swift"
 	languages_typescript "github.com/schahriar/captn/pkg/languages/typescript"
@@ -39,6 +41,10 @@ var Typescript LanguageSupport = languages_typescript.NewTypescriptLanguageSuppo
 var TypescriptReact LanguageSupport = languages_typescript.NewTSXLanguageSupportDefinition()
 var Javascript LanguageSupport = languages_typescript.NewJavascriptLanguageSupportDefinition()
 var JavascriptReact LanguageSupport = languages_typescript.NewJSXLanguageSupportDefinition()
+var CSS LanguageSupport = languages_css.NewCSSLanguageSupportDefinition()
+var SCSS LanguageSupport = languages_css.NewSCSSLanguageSupportDefinition()
+var LESS LanguageSupport = languages_css.NewLESSLanguageSupportDefinition()
+var HTML LanguageSupport = languages_html.NewHTMLLanguageSupportDefinition()
 
 // ForExtension resolves the LanguageSupport that parses files with the given
 // extension, e.g. ".go"
@@ -60,6 +66,16 @@ func ForExtension(ext string) (LanguageSupport, bool) {
 		return Javascript, true
 	case ".jsx":
 		return JavascriptReact, true
+	case ".css":
+		return CSS, true
+	// SCSS and LESS parse with the CSS grammar as degraded dialects; their
+	// rule structure maps while preprocessor syntax stays unmapped
+	case ".scss":
+		return SCSS, true
+	case ".less":
+		return LESS, true
+	case ".html":
+		return HTML, true
 	}
 
 	return nil, false

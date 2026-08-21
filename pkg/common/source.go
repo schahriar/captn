@@ -105,6 +105,14 @@ func (src *Source) GetLanguage() string {
 		return "typescript"
 	case ".js", ".mjs", ".cjs", ".jsx":
 		return "javascript"
+	case ".css":
+		return "css"
+	case ".scss":
+		return "scss"
+	case ".less":
+		return "less"
+	case ".html":
+		return "html"
 	default:
 		return "unknown"
 	}

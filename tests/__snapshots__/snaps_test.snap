@@ -1444,3 +1444,348 @@
                                                                       - Virtual: []
 
 ---
+
+[TestCSSSnapshotParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:1:1-14:1
+        sourcehash: kjj7z4HWgBAx49xLFWnEK42ZkvkZCXbsXo5i4C2EvPc
+  - Name:
+      - styles
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:1:1-14:1
+              sourcehash: JHH3nwOtACBjx7iWKtOIVhszJfIyEu3YH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:1:1-4:2
+                        sourcehash: tqrzboWDgDB6MWJ0s0D4-1s3aHgeeG1u_2DInzsKsto
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:1:7-4:2
+                              sourcehash: SOPvPgdaAEA3ThMSUq3YC4sxKIb6S1-vwIRKSDkkBsY
+                        - Virtual:
+                            - ASTSymbol:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:2:3-2:11
+                                        sourcehash: 2xzrDYkwgFD4mCPDwAcoEVhffZa9P0WA5h7Za-ou7OU
+                                  - Name:
+                                      - --accent
+                            - ASTSymbol:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:3:3-3:8
+                                        sourcehash: 2xzrDYkwgFBEcAhCspR-mDQSbop7ZYJz5h7Za-ou7OU
+                                  - Name:
+                                      - --gap
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:6:1-9:2
+                        sourcehash: tqrzboWDgDACt86OBwaMPAOuLl2IdRm1_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:6:2-6:8
+                              sourcehash: SOPvPgdaAEAYmdIsrBKbAjz8YPyzobqZJPtXwuwVmPk
+                        - Name:
+                            - button
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:6:9-9:2
+                              sourcehash: SOPvPgdaAEDuml8xCmVO8Ex-Lsbps1wOwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:7:10-7:23
+                                        sourcehash: 2xzrDYkwgFBTIhmTYqniYDtoPLagWTx21O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:7:14-7:22
+                                              sourcehash: bVXm3QsHAGAUbCpE0AMyZhFKzFamK5Nj-oncqnxLqsg
+                                        - Name:
+                                            - --accent
+                                  - Arguments: []
+                                  - Virtual: []
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:8:17-8:27
+                                        sourcehash: 2xzrDYkwgFDC1tzFwGbJj7PexTa_YXTm1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:8:21-8:26
+                                              sourcehash: bVXm3QsHAGDP-NH2IE1wHLLEbak-r6e9-oncqnxLqsg
+                                        - Name:
+                                            - --gap
+                                  - Arguments: []
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:11:1-13:2
+                        sourcehash: tqrzboWDgDCgXF-uXjp9FM8SXapmoYNN_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:11:2-11:8
+                              sourcehash: SOPvPgdaAEC2PmNNA0aL2qM1QXuyFTaIJPtXwuwVmPk
+                        - Name:
+                            - button
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:11:16-13:2
+                              sourcehash: SOPvPgdaAECe0IcEmRwkkWs_MYQi7oJHwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:12:10-12:30
+                                        sourcehash: 2xzrDYkwgFDOKPWWh7e6gkYLPspK22S41O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/baseproj/styles.css:12:14-12:22
+                                              sourcehash: bVXm3QsHAGCPcwZH9REKiNWU9R0UfSm4-oncqnxLqsg
+                                        - Name:
+                                            - --accent
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestCSSSnapshotMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:1:1-6:1
+        sourcehash: Mww5xmsw9ccstnV-B6q-Vm-TrE3OzBEhXo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:1:1-6:1
+              sourcehash: ZhhzjNZh645ZbOr8D1V8rN8nWJudmCJCH7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:1:9-1:22
+                        sourcehash: mSStU0GS4VWnDJScAh3QixiaQNHAMeOZPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:1:9-1:22
+                              sourcehash: zDDnGazD1xz0rD479OYkalINKQfiy6TwZLxLjrI6pks
+                        - Name:
+                            - ./theme.css
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:3:1-5:2
+                        sourcehash: mSStU0GS4VV33v-TZsLvoAdFDpoe5_Hw_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:3:2-3:8
+                              sourcehash: zDDnGazD1xxcUza90HxQ2otzCET4CjmqJPtXwuwVmPk
+                        - Name:
+                            - banner
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:3:9-5:2
+                              sourcehash: zDDnGazD1xzrqn7vsF26tXKZgOfvps9uwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:4:15-4:27
+                                        sourcehash: _z0g4Bf0zONNThXksTYV_KFfppMuyd3L1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/css/multidep/main.css:4:19-4:26
+                                              sourcehash: MklapoMlwqouV7_2pxy4qifAZZSUeTpC-oncqnxLqsg
+                                        - Name:
+                                            - --brand
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestHTMLSnapshotParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:1:1-13:1
+        sourcehash: NZGf-bDzI_eoJ0cys0TIIofSTaJ4rPGPXo5i4C2EvPc
+  - Name:
+      - index
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:1:1-13:1
+              sourcehash: ayM_82HmR-5QTo5lZomQRA-km0TxWeMeH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:2:1-12:8
+                        sourcehash: oLTf7RLZa-Wx0Sq6xaGtjecrPy---uKW_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:2:2-2:6
+                              sourcehash: 1kZ_5sPMj9yh9tHJH43NAb1dvRcpUoj1JPtXwuwVmPk
+                        - Name:
+                            - html
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:2:7-2:16
+                              sourcehash: 1kZ_5sPMj9xSNE89gycS7vVuMeqbU1Oax9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:2:7-2:11
+                                    sourcehash: C9gf4HS_s9OOBgMc19VhvYiChnzpTG6d7XSsTuIhl0I
+                              - Name:
+                                  - lang
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:2:1-2:17
+                              sourcehash: 1kZ_5sPMj9xjhwS4DaObZBIDyyWWsag_wIRKSDkkBsY
+                        - Virtual:
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:3:3-6:10
+                                        sourcehash: C9gf4HS_s9NcKPv2sbjPacU2y1MvgHCBoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:3:4-3:8
+                                              sourcehash: QWm_2iWy18pgNbW4h_yKvgUZoWEvkn4hxc29gfmbjtw
+                                        - Name:
+                                            - head
+                                  - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:3:3-3:9
+                                              sourcehash: QWm_2iWy18pVFPrQY_12H8GLQg3H4mSMYVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTFuncExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:5-5:5
+                                                        sourcehash: dvtf09al-8G4_j6-V57WrNlL5lIMsPOAQQWUHVYWnqA
+                                                  - Name:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:6-4:10
+                                                              sourcehash: rIz_zYeZH7iwlkmfJUZryk5EEv75CVJzZqAjQQchhL8
+                                                        - Name:
+                                                            - link
+                                                  - Arguments:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:11-4:27
+                                                              sourcehash: rIz_zYeZH7jfgluN_c4U8H6p1HguDZFyCX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:11-4:14
+                                                                    sourcehash: 4h6fxziMQ69nLszSuv8mAZHsqkmLurB2Lxl3zP0tgwg
+                                                              - Name:
+                                                                  - rel
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:28-4:47
+                                                              sourcehash: rIz_zYeZH7i6XB7_iI8YeB02rhmiskgeCX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:28-4:32
+                                                                    sourcehash: 4h6fxziMQ68uC_DuziuuWQyjJKDGNWjELxl3zP0tgwg
+                                                              - Name:
+                                                                  - href
+                                                  - Block:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:4:5-4:48
+                                                              sourcehash: rIz_zYeZH7jQtuBpfefZD7lpqFLEBjU9AikVxlQv8ow
+                                                        - Virtual: []
+                                            - ASTFuncExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:5-5:43
+                                                        sourcehash: dvtf09al-8FTWUi1FJvLzDL7_y2eodItQQWUHVYWnqA
+                                                  - Name:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:6-5:12
+                                                              sourcehash: rIz_zYeZH7gi17ERu9Q7MtPtWClDv5sjZqAjQQchhL8
+                                                        - Name:
+                                                            - script
+                                                  - Arguments:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:13-5:27
+                                                              sourcehash: rIz_zYeZH7jUSkMhUlH6maXHzlgT02t_CX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:13-5:16
+                                                                    sourcehash: 4h6fxziMQ6-mxWGPKD0DoKv-EXutfhyVLxl3zP0tgwg
+                                                              - Name:
+                                                                  - src
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:28-5:33
+                                                              sourcehash: rIz_zYeZH7huqBbOwvFvGOTL5rSCSlfgCX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:28-5:33
+                                                                    sourcehash: 4h6fxziMQ6-J9uTocUcSZJabzjtl8t2TLxl3zP0tgwg
+                                                              - Name:
+                                                                  - defer
+                                                  - Block:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:5:5-5:34
+                                                              sourcehash: rIz_zYeZH7hWWcsF9K_xecx8AV1kwLoBAikVxlQv8ow
+                                                        - Virtual: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:7:3-11:10
+                                        sourcehash: C9gf4HS_s9NILF6OIfiPoee5i6JMvRZaoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:7:4-7:8
+                                              sourcehash: QWm_2iWy18p5nqlCUzW8sN6xPqv_I28yxc29gfmbjtw
+                                        - Name:
+                                            - body
+                                  - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:7:3-7:9
+                                              sourcehash: QWm_2iWy18pEQb5wOzDTbl_8W6FXpN0nYVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTFuncExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:5-10:11
+                                                        sourcehash: dvtf09al-8GMoqfEPNokfuI2EvKS-vT0QQWUHVYWnqA
+                                                  - Name:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:6-8:9
+                                                              sourcehash: rIz_zYeZH7g3f3sroB_OU_d2vQbSyTpCZqAjQQchhL8
+                                                        - Name:
+                                                            - div
+                                                  - Arguments:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:10-8:24
+                                                              sourcehash: rIz_zYeZH7iCKpd0swymtaYYtfchKCgXCX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:10-8:15
+                                                                    sourcehash: 4h6fxziMQ68P1RBh_uvaUgvGsJkVBH2GLxl3zP0tgwg
+                                                              - Name:
+                                                                  - class
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:25-8:33
+                                                              sourcehash: rIz_zYeZH7hoTK47PdO87raEC-YNnkSACX7oqUwinOk
+                                                        - Identifier:
+                                                            - - ASTNodeContainer:
+                                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:25-8:27
+                                                                    sourcehash: 4h6fxziMQ6_C2NG2UzScFHKMVhI5K2EBLxl3zP0tgwg
+                                                              - Name:
+                                                                  - id
+                                                  - Block:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:8:5-8:34
+                                                              sourcehash: rIz_zYeZH7iPA7cxjAaEnOnlswVXc7loAikVxlQv8ow
+                                                        - Virtual:
+                                                            - ASTFuncExpression:
+                                                                - - ASTNodeContainer:
+                                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:9:13-9:18
+                                                                        sourcehash: 4h6fxziMQ69LzxHvu5XSOqDDkE2Nw_0_4df53GOclIM
+                                                                  - Name:
+                                                                      - - ASTNodeContainer:
+                                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:9:14-9:16
+                                                                              sourcehash: F7A_wOl_Z6b1JqTLu5XAq4uo-0WHH922B3KJABSneqI
+                                                                        - Name:
+                                                                            - br
+                                                                  - Arguments: []
+                                                                  - Block:
+                                                                      - - ASTNodeContainer:
+                                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/html/baseproj/index.html:9:13-9:18
+                                                                              sourcehash: F7A_wOl_Z6YImmyt6yUf2FehbZXEFEEWovt7hWG16G8
+                                                                        - Virtual: []
+
+---
