@@ -84,6 +84,7 @@ func TestNormalizeDefinitionRangeKeepsExistingSpans(t *testing.T) {
 		{"swift", languages.Swift, "n.swift", "func widen() {}\n"},
 		{"golang", languages.Golang, "n.go", "package main\n"},
 		{"python", languages.Python, "n.py", "wide = 1\n"},
+		{"typescript", languages.Typescript, "n.ts", "wide = 1\n"},
 	} {
 		t.Run(lang.name, func(t *testing.T) {
 			src := common.NewSource(t.TempDir(), lang.file, []byte(lang.body))

@@ -170,3 +170,7 @@ func swiftSiblingPath(binary string) string {
 
 	return ""
 }
+
+func (slsd *SwiftLanguageSupportDefinition) GetLSPInitializationOptions(_ context.Context, _ string) any {
+	return nil
+}

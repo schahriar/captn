@@ -101,6 +101,10 @@ func (src *Source) GetLanguage() string {
 		return "python"
 	case ".swift", ".swiftinterface":
 		return "swift"
+	case ".ts", ".mts", ".cts", ".tsx":
+		return "typescript"
+	case ".js", ".mjs", ".cjs", ".jsx":
+		return "javascript"
 	default:
 		return "unknown"
 	}

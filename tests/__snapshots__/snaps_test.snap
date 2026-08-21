@@ -736,3 +736,711 @@
                                                       - Virtual: []
 
 ---
+
+[TestTSParserSimpleFuncParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:1-4:1
+        sourcehash: NJWcrne_prTYfYQVGzZP4AmLefvlDKh-Xo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:1-4:1
+              sourcehash: aSs5XO9_TWiw-wgqNmyfwBMW8_fKGVD8H7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:1-3:2
+                        sourcehash: ncDWC2c-9Bwch6Mk4g4LeJUVG9n96Gc3_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:10-1:11
+                              sourcehash: 0lZyud7-mtB5CGO7ZRIcm3mGVWOIronhJPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:12-1:21
+                              sourcehash: 0lZyud7-mtC7F9Vtdil3uJAr0a9VArFbx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:12-1:13
+                                    sourcehash: BuwPaFa-QYRdq6mjuBr2eT5UITPKb4jp7XSsTuIhl0I
+                              - Name:
+                                  - v
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:1:31-3:2
+                              sourcehash: 0lZyud7-mtA7CzoZUkfSEeaQY7WujLQ0wIRKSDkkBsY
+                        - Virtual:
+                            - ASTReturnStatement:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:2:3-2:24
+                                        sourcehash: BuwPaFa-QYRS2n0bgqWvJwknUNT4L2kx8fQSeme6l2g
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:2:10-2:23
+                                                  sourcehash: O4GsFs596DgZKbSMO-pAB9h8yH-PGER5Bl8VuPnXVUs
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:2:10-2:16
+                                                        sourcehash: cBdIxUY9juy0ZHi7eUGMLtGuPoV6NPAtK_mk3KriO2o
+                                                  - Name:
+                                                      - String
+                                            - Arguments:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:2:17-2:18
+                                                        sourcehash: cBdIxUY9juy7vYjCfdu-yFMLg3XF1CvHzthqRO_jU5Q
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/simple.ts:2:17-2:18
+                                                              sourcehash: pKzlc739NaBeUVz4v809ic2aPmv8kBMV9HL5aKDuObM
+                                                        - Name:
+                                                            - v
+                                            - Virtual: []
+
+---
+
+[TestTSParserTypeFormsParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:1:1-28:1
+        sourcehash: i7ead24oJXw1iVipU0IFNzugd4gzi1XxXo5i4C2EvPc
+  - Name:
+      - types
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:1:1-28:1
+              sourcehash: F2807txQSvhrErFSpoQKbndA7xBnFqviH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:1:1-3:2
+                        sourcehash: oybPZkp4cHRQZPIvf3fGNmTgstGTTvPo_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:1:7-1:13
+                              sourcehash: Lt5p3biglfCV8wcHSzb-uWKMd9RZhzv7JPtXwuwVmPk
+                        - Name:
+                            - Gadget
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:1:14-3:2
+                              sourcehash: Lt5p3biglfC1oIo432QJ_E26O3ki3ZWDwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:2:3-2:22
+                                        sourcehash: upYEVSbIu2yf8iSOaWM7U-suX_nxaQSfpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:2:3-2:9
+                                              sourcehash: Rk2ezJTw4OgJDpURWnpWGnrnxR6G38EXy29hO8e1IZ8
+                                        - Name:
+                                            - serial
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:5:1-8:2
+                        sourcehash: oybPZkp4cHTPg9IToJqCWCxfYVsFoUJD_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:5:6-5:10
+                              sourcehash: Lt5p3biglfDPlHLFeUnZ-nwZkx5uzs7hJPtXwuwVmPk
+                        - Name:
+                            - Mode
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:5:11-8:2
+                              sourcehash: Lt5p3biglfCq3yHgo_w38tLW3g12TBzuwIRKSDkkBsY
+                        - Virtual:
+                            - ASTSymbol:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:6:3-6:7
+                                        sourcehash: upYEVSbIu2y9pnTpzfxqvcATV_XvQ3Ev5h7Za-ou7OU
+                                  - Name:
+                                      - Idle
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:7:3-7:16
+                                        sourcehash: upYEVSbIu2xr6Hv5RqufzIj8o5CUmI7DpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:7:3-7:7
+                                              sourcehash: Rk2ezJTw4OixnS6FSZgY8HaRGOArVItTy29hO8e1IZ8
+                                        - Name:
+                                            - Busy
+                                  - Virtual: []
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:10:1-10:27
+                        sourcehash: oybPZkp4cHR-TguGq8afpL2_KWg1HQ4kBQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:10:6-10:17
+                              sourcehash: Lt5p3biglfBODboZP7WusuRZqmIIOCugKpz7fLovK7w
+                        - Name:
+                            - GadgetAlias
+                  - Type:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:10:20-10:26
+                              sourcehash: Lt5p3biglfDD3CBed4XYJ_vnThU7zwkgs-fZ5D7tmGc
+                        - Name:
+                            - Gadget
+                        - Arguments: []
+                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:1-12:51
+                        sourcehash: oybPZkp4cHQDYv7Gg9mWPIVHTFx_emky_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:6-12:16
+                              sourcehash: Lt5p3biglfCU_Ss6t9tYkuYQvh203Q2xJPtXwuwVmPk
+                        - Name:
+                            - GadgetPair
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:19-12:50
+                              sourcehash: Lt5p3biglfBTawEY7sSICqeJ5kUs0dknwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:21-12:33
+                                        sourcehash: upYEVSbIu2xOlcHNNuDduVlgwsXZQNddpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:21-12:25
+                                              sourcehash: Rk2ezJTw4Ohjzx7Wf8d5gTV3XZzaAD6Cy29hO8e1IZ8
+                                        - Name:
+                                            - left
+                                  - Type:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:27-12:33
+                                              sourcehash: Rk2ezJTw4OiUI9alAqAWPFK5QO3rXK_OVLo_o0xzjko
+                                        - Name:
+                                            - Gadget
+                                        - Arguments: []
+                                  - Virtual: []
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:35-12:48
+                                        sourcehash: upYEVSbIu2x4Ws-S56VTvS53w6T1vbpfpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:35-12:40
+                                              sourcehash: Rk2ezJTw4Og8xPqOpliSTwN3JAh9ZeJ-y29hO8e1IZ8
+                                        - Name:
+                                            - right
+                                  - Type:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:12:42-12:48
+                                              sourcehash: Rk2ezJTw4Oi96ORqs2SMQMXzG2-BfsGDVLo_o0xzjko
+                                        - Name:
+                                            - Gadget
+                                        - Arguments: []
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:1-14:51
+                        sourcehash: oybPZkp4cHQXQyOweFjKNX5NOZ13k7Ha_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:6-14:13
+                              sourcehash: Lt5p3biglfDZCAJwwWcfK5mdkWndTGtGJPtXwuwVmPk
+                        - Name:
+                            - Labeler
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:14-14:30
+                              sourcehash: Lt5p3biglfC7OPoiXrBf2dI7enWiZS8Tx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:14-14:15
+                                    sourcehash: upYEVSbIu2wWhmUUplQvVDah9qXaLwUj7XSsTuIhl0I
+                              - Name:
+                                  - T
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:24-14:30
+                                    sourcehash: upYEVSbIu2wAxw76Km-YXDL2RIzkrQGmdr-KtmbgA-0
+                              - Name:
+                                  - Gadget
+                              - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:34-14:50
+                              sourcehash: Lt5p3biglfDOycTToXOJFNDN97meyn3LwIRKSDkkBsY
+                        - Virtual:
+                            - ASTTypeExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:14:38-14:39
+                                        sourcehash: upYEVSbIu2wqFy_F6RdYj_SxYKHwB1zYb2m3027tWZA
+                                  - Name:
+                                      - T
+                                  - Arguments: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:16:1-19:2
+                        sourcehash: oybPZkp4cHSXIEMMh9bJwXHtBfj3lvwU_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:16:11-16:20
+                              sourcehash: Lt5p3biglfBeb6siA3Go5-O2mYTKW77aJPtXwuwVmPk
+                        - Name:
+                            - Inventory
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:16:46-19:2
+                              sourcehash: Lt5p3biglfASB7QG5aLkd6aT5VXL2ShvwIRKSDkkBsY
+                        - Virtual:
+                            - ASTTypeExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:16:29-16:37
+                                        sourcehash: upYEVSbIu2zZCYBRXlVlE34wDzMcNBrAb2m3027tWZA
+                                  - Name:
+                                      - Iterable
+                                  - Arguments:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:16:38-16:44
+                                              sourcehash: Rk2ezJTw4Ogel5UpKhSdlucKsbSnF2zfHk8lXqS2rFo
+                                        - Name:
+                                            - Gadget
+                                        - Arguments: []
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:17:3-17:16
+                                        sourcehash: upYEVSbIu2xLr9yNoTvH6uqCOsloyB89pdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:17:3-17:8
+                                              sourcehash: Rk2ezJTw4OiTFHIVoXQUHzEPT72WOx2sy29hO8e1IZ8
+                                        - Name:
+                                            - count
+                                  - Virtual: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:3-18:43
+                                        sourcehash: upYEVSbIu2yyX6H2S0hjeCbwNtct6MpnoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:3-18:7
+                                              sourcehash: Rk2ezJTw4Og_BqT1oO5VZTJnwfkIQaHfxc29gfmbjtw
+                                        - Name:
+                                            - find
+                                  - Arguments:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:8-18:22
+                                              sourcehash: Rk2ezJTw4OjQaRgOMyjcN2oyCSlMVmGgaKyC6j6cpwY
+                                        - Identifier:
+                                            - - ASTNodeContainer:
+                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:8-18:14
+                                                    sourcehash: 0gU5RAMZBmQ5hYiRJD_2_pTfyGjkE4XvjkcSDe-njSU
+                                              - Name:
+                                                  - serial
+                                  - ReturnType:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:25-18:31
+                                              sourcehash: Rk2ezJTw4Oj37bbOFweb-03AZax6Wzq4Txib6X5Z-4c
+                                        - Name:
+                                            - Gadget
+                                        - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:18:3-18:43
+                                              sourcehash: Rk2ezJTw4OhSt4_lsO3ieadMiFiP-GxfYVawB0ap_Kk
+                                        - Virtual: []
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:7-21:50
+                        sourcehash: oybPZkp4cHRgk28Xkhv0iH14_S8_zhCnBQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:7-21:15
+                              sourcehash: Lt5p3biglfCLHUlp7zi12zFSHU8K3jveKpz7fLovK7w
+                        - Name:
+                            - describe
+                  - Type:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:17-21:24
+                              sourcehash: Lt5p3biglfAiWE3X2ypJfrdHvuFctPkms-fZ5D7tmGc
+                        - Name:
+                            - Labeler
+                        - Arguments:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:25-21:31
+                                    sourcehash: upYEVSbIu2xn5mKvpumCAesQNxNreZEHYs1Hb3S26zE
+                              - Name:
+                                  - Gadget
+                              - Arguments: []
+                  - Virtual:
+                      - ASTFuncExpression:
+                          - - ASTNodeContainer:
+                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:35-21:50
+                                  sourcehash: Lt5p3biglfCJF9uCwn6wZz94tQy6MLcx5LFQbxiQ55Q
+                            - Arguments:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:36-21:37
+                                        sourcehash: upYEVSbIu2wrq6-5BHAvKJ4ujEwO96J4rSqk-w6c5d0
+                                  - Identifier:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:36-21:37
+                                              sourcehash: Rk2ezJTw4OjOP4PvRmGt6fzkY4tjvo2_0sU0Hr-ny_w
+                                        - Name:
+                                            - v
+                            - Block:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:21:42-21:50
+                                        sourcehash: upYEVSbIu2y7zN0BD6mJwBtN0kHul3G8pdTSGBaqO4A
+                                  - Virtual: []
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:23:7-23:45
+                        sourcehash: oybPZkp4cHT8uTVT2g3n6IcZIenQ4aVFBQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:23:17-23:28
+                              sourcehash: Lt5p3biglfDKTOooILxBKTvTN7mcBk_-Kpz7fLovK7w
+                        - Name:
+                            - firstSerial
+                  - Virtual:
+                      - ASTCallExpression:
+                          - - ASTNodeContainer:
+                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:23:33-23:45
+                                  sourcehash: Lt5p3biglfBUJpNpMcL7AwML0dPFhOa9GW1vl5tBA4A
+                            - Symbol:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:23:37-23:43
+                                        sourcehash: upYEVSbIu2yZtKhA_YIzhhCx9egLoecBPwf-u0xL6Z8
+                                  - Name:
+                                      - Gadget
+                            - Arguments: []
+                            - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:1-27:2
+                        sourcehash: oybPZkp4cHRXda9S17c68rqZzb90n93e_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:10-25:15
+                              sourcehash: Lt5p3biglfAXud0TYTDt0lAEE3ZRZXVjJPtXwuwVmPk
+                        - Name:
+                            - tally
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:16-25:32
+                              sourcehash: Lt5p3biglfDitT4dEzMu4QtgX-O2pwyLx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:16-25:20
+                                    sourcehash: upYEVSbIu2xL27yh5YI8xXHjEUyGDWTB7XSsTuIhl0I
+                              - Name:
+                                  - pair
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:22-25:32
+                                    sourcehash: upYEVSbIu2x0T2qRRzTxN_gkPH5XayaAdr-KtmbgA-0
+                              - Name:
+                                  - GadgetPair
+                              - Arguments: []
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:34-25:44
+                              sourcehash: Lt5p3biglfA9pOGkG_EPni2GFofhrmjpx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:34-25:38
+                                    sourcehash: upYEVSbIu2wKFMtDWOvUnOEpyRWtb3QT7XSsTuIhl0I
+                              - Name:
+                                  - mode
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:40-25:44
+                                    sourcehash: upYEVSbIu2w9tYJV9KBnQOpfosPtlQ1cdr-KtmbgA-0
+                              - Name:
+                                  - Mode
+                              - Arguments: []
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:47-25:58
+                              sourcehash: Lt5p3biglfAnNV3la6ZKAJ6A4BEPdb2PrkY2KnDUBaQ
+                        - Name:
+                            - GadgetAlias
+                        - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:25:59-27:2
+                              sourcehash: Lt5p3biglfC0jBtpUakOKJPyNQyX_8wcwIRKSDkkBsY
+                        - Virtual:
+                            - ASTReturnStatement:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/types.ts:26:3-26:54
+                                        sourcehash: upYEVSbIu2yjsZKdBUpL571SX7UyXOMt8fQSeme6l2g
+                                  - Virtual: []
+
+---
+
+[TestTSParserMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:1:1-7:1
+        sourcehash: PXqqeRKwyVIEflwnBJKC6Z5XwcEGjmc_Xo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:1:1-7:1
+              sourcehash: evVU8iVhkqQI_LhOCSUF0jyvg4INHM5-H7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:1:30-1:39
+                        sourcehash: uG__azgSW_a_JF41K45zKXJppyR81qikPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:1:30-1:39
+                              sourcehash: 9eqp5ErDJUh1TAQcTffggKgjysbskILKZLxLjrI6pks
+                        - Name:
+                            - node:fs
+            - ASTSymbol:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:1:10-1:22
+                        sourcehash: uG__azgSW_YtX0Z2T56OTT6prrhqKagDRUxzrNyo9wI
+                  - Name:
+                      - readFileSync
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:2:47-2:59
+                        sourcehash: uG__azgSW_YsZH_z8Lhcmy_T--48MBtEPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:2:47-2:59
+                              sourcehash: 9eqp5ErDJUhPzEeZ2EuzZCL4dFprQ2gKZLxLjrI6pks
+                        - Name:
+                            - ./pkg/dep1
+            - ASTSymbol:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:2:28-2:39
+                        sourcehash: uG__azgSW_YchZNJ8KoeTrywqXw9waxrRUxzrNyo9wI
+                  - Name:
+                      - fixtureDep1
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:4:8-6:2
+                        sourcehash: uG__azgSW_bHFZf-rHR_aT0f7gFFaZ4q_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:4:17-4:21
+                              sourcehash: 9eqp5ErDJUjXQAA2ioVtb8EZgoMMhoTgJPtXwuwVmPk
+                        - Name:
+                            - main
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:4:32-6:2
+                              sourcehash: 9eqp5ErDJUhGV6uS3buQJutCtURO5E1jwIRKSDkkBsY
+                        - Virtual:
+                            - ASTReturnStatement:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:3-5:46
+                                        sourcehash: M2VUXV1z7poYtX8wTaanhI6TfLYxdOey8fQSeme6l2g
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:10-5:45
+                                                  sourcehash: cN_-1nAkt-xaT1RZAtOWAF15gGO8YZo8Bl8VuPnXVUs
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:10-5:22
+                                                        sourcehash: rlqpT4LVgT5-seKBSU0eez_1MF8I19a8K_mk3KriO2o
+                                                  - Name:
+                                                      - readFileSync
+                                            - Arguments:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:23-5:34
+                                                        sourcehash: rlqpT4LVgT5t2C9U6liufH9usuBcbVWdzthqRO_jU5Q
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:23-5:34
+                                                              sourcehash: 69VTyJWGSpCBYQpQ0d3G-KFj5Vz8eRD-9HL5aKDuObM
+                                                        - Name:
+                                                            - fixtureDep1
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:38-5:44
+                                                        sourcehash: rlqpT4LVgT58xE-CUB0WSBuLwONsuEhAzthqRO_jU5Q
+                                            - Virtual:
+                                                - ASTCallExpression:
+                                                    - - ASTNodeContainer:
+                                                          - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:23-5:36
+                                                            sourcehash: rlqpT4LVgT4DIChrXdAXuZaEm4fZRd0yGsoY94v0Ey4
+                                                      - Symbol:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/multidep/main.ts:5:23-5:34
+                                                                  sourcehash: 69VTyJWGSpAWqQNnRVUwNbh5zgR5UZiTQGSoGzz--U0
+                                                            - Name:
+                                                                - fixtureDep1
+                                                      - Arguments: []
+                                                      - Virtual: []
+
+---
+
+[TestTSParserJavascriptParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:1-6:1
+        sourcehash: 5x8gNaN6ntNv0TIVAH62OR31HuAIvjJ7Xo5i4C2EvPc
+  - Name:
+      - arrow
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:1-6:1
+              sourcehash: zj5Aa0b1PabfomQqAP1scjvqPcARfGT2H7HkiSueEOM
+        - Virtual:
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:7-1:28
+                        sourcehash: tV1goOpv3Hm0npERK2bJIY3zXK3GcXY_BQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:7-1:13
+                              sourcehash: nHyA1o3qe0x5XNZC-BUsCOGZSAwF8ObFKpz7fLovK7w
+                        - Name:
+                            - double
+                  - Virtual:
+                      - ASTFuncExpression:
+                          - - ASTNodeContainer:
+                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:16-1:28
+                                  sourcehash: nHyA1o3qe0xyPP5IfSvg1hLXbSG_pfZz5LFQbxiQ55Q
+                            - Arguments:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:17-1:18
+                                        sourcehash: g5uhDDFlGh8U0NJ-vx1flzrtwgydBne-rSqk-w6c5d0
+                                  - Identifier:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:17-1:18
+                                              sourcehash: arrBQdTfuPK3ZKa1AQ7eWGMEFvd6ZvkJ0sU0Hr-ny_w
+                                        - Name:
+                                            - v
+                            - Block:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:1:23-1:28
+                                        sourcehash: g5uhDDFlGh8XPpqayAvHolCp8Fu_GajGpdTSGBaqO4A
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:3:1-5:2
+                        sourcehash: tV1goOpv3Hl2zYr5Fc5X6lm4YicotUyp_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:3:10-3:15
+                              sourcehash: nHyA1o3qe0ytsG-D8mho6WIH5RU5Hv0VJPtXwuwVmPk
+                        - Name:
+                            - apply
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:3:16-3:22
+                              sourcehash: nHyA1o3qe0zyE-LBQDRNduOhi9-TlTZBx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:3:16-3:22
+                                    sourcehash: g5uhDDFlGh9tWjqJappDAm2KtZf-dR_Z7XSsTuIhl0I
+                              - Name:
+                                  - values
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:3:24-5:2
+                              sourcehash: nHyA1o3qe0xQkZv2ksg8DRpDSF-KuupuwIRKSDkkBsY
+                        - Virtual:
+                            - ASTReturnStatement:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:3-4:39
+                                        sourcehash: g5uhDDFlGh_qlqg_Zv3tyCkUbuaI1yaI8fQSeme6l2g
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:10-4:38
+                                                  sourcehash: arrBQdTfuPKuwmORi3uHRHRSr7r4HZNVBl8VuPnXVUs
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:10-4:16
+                                                        sourcehash: Udnhd3haV8UqCLtZteF80OoyL0nm9LG4K_mk3KriO2o
+                                                  - Name:
+                                                      - values
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:17-4:20
+                                                        sourcehash: Udnhd3haV8WBOXivF8vu22OrEZoSs4hyK_mk3KriO2o
+                                                  - Name:
+                                                      - map
+                                            - Arguments:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:22-4:23
+                                                        sourcehash: Udnhd3haV8VRVjfHzW0GBZ2Fs2U1cLU9zthqRO_jU5Q
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:22-4:23
+                                                              sourcehash: OPkBrRvU9pjz6gv-D16Exsa4tw9yw9cl9HL5aKDuObM
+                                                        - Name:
+                                                            - v
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:28-4:34
+                                                        sourcehash: Udnhd3haV8VzgKjDWCnqK1cIE3EnwQH-zthqRO_jU5Q
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:28-4:34
+                                                              sourcehash: OPkBrRvU9pg4Pu31JNhNEjm9dydXZHCn9HL5aKDuObM
+                                                        - Name:
+                                                            - double
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:35-4:36
+                                                        sourcehash: Udnhd3haV8VRVjfHzW0GBeSvz09XpPjszthqRO_jU5Q
+                                                  - Identifier:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:35-4:36
+                                                              sourcehash: OPkBrRvU9pjz6gv-D16ExlUM7uO3LF6D9HL5aKDuObM
+                                                        - Name:
+                                                            - v
+                                            - Virtual:
+                                                - ASTFuncExpression:
+                                                    - - ASTNodeContainer:
+                                                          - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:21-4:37
+                                                            sourcehash: Udnhd3haV8U0Fe50kYeGqiVvo_DysDfo5g35zwlD90I
+                                                      - Arguments:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:22-4:23
+                                                                  sourcehash: OPkBrRvU9pjWqcKq03kFa06ip5swA1nQrodOWv9P9Ys
+                                                            - Identifier:
+                                                                - - ASTNodeContainer:
+                                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:22-4:23
+                                                                        sourcehash: IBgh4r9PlWt5PZbhFWqELHfVq0VtVnu41CHdfrBa26o
+                                                                  - Name:
+                                                                      - v
+                                                      - Block:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:28-4:37
+                                                                  sourcehash: OPkBrRvU9pj67IN5T_lC5G35UIlVQ0V_pzF7eAddSy4
+                                                            - Virtual:
+                                                                - ASTCallExpression:
+                                                                    - - ASTNodeContainer:
+                                                                          - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:28-4:37
+                                                                            sourcehash: IBgh4r9PlWvBwxh-Dmr_HraC_SG31lMWu5x-tpl6CRE
+                                                                      - Symbol:
+                                                                          - - ASTNodeContainer:
+                                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:28-4:34
+                                                                                  sourcehash: BzdCGGLKND6GgV2v2xliBZk4YNfnecG_4TcN2kqE7zA
+                                                                            - Name:
+                                                                                - double
+                                                                      - Arguments:
+                                                                          - - ASTNodeContainer:
+                                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:35-4:36
+                                                                                  sourcehash: BzdCGGLKND5kVuy0UFx93ybgHLYXXbithBXTQo-GB1o
+                                                                            - Identifier:
+                                                                                - - ASTNodeContainer:
+                                                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/typescript/baseproj/arrow.js:4:35-4:36
+                                                                                        sourcehash: 7lZiTgZE0xEG6sDqkk38oJc9PEp25R5EqbBiZkCQ7Xk
+                                                                                  - Name:
+                                                                                      - v
+                                                                      - Virtual: []
+
+---

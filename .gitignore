@@ -50,5 +50,9 @@ node_modules
 dist
 *.gv
 
+# The TypeScript fixture ships a minimal @types/node so the language server
+# can resolve its stdlib import
+!tests/fixtures/typescript/multidep/node_modules/
+
 .gocache
 out.txt

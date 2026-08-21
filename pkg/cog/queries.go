@@ -33,9 +33,18 @@ func loadLSPServerForLanguage(ctx context.Context, lang languages.LanguageSuppor
 		return nil, err
 	}
 
+	// Decoupled from the caller like the locate above: the server is cached
+	// beyond the request, and a caller gone away mid-query must not degrade
+	// the options the server starts with
+	ictx, cancel := context.WithTimeout(context.WithoutCancel(ctx), locateServerTimeout)
+	defer cancel()
+
+	opts := lsp.NewStartOptions(workspace, "captn-lsp-client", "0.1.0", lang.NewLSPServer)
+	opts.InitializationOptions = lang.GetLSPInitializationOptions(ictx, workspace)
+
 	// The server is cached beyond the request that spawned it, so it is started
 	// on a background context while the install above still follows the caller.
-	client, err := lsp.Start(context.Background(), lsp.NewStartOptions(workspace, "captn-lsp-client", "0.1.0", lang.NewLSPServer))
+	client, err := lsp.Start(context.Background(), opts)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to load language server for language %v with error %w", lang.GetLanguageID(), err)

@@ -78,3 +78,7 @@ func goInstallDir(ctx context.Context) string {
 func (glsd *GolangLanguageSupportDefinition) NormalizeDefinitionRange(_ *common.Source, r *common.FileRange) *common.FileRange {
 	return r
 }
+
+func (glsd *GolangLanguageSupportDefinition) GetLSPInitializationOptions(_ context.Context, _ string) any {
+	return nil
+}

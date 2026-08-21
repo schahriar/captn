@@ -126,6 +126,10 @@ func isIdentifierRune(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_'
 }
 
+func (plsd *PythonLanguageSupportDefinition) GetLSPInitializationOptions(_ context.Context, _ string) any {
+	return nil
+}
+
 // Source treats columns as bytes into the line, see BytePositionForLineColumn
 func advance(buf []byte, pos common.FilePosition, to int) common.FilePosition {
 	for pos.BytePosition < to {
