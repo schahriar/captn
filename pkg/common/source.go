@@ -109,6 +109,8 @@ func (src *Source) GetLanguage() string {
 		return "python"
 	case ".rb":
 		return "ruby"
+	case ".rs":
+		return "rust"
 	case ".swift", ".swiftinterface":
 		return "swift"
 	case ".ts", ".mts", ".cts", ".tsx":

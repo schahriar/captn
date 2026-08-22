@@ -117,6 +117,21 @@ clangd answers the *declaration* it saw through includes, not the definition in 
 the same edge can anchor at the header prototype on one machine and the definition on another —
 both stay stable nodes, and the duplicate observation is the accepted cost.
 
+### rust-analyzer loads only the root manifest and leans on rustup
+
+rust-analyzer discovers the cargo project at the workspace root and never searches below it, so a
+crate nested deeper (a fixture, a monorepo member with no root manifest) resolves nothing —
+`GetLSPInitializationOptions` walks the workspace for Cargo.toml files and passes them as
+`linkedProjects`. The server shells out to `cargo metadata`, and a component installed through
+rustup sits next to its toolchain's cargo, which is not necessarily on PATH — `NewLSPServer`
+prepends the resolved binary's directory. Definitions answer empty until metadata loads, so
+server-backed tests retry. Ranges are name extents throughout (`NormalizeDefinitionRange` passes
+through), except `mod foo;` which answers the whole target file — harmless, since imports resolve
+to files, not nodes. Stdlib resolves into the rust-src component
+(`…/lib/rustlib/src/rust/library/`), so the install command carries both components. A macro call
+resolves to the `macro_rules!` name, which is why `macro_definition` emits a vertex on its name;
+macro token-tree arguments are never parsed and contribute no edges.
+
 ### ruby-lsp answers from an index it builds late
 
 ruby-lsp resolves definitions from a workspace index built in the background after initialize, so a

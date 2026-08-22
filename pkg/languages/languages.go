@@ -13,6 +13,7 @@ import (
 	languages_php "github.com/schahriar/captn/pkg/languages/php"
 	languages_python "github.com/schahriar/captn/pkg/languages/python"
 	languages_ruby "github.com/schahriar/captn/pkg/languages/ruby"
+	languages_rust "github.com/schahriar/captn/pkg/languages/rust"
 	languages_swift "github.com/schahriar/captn/pkg/languages/swift"
 	languages_typescript "github.com/schahriar/captn/pkg/languages/typescript"
 	"github.com/schahriar/captn/pkg/lsp"
@@ -44,6 +45,7 @@ var Java LanguageSupport = languages_java.NewJavaLanguageSupportDefinition()
 var PHP LanguageSupport = languages_php.NewPHPLanguageSupportDefinition()
 var Python LanguageSupport = languages_python.NewPythonLanguageSupportDefinition()
 var Ruby LanguageSupport = languages_ruby.NewRubyLanguageSupportDefinition()
+var Rust LanguageSupport = languages_rust.NewRustLanguageSupportDefinition()
 var Swift LanguageSupport = languages_swift.NewSwiftLanguageSupportDefinition()
 
 // TypeScript's sibling dialects share one transformer and one server but
@@ -78,6 +80,8 @@ func ForExtension(ext string) (LanguageSupport, bool) {
 		return Python, true
 	case ".rb":
 		return Ruby, true
+	case ".rs":
+		return Rust, true
 	// Every Swift definition that leaves the current module resolves into a
 	// generated .swiftinterface; leaving it undispatched drops the whole match
 	case ".swift", ".swiftinterface":

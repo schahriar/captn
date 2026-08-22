@@ -3983,3 +3983,369 @@
                                             - Virtual: []
 
 ---
+
+[TestRustSimpleFuncParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:1-8:1
+        sourcehash: JxHNWUbMn-H2i75WipMBgPqwH7TtW3EMXo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:1-8:1
+              sourcehash: TiOaso2ZP8LtF3ytFSYDAPVgP2natuIYH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:1-3:2
+                        sourcehash: dTVoC9Rl36NWuZKLR_nNku3LEDbEGIog_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:8-1:9
+                              sourcehash: nEc1ZRsyf4SzOlMhyv3etY_gD4IG0N8wJPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:10-1:16
+                              sourcehash: nEc1ZRsyf4TgEH3EodrBdHBFiy8G0xIex9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:10-1:11
+                                    sourcehash: w1kCvmH_H2WCpFH648xANRv1NJkTZIsH7XSsTuIhl0I
+                              - Name:
+                                  - v
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:21-1:27
+                              sourcehash: nEc1ZRsyf4Tx9Fa6hVEZuaFqBUMGqGhUrkY2KnDUBaQ
+                        - Name:
+                            - String
+                        - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:1:28-3:2
+                              sourcehash: nEc1ZRsyf4ScPXpYZkmjSxKX4VM9d5nvwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:2:5-2:17
+                                        sourcehash: w1kCvmH_H2WBMddQm0Y0AhAsv5xxjMBB1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:2:5-2:14
+                                              sourcehash: 6mrQF6jLv0aX2W5TWSDpsFT2ROI3SEOf-oncqnxLqsg
+                                        - Name:
+                                            - stringify
+                                  - Arguments: []
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:1-7:2
+                        sourcehash: dTVoC9Rl36Oburb734CGZpSLb3KDSZO0_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:4-5:13
+                              sourcehash: nEc1ZRsyf4SyYk3-nVs8FJ0opOMA2RE4JPtXwuwVmPk
+                        - Name:
+                            - stringify
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:14-5:20
+                              sourcehash: nEc1ZRsyf4QlEaI1OWF6SNvxUNCalGLax9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:14-5:15
+                                    sourcehash: w1kCvmH_H2XHpXZre1L5CZq9g-h3nQ9r7XSsTuIhl0I
+                              - Name:
+                                  - v
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:25-5:31
+                              sourcehash: nEc1ZRsyf4Q29XsrHNfSjU-AG78LAkQ3rkY2KnDUBaQ
+                        - Name:
+                            - String
+                        - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:5:32-7:2
+                              sourcehash: nEc1ZRsyf4RDZq3PjVoIMtifO3yepW6swIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:6:5-6:18
+                                        sourcehash: w1kCvmH_H2XOxPNpgIzT9_FTSrwEPr421O9NhstAxKk
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:6:5-6:6
+                                              sourcehash: 6mrQF6jLv0ZxWMefwn5SuCxUcD8nNHqO-oncqnxLqsg
+                                        - Name:
+                                            - v
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/simple.rs:6:7-6:16
+                                              sourcehash: 6mrQF6jLv0Yc2qpAIzf4Kqehr4kCi0F0-oncqnxLqsg
+                                        - Name:
+                                            - to_string
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestRustMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:1:1-12:1
+        sourcehash: XQtFv3Bvjiif6nPZMojHfdQr60soGNxPXo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:1:1-12:1
+              sourcehash: uhaLfuDfHFA_1OeyZRGO-qhX1pZQMbieH7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:1:23-1:30
+                        sourcehash: FyHRPlFOqniYM_SG5bhkoMlnfp-2q5N-PyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:1:23-1:30
+                              sourcehash: dC0W_cG-OKDwkwFbZl86Rup3JqkdJW5eZLxLjrI6pks
+                        - Name:
+                            - std::collections::HashMap
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:3:5-3:9
+                        sourcehash: FyHRPlFOqni5K9AHqiGWDwBqDTmcmiCoPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:3:5-3:9
+                              sourcehash: dC0W_cG-OKAygrhc7zGdJFh8Q9zpAoiyZLxLjrI6pks
+                        - Name:
+                            - dep1
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:5:11-5:27
+                        sourcehash: FyHRPlFOqngmsYBKYHMqS-HO5Xr3uJ5sPyG8awEvwCw
+                  - Namespace:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:5:31-5:43
+                              sourcehash: dC0W_cG-OKBrBuWQ9_ick29KGW_n6O8dZLxLjrI6pks
+                        - Name:
+                            - example_text
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:5:11-5:27
+                              sourcehash: dC0W_cG-OKANjhjiW9TFnBtF9F-fP4Q6ZLxLjrI6pks
+                        - Name:
+                            - dep1::get_example_text
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:7:1-11:2
+                        sourcehash: FyHRPlFOqng5ErUO3E6Z1y50FEUToFxS_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:7:4-7:8
+                              sourcehash: dC0W_cG-OKBJPR1Gul-H3cKsmGpUCebiJPtXwuwVmPk
+                        - Name:
+                            - main
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:7:11-11:2
+                              sourcehash: dC0W_cG-OKCXwWTowuZkXcZsraqKc2MrwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:5-8:57
+                                        sourcehash: 0ThcvTItxsixtEY1xV3xCd43imUCAWXppdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:13-8:17
+                                              sourcehash: LkOifKKdVPBtLrHaBax1M2UJTYBDAbepy29hO8e1IZ8
+                                        - Name:
+                                            - seen
+                                  - Type:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:19-8:26
+                                              sourcehash: LkOifKKdVPAKE1MKRgTGr8H4KuavtDv5VLo_o0xzjko
+                                        - Name:
+                                            - HashMap
+                                        - Arguments:
+                                            - - ASTNodeContainer:
+                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:27-8:33
+                                                    sourcehash: i07oPBMM4xilThc5g1wS1rrEKk3BML2jA5-tLoI84RQ
+                                              - Name:
+                                                  - String
+                                              - Arguments: []
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:42-8:56
+                                                  sourcehash: LkOifKKdVPBVWP_H2w7XgRV3srB2flS-uj_VVqjG-WM
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:42-8:49
+                                                        sourcehash: i07oPBMM4xituAycW7WtJ7VL8ofOnOBh39pkelnR34I
+                                                  - Name:
+                                                      - HashMap
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:8:51-8:54
+                                                        sourcehash: i07oPBMM4xgTPlOoYO_sqJLcd43X8V4m39pkelnR34I
+                                                  - Name:
+                                                      - new
+                                            - Arguments: []
+                                            - Virtual: []
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:9:5-9:35
+                                        sourcehash: 0ThcvTItxsgX5TNEvCUUFYu1PgLyX6Gi1O9NhstAxKk
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:9:5-9:9
+                                              sourcehash: LkOifKKdVPDTX57o_HOYP0ado36aFOyR-oncqnxLqsg
+                                        - Name:
+                                            - seen
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:9:10-9:16
+                                              sourcehash: LkOifKKdVPA_AQZ0sp5ZfKVkYcO3IQ6F-oncqnxLqsg
+                                        - Name:
+                                            - insert
+                                  - Arguments: []
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:9:17-9:31
+                                                  sourcehash: LkOifKKdVPCnNxpDyncldyBRcNHfEo9l6VpQxV1dgow
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:9:17-9:29
+                                                        sourcehash: i07oPBMM4xjrjH-KYfyXv5hhci0MDZLcDvTf6Q5oaKs
+                                                  - Name:
+                                                      - example_text
+                                            - Arguments: []
+                                            - Virtual: []
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:10:5-10:31
+                                        sourcehash: 0ThcvTItxsgTCWHXpctGqAnfdvEfoTmd1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/multidep/src/main.rs:10:5-10:12
+                                              sourcehash: LkOifKKdVPBwUvS5ezyr1Rs9IlRI9BrE-oncqnxLqsg
+                                        - Name:
+                                            - println
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestRustMethodParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:1:1-10:1
+        sourcehash: ZY4sIpYjlt0GGJRygI5sXAuh5EKkH6WeXo5i4C2EvPc
+  - Name:
+      - method
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:1:1-10:1
+              sourcehash: yxxYRSxHLboMMSjlARzYuBdDyIVIP0s8H7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:1:1-3:2
+                        sourcehash: MKqEZ8JqxJfE05nU-d3ckeCsjZHcu25P_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:1:12-1:18
+                              sourcehash: ljiwiliOW3RsvEWK4Em4buE1scMR3ZywJPtXwuwVmPk
+                        - Name:
+                            - Widget
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:1:19-3:2
+                              sourcehash: ljiwiliOW3QwonKIHQ__A4yis4sXHF26wIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:2:5-2:18
+                                        sourcehash: -8bcrO6x8lHtayXyvq5taNICa1H4fxOIpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:2:5-2:10
+                                              sourcehash: YVUIz4TViS7duNMg454jpwmggJDd3aqCy29hO8e1IZ8
+                                        - Name:
+                                            - label
+                                  - Type:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:2:12-2:18
+                                              sourcehash: YVUIz4TViS6Ipeoh_AW5jzvaKQ9z2U1sVLo_o0xzjko
+                                        - Name:
+                                            - String
+                                        - Arguments: []
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:5:1-9:2
+                        sourcehash: MKqEZ8JqxJfGoLOzbTIYkLws2NC_ps7O_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:5:6-5:12
+                              sourcehash: ljiwiliOW3RuiV9pU530bcl3c-xKE5k5JPtXwuwVmPk
+                        - Name:
+                            - Widget
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:5:13-9:2
+                              sourcehash: ljiwiliOW3QjILFv9X3NViOO-nUEKT8mwIRKSDkkBsY
+                        - Virtual:
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:5-8:6
+                                        sourcehash: -8bcrO6x8lHhguBs6f5T2j1-1EOW8Q_soDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:12-6:20
+                                              sourcehash: YVUIz4TViS4MDLq_RxsVLSyWJ8ywKTV7xc29gfmbjtw
+                                        - Name:
+                                            - describe
+                                  - Arguments:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:28-6:40
+                                              sourcehash: YVUIz4TViS7B5GJaT5s0JfIJN-yTwvp5aKyC6j6cpwY
+                                        - Identifier:
+                                            - - ASTNodeContainer:
+                                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:28-6:34
+                                                    sourcehash: xuM08hr5IAs1Wjh0kjiLoSOct7Y9YXx5jkcSDe-njSU
+                                              - Name:
+                                                  - prefix
+                                  - ReturnType:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:45-6:51
+                                              sourcehash: YVUIz4TViS58vaScJ1WgAQvWud08nS5sTxib6X5Z-4c
+                                        - Name:
+                                            - String
+                                        - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:6:52-8:6
+                                              sourcehash: YVUIz4TViS7nVwPjwJITG82FQrJKpDaWYVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTCallExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:7:9-7:44
+                                                        sourcehash: xuM08hr5IAsldAJ35J0rI6nbKtCBZ5SydcGzRdjGuow
+                                                  - Symbol:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/rust/baseproj/src/method.rs:7:9-7:15
+                                                              sourcehash: LHFhFLEctuh4zLyrWF3vJEtsmQ9WlH6ym1xCaYnRoKs
+                                                        - Name:
+                                                            - format
+                                                  - Arguments: []
+                                                  - Virtual: []
+
+---

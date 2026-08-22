@@ -45,6 +45,10 @@ bin
 
 # ruby-lsp composes a bundle inside its workspace root on startup
 .ruby-lsp/
+
+# cargo writes build state into the Rust fixture crates when rust-analyzer
+# checks them; the dependency-free Cargo.lock files stay tracked
+tests/fixtures/rust/**/target/
 Why.md
 out.yaml
 
