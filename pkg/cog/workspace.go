@@ -839,6 +839,12 @@ func (wspace *Workspace) queryWithDepth(ctx context.Context, g *ObservationGraph
 		errs := []error{}
 
 		for _, imp := range imps {
+			// Pruned dependencies are never loaded: a stdlib target may not
+			// even be parseable (libc++'s <string> has no extension)
+			if imp.Type == common.StandardLibraryDependency || imp.Type == common.PackageDependency {
+				continue
+			}
+
 			wg.Go(func() {
 				f, err := wspace.LoadFile(ctx, imp.External.Source.Path)
 

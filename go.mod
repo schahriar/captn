@@ -22,6 +22,8 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
 	github.com/tree-sitter/go-tree-sitter v0.25.0
+	github.com/tree-sitter/tree-sitter-c v0.24.2
+	github.com/tree-sitter/tree-sitter-cpp v0.23.4
 	github.com/tree-sitter/tree-sitter-css v0.25.0
 	github.com/tree-sitter/tree-sitter-go v0.25.0
 	github.com/tree-sitter/tree-sitter-html v0.23.2

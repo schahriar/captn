@@ -5,6 +5,7 @@ import (
 
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/common"
+	languages_c "github.com/schahriar/captn/pkg/languages/c"
 	languages_css "github.com/schahriar/captn/pkg/languages/css"
 	languages_golang "github.com/schahriar/captn/pkg/languages/golang"
 	languages_html "github.com/schahriar/captn/pkg/languages/html"
@@ -34,6 +35,10 @@ type LanguageSupport interface {
 	GetTreeSitterLanguage() *tree_sitter.Language
 }
 
+// C's sibling dialects share one transformer and one server (clangd) with
+// the grammar and didOpen languageId varying per dialect
+var C LanguageSupport = languages_c.NewCLanguageSupportDefinition()
+var CPP LanguageSupport = languages_c.NewCPPLanguageSupportDefinition()
 var Golang LanguageSupport = languages_golang.NewGolangLanguageSupportDefinition()
 var Java LanguageSupport = languages_java.NewJavaLanguageSupportDefinition()
 var PHP LanguageSupport = languages_php.NewPHPLanguageSupportDefinition()
@@ -56,6 +61,13 @@ var HTML LanguageSupport = languages_html.NewHTMLLanguageSupportDefinition()
 // extension, e.g. ".go"
 func ForExtension(ext string) (LanguageSupport, bool) {
 	switch ext {
+	case ".c":
+		return C, true
+	// A .h header always parses as C++: the grammar is a superset that keeps
+	// the class declarations C++ headers hold parseable, and a fixed mapping
+	// keeps AST shape (and so observation hashes) identical on every machine
+	case ".h", ".hpp", ".hh", ".hxx", ".cpp", ".cc", ".cxx":
+		return CPP, true
 	case ".go":
 		return Golang, true
 	case ".java":

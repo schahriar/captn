@@ -102,6 +102,21 @@ Ranges are name extents throughout, so `NormalizeDefinitionRange` passes them th
 builds in the background like ruby-lsp's but persists in the OS temp dir, so only the first boot
 per workspace answers empty.
 
+### clangd is exact about names but resolves std:: into files captn cannot parse
+
+clangd answers definitions with the declared name's extent and an #include with a zero-width
+position at the target header's start, so ranges pass through unrepaired. But std:: symbols
+resolve into libc++ headers with no extension (`<string>`, and `bits/*.tcc` under libstdc++):
+C's `NormalizeDefinitionRange` collapses a definition into any non-C-extension file to zero
+width (the Ruby `.rbs` shape), and `queryWithDepth` prunes stdlib/package imports by their
+already-classified type *before* loading them — it used to load first, and `<string>` does not
+parse. A std:: *type* instead resolves into a forward-declaration header (`__fwd/string.h`),
+which is why a bodiless struct/class specifier in statement position emits a symbol on its
+name; without it the exactly-one-node check dies inside the SDK. Without a background index
+clangd answers the *declaration* it saw through includes, not the definition in the .cpp, so
+the same edge can anchor at the header prototype on one machine and the definition on another —
+both stay stable nodes, and the duplicate observation is the accepted cost.
+
 ### ruby-lsp answers from an index it builds late
 
 ruby-lsp resolves definitions from a workspace index built in the background after initialize, so a

@@ -9,6 +9,8 @@ version_of() {
   grep "^\s*$1 " "$GOMOD" | awk '{print $2}'
 }
 
+TS_C_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-c")
+TS_CPP_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-cpp")
 TS_GO_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-go")
 TS_JAVA_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-java")
 TS_PHP_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-php")
@@ -20,11 +22,13 @@ TS_CSS_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-css")
 TS_HTML_VERSION=$(version_of "github.com/tree-sitter/tree-sitter-html")
 GO_TS_VERSION=$(version_of "github.com/tree-sitter/go-tree-sitter")
 
-if [ -z "$TS_GO_VERSION" ] || [ -z "$TS_JAVA_VERSION" ] || [ -z "$TS_PHP_VERSION" ] || [ -z "$TS_PYTHON_VERSION" ] || [ -z "$TS_RUBY_VERSION" ] || [ -z "$TS_SWIFT_VERSION" ] || [ -z "$TS_TYPESCRIPT_VERSION" ] || [ -z "$TS_CSS_VERSION" ] || [ -z "$TS_HTML_VERSION" ] || [ -z "$GO_TS_VERSION" ]; then
+if [ -z "$TS_C_VERSION" ] || [ -z "$TS_CPP_VERSION" ] || [ -z "$TS_GO_VERSION" ] || [ -z "$TS_JAVA_VERSION" ] || [ -z "$TS_PHP_VERSION" ] || [ -z "$TS_PYTHON_VERSION" ] || [ -z "$TS_RUBY_VERSION" ] || [ -z "$TS_SWIFT_VERSION" ] || [ -z "$TS_TYPESCRIPT_VERSION" ] || [ -z "$TS_CSS_VERSION" ] || [ -z "$TS_HTML_VERSION" ] || [ -z "$GO_TS_VERSION" ]; then
   echo "error: could not detect tree-sitter versions from go.mod" >&2
   exit 1
 fi
 
+echo "tree-sitter/tree-sitter-c: $TS_C_VERSION"
+echo "tree-sitter/tree-sitter-cpp: $TS_CPP_VERSION"
 echo "tree-sitter/tree-sitter-go: $TS_GO_VERSION"
 echo "tree-sitter/tree-sitter-java: $TS_JAVA_VERSION"
 echo "tree-sitter/tree-sitter-php: $TS_PHP_VERSION"
@@ -46,6 +50,12 @@ vendor_copy() {
   cp -r "$src" "$dst"
   chmod -R u+w "$dst"
 }
+
+vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/tree-sitter-c@$TS_C_VERSION/src" \
+  vendor/github.com/tree-sitter/tree-sitter-c/src
+
+vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/tree-sitter-cpp@$TS_CPP_VERSION/src" \
+  vendor/github.com/tree-sitter/tree-sitter-cpp/src
 
 vendor_copy "$GOPATH/pkg/mod/github.com/tree-sitter/tree-sitter-go@$TS_GO_VERSION/src" \
   vendor/github.com/tree-sitter/tree-sitter-go/src

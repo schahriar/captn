@@ -95,6 +95,10 @@ func (src *Source) RelativePath() string {
 func (src *Source) GetLanguage() string {
 	// TODO: Implement a better version
 	switch filepath.Ext(src.Path) {
+	case ".c":
+		return "c"
+	case ".h", ".hpp", ".hh", ".hxx", ".cpp", ".cc", ".cxx":
+		return "cpp"
 	case ".go":
 		return "golang"
 	case ".java":
