@@ -126,7 +126,7 @@ func (src *Source) GetLanguage() string {
 	case ".html":
 		return "html"
 	default:
-		return "unknown"
+		return "plaintext"
 	}
 }
 

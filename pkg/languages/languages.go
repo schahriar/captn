@@ -11,6 +11,7 @@ import (
 	languages_html "github.com/schahriar/captn/pkg/languages/html"
 	languages_java "github.com/schahriar/captn/pkg/languages/java"
 	languages_php "github.com/schahriar/captn/pkg/languages/php"
+	languages_plaintext "github.com/schahriar/captn/pkg/languages/plaintext"
 	languages_python "github.com/schahriar/captn/pkg/languages/python"
 	languages_ruby "github.com/schahriar/captn/pkg/languages/ruby"
 	languages_rust "github.com/schahriar/captn/pkg/languages/rust"
@@ -58,6 +59,10 @@ var CSS LanguageSupport = languages_css.NewCSSLanguageSupportDefinition()
 var SCSS LanguageSupport = languages_css.NewSCSSLanguageSupportDefinition()
 var LESS LanguageSupport = languages_css.NewLESSLanguageSupportDefinition()
 var HTML LanguageSupport = languages_html.NewHTMLLanguageSupportDefinition()
+
+// Plaintext is the fallback for extensions ForExtension does not dispatch:
+// one whole-file module, no grammar, no LSP. Never add it to ForExtension.
+var Plaintext LanguageSupport = languages_plaintext.NewPlaintextLanguageSupportDefinition()
 
 // ForExtension resolves the LanguageSupport that parses files with the given
 // extension, e.g. ".go"

@@ -4349,3 +4349,17 @@
                                                   - Virtual: []
 
 ---
+
+[TestPlaintextModuleSnap - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/plaintext/notes.md:1:1-7:1
+        sourcehash: QSFFLr2MqcOpFpjgHT0VN2Nx46ziQJejXo5i4C2EvPc
+  - Name:
+      - notes.md
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/plaintext/notes.md:1:1-7:1
+              sourcehash: gkKKXXsZU4ZSLTHAOnoqbsbjx1nEgS9GH7HkiSueEOM
+        - Virtual: []
+
+---

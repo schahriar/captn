@@ -106,8 +106,22 @@ func ParseSource(ctx context.Context, src *common.Source) (*COGFile, error) {
 
 	lang, ok := languages.ForExtension(ext)
 
+	// An unsupported extension still parses: a whole-file module observations
+	// can anchor to, with no grammar and no LSP behind it
 	if !ok {
-		return nil, errors.New("unsupported file type") // TODO: Use knownerrors
+		task.End()
+
+		root, err := languages.Plaintext.Parse(ctx, src, nil)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse %v file: %w", ext, err)
+		}
+
+		pf := NewCOGFile(src, root, languages.Plaintext)
+
+		pf.IndexNodes()
+
+		return pf, nil
 	}
 
 	tsp := tree_sitter.NewParser()

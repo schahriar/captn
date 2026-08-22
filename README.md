@@ -1,7 +1,6 @@
 # captn
 
 ## TODO:
-- [ ] For unsupported files add file level node observations
 - [ ] Add tool to collect automated chat sessions for experimentation
 - [ ] Benchmark using predefined set of changes in popular git repos
 - [ ] Fix port already in use error

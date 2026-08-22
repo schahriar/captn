@@ -25,6 +25,7 @@ import (
 	"github.com/schahriar/captn/pkg/ast"
 	"github.com/schahriar/captn/pkg/cgraph"
 	"github.com/schahriar/captn/pkg/common"
+	"github.com/schahriar/captn/pkg/languages"
 	"github.com/schahriar/captn/pkg/lsp"
 )
 
@@ -654,6 +655,16 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 		root = tight
 	}
 
+	// Plaintext has no LSP; the whole-file module is the entire graph
+	if f.Language == languages.Plaintext {
+		g := cgraph.NewGraph(NodeHasher)
+		og := NewObservationGraph(&g)
+
+		og.Graph.AddVertex(root)
+
+		return og, root, nil
+	}
+
 	defs := map[ast.ASTNode]*common.FileRange{}
 
 	// TODO: We may need to breakdown refs by language for cross-language references
@@ -752,6 +763,14 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 
 		if err != nil {
 			return nil, nil, err
+		}
+
+		// A dependency into a plaintext file anchors at its whole-file module;
+		// there is no finer node to resolve onto
+		if ef.Language == languages.Plaintext {
+			chlds = append(chlds, ef.Module)
+			ichains[ef.Module] = inode.NearestOrSelf(IsNodeOfInterest)
+			continue
 		}
 
 		enodes := ef.FindNodesWithinRange(dep.External)

@@ -56,6 +56,15 @@ func loadLSPServerForLanguage(ctx context.Context, lang languages.LanguageSuppor
 }
 
 func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDependencies, error) {
+	impVis := ast.NewImportVisitor()
+
+	pf.Module.Accept(impVis)
+
+	// No imports means no server boot: a plaintext file must resolve without one
+	if len(impVis.Imports) == 0 {
+		return []common.ResolvedDependency{}, nil
+	}
+
 	reg := trace.StartRegion(ctx, "ListDependencies:LSPServerLoad")
 
 	client, err := loadLSPServerForLanguage(ctx, pf.Language, pf.Source.Workspace)
@@ -67,10 +76,6 @@ func (pf *COGFile) ListDependencies(ctx context.Context) (common.ResolvedDepende
 	reg.End()
 
 	reg = trace.StartRegion(ctx, "LSPImportsQuery")
-
-	impVis := ast.NewImportVisitor()
-
-	pf.Module.Accept(impVis)
 
 	impLoc := []common.ResolvedDependency{}
 
