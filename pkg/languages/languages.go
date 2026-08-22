@@ -8,7 +8,10 @@ import (
 	languages_css "github.com/schahriar/captn/pkg/languages/css"
 	languages_golang "github.com/schahriar/captn/pkg/languages/golang"
 	languages_html "github.com/schahriar/captn/pkg/languages/html"
+	languages_java "github.com/schahriar/captn/pkg/languages/java"
+	languages_php "github.com/schahriar/captn/pkg/languages/php"
 	languages_python "github.com/schahriar/captn/pkg/languages/python"
+	languages_ruby "github.com/schahriar/captn/pkg/languages/ruby"
 	languages_swift "github.com/schahriar/captn/pkg/languages/swift"
 	languages_typescript "github.com/schahriar/captn/pkg/languages/typescript"
 	"github.com/schahriar/captn/pkg/lsp"
@@ -32,7 +35,10 @@ type LanguageSupport interface {
 }
 
 var Golang LanguageSupport = languages_golang.NewGolangLanguageSupportDefinition()
+var Java LanguageSupport = languages_java.NewJavaLanguageSupportDefinition()
+var PHP LanguageSupport = languages_php.NewPHPLanguageSupportDefinition()
 var Python LanguageSupport = languages_python.NewPythonLanguageSupportDefinition()
+var Ruby LanguageSupport = languages_ruby.NewRubyLanguageSupportDefinition()
 var Swift LanguageSupport = languages_swift.NewSwiftLanguageSupportDefinition()
 
 // TypeScript's sibling dialects share one transformer and one server but
@@ -52,8 +58,14 @@ func ForExtension(ext string) (LanguageSupport, bool) {
 	switch ext {
 	case ".go":
 		return Golang, true
+	case ".java":
+		return Java, true
+	case ".php":
+		return PHP, true
 	case ".py", ".pyi":
 		return Python, true
+	case ".rb":
+		return Ruby, true
 	// Every Swift definition that leaves the current module resolves into a
 	// generated .swiftinterface; leaving it undispatched drops the whole match
 	case ".swift", ".swiftinterface":

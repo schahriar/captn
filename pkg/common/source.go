@@ -97,8 +97,14 @@ func (src *Source) GetLanguage() string {
 	switch filepath.Ext(src.Path) {
 	case ".go":
 		return "golang"
+	case ".java":
+		return "java"
+	case ".php":
+		return "php"
 	case ".py", ".pyi":
 		return "python"
+	case ".rb":
+		return "ruby"
 	case ".swift", ".swiftinterface":
 		return "swift"
 	case ".ts", ".mts", ".cts", ".tsx":

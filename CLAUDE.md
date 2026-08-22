@@ -92,6 +92,28 @@ pyright answers most definitions with the name's extent, but a typing special fo
 Python's `NormalizeDefinitionRange` narrows to the leading identifier for that reason; a probe
 against local fixtures alone would never have shown it.
 
+### intelephense imports are use clauses, not requires
+
+intelephense returns no definition for a require/include path — PHP dependency edges come from
+`use` clauses and call/type references only, so a require import parses but resolves to nothing.
+Stdlib resolves into the server's own npm install (`intelephense/lib/stub/`), the pyright pattern.
+`new X()` answers two locations, the class name and `__construct`, and both become vertices.
+Ranges are name extents throughout, so `NormalizeDefinitionRange` passes them through. Its index
+builds in the background like ruby-lsp's but persists in the OS temp dir, so only the first boot
+per workspace answers empty.
+
+### ruby-lsp answers from an index it builds late
+
+ruby-lsp resolves definitions from a workspace index built in the background after initialize, so a
+cold server answers empty — not an error — and first-query results under-resolve; the Ruby tests
+retry until edges appear. The indexer hard-excludes `**/fixtures/**` and configuration can only add
+exclusions, which is why each Ruby fixture project is its own workspace root. Core and stdlib
+methods (`new`, `upcase`) resolve into `.rbs` signature stubs captn cannot parse: Ruby's
+`NormalizeDefinitionRange` collapses those to zero width, the shape `SearchSnippet` already skips
+(and since then skips before preloading). An attr_accessor definition answers `label` while the
+declared token is `:label`; the same normalize widens the range over a single leading colon. On
+first launch ruby-lsp composes a bundle into `.ruby-lsp/` inside the workspace (gitignored).
+
 ### Measuring
 
 Benchmark `B/op` is allocation churn, not size; a parse that reported 34 GB retained 4 MB. Go's

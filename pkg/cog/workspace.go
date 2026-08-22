@@ -706,10 +706,20 @@ func (wspace *Workspace) SearchSnippet(ctx context.Context, file string, snippet
 		}
 	}
 
-	// Preload dependencies
-	if _, err = wspace.LoadFiles(ctx, common.Map(deps, func(dep common.ResolvedDependency) string {
-		return dep.External.Source.Path
-	})); err != nil {
+	// Preload dependencies. A zero-width external is skipped below, so loading
+	// (and possibly failing to parse) its file would be pure waste; languages
+	// collapse definitions captn cannot link to zero width for that reason.
+	var preload []string
+
+	for _, dep := range deps {
+		if dep.External.Start.BytePosition == dep.External.End.BytePosition {
+			continue
+		}
+
+		preload = append(preload, dep.External.Source.Path)
+	}
+
+	if _, err = wspace.LoadFiles(ctx, preload); err != nil {
 		return nil, nil, err
 	}
 

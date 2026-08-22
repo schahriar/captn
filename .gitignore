@@ -42,6 +42,9 @@ bin
 # when it indexes them in the background
 .build
 .swiftpm
+
+# ruby-lsp composes a bundle inside its workspace root on startup
+.ruby-lsp/
 Why.md
 out.yaml
 

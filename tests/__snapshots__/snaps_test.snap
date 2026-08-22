@@ -1789,3 +1789,863 @@
                                                                         - Virtual: []
 
 ---
+
+[TestParserRubySimpleParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:1-4:1
+        sourcehash: -GFIh8ZyazMlvwElC6ks7PR5i_7nO4xmXo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:1-4:1
+              sourcehash: 8MKRD4zk1mZLfgJKF1JZ2OjzF_3OdxjMH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:1-3:4
+                        sourcehash: 6SPZl1NXQZkbCOtR_xX_SoXjMmPcyap2_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:5-1:6
+                              sourcehash: 4YUiHxnJrMx3iavoghoQbY8caKszAF98JPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:7-1:8
+                              sourcehash: 4YUiHxnJrMy9nL-IQQd-C0EAfXPcytsSx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:1:7-1:8
+                                    sourcehash: 2eZqpuA8F_9gMJO-gvj8zPwdyIPczAuu7XSsTuIhl0I
+                              - Name:
+                                  - v
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:2:3-2:9
+                              sourcehash: 4YUiHxnJrMyUKcyFwUP7I3HjXG8aX2HuwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:2:3-2:9
+                                        sourcehash: 2eZqpuA8F_8NSq25g3H2_F3jhnpX9Rlm1O9NhstAxKk
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:2:3-2:4
+                                              sourcehash: 0kezLqaugzKv3oHvxWN1vWC29j7ECtp4-oncqnxLqsg
+                                        - Name:
+                                            - v
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/simple.rb:2:5-2:9
+                                              sourcehash: 0kezLqaugzLp412zBPEifvphm_xL005H-oncqnxLqsg
+                                        - Name:
+                                            - to_s
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestParserRubyTypesParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:1:1-24:1
+        sourcehash: Z6ETChJpk3YoGN6UiUTBH19tcVhqB19IXo5i4C2EvPc
+  - Name:
+      - types
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:1:1-24:1
+              sourcehash: z0ImFCTTJuxQMb0pEomCPr7a4rDUDr6QH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:1:1-15:4
+                        sourcehash: NuM5Hjc8umJwNo_-P7TNgYQQP0a7z3YV_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:1:8-1:17
+                              sourcehash: noRMKEmmTdjyqOlr2gtqzJ0yg81di1BlJPtXwuwVmPk
+                        - Name:
+                            - Reporting
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:2:3-14:6
+                              sourcehash: noRMKEmmTdjMu87bjRON208pHu0AJiZJwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:2:3-2:28
+                                        sourcehash: BiVfMlwP4U7qc3qaKf5AT2T26zHydKR1pdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:2:3-2:16
+                                              sourcehash: bcZyPG55dMT70UG43jwJb71qA6lWAFs_y29hO8e1IZ8
+                                        - Name:
+                                            - DEFAULT_LABEL
+                                  - Virtual: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:4:3-8:6
+                                        sourcehash: BiVfMlwP4U43U0s8mBjllO-bMXNL4dCEoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:4:9-4:13
+                                              sourcehash: bcZyPG55dMQKsqwAd1n6aiK5PgDOw2xsxc29gfmbjtw
+                                        - Name:
+                                            - Base
+                                  - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:5:5-7:8
+                                              sourcehash: bcZyPG55dMT2fFmwg7hHkUd04JysoPY9YVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTFuncExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:5:5-7:8
+                                                        sourcehash: 1WeFRoDjCDq1pWgkb1epjp9Oj8YNYBv2QQWUHVYWnqA
+                                                  - Name:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:5:9-5:15
+                                                              sourcehash: PQiYUJNMm7B_8oRjUH876TpsrGvofMR8ZqAjQQchhL8
+                                                        - Name:
+                                                            - render
+                                                  - Arguments: []
+                                                  - Block:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:6:7-6:32
+                                                              sourcehash: PQiYUJNMm7CSWJF4UFbieliWSYNHPsg6AikVxlQv8ow
+                                                        - Virtual:
+                                                            - ASTCallExpression:
+                                                                - - ASTNodeContainer:
+                                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:6:7-6:32
+                                                                        sourcehash: pKmrWqW2LyZvC7rMMVYbZhHeA0CBHXR-FpQZBOZMsG8
+                                                                  - Symbol:
+                                                                      - - ASTNodeContainer:
+                                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:6:7-6:12
+                                                                              sourcehash: DEq-ZLgfwpz2_Q75RxuDsieUhcyiS-WuPC6oKJdXlo4
+                                                                        - Name:
+                                                                            - raise
+                                                                  - Arguments: []
+                                                                  - Virtual: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:10:3-14:6
+                                        sourcehash: BiVfMlwP4U4ntyf-L21tSRS5v8fPRTFcoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:10:9-10:13
+                                              sourcehash: bcZyPG55dMT4CgANkSYBs2OphBbK6YuGxc29gfmbjtw
+                                        - Name:
+                                            - Card
+                                  - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:11:5-13:8
+                                              sourcehash: bcZyPG55dMQ61gTwsxAxE3ayOjIbIiErYVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTTypeExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:10:16-10:20
+                                                        sourcehash: 1WeFRoDjCDoONWW0klFF6aVlUKR49sAjEDwdknxzT3M
+                                                  - Name:
+                                                      - Base
+                                                  - Arguments: []
+                                            - ASTFuncExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:11:5-13:8
+                                                        sourcehash: 1WeFRoDjCDpN9OHjNrL03diqtJxm_xD6QQWUHVYWnqA
+                                                  - Name:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:11:9-11:15
+                                                              sourcehash: PQiYUJNMm7AYQf4iF9qHONABvjCPUCQkZqAjQQchhL8
+                                                        - Name:
+                                                            - render
+                                                  - Arguments: []
+                                                  - Block:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:12:7-12:27
+                                                              sourcehash: PQiYUJNMm7DGZdajetX6vZvNEE0eb7CiAikVxlQv8ow
+                                                        - Virtual:
+                                                            - ASTCallExpression:
+                                                                - - ASTNodeContainer:
+                                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:12:7-12:27
+                                                                        sourcehash: pKmrWqW2LyY-1stjvvkAnV7va_3V4FBKFpQZBOZMsG8
+                                                                  - Namespace:
+                                                                      - - ASTNodeContainer:
+                                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:12:7-12:20
+                                                                              sourcehash: DEq-ZLgfwpxQNJKCczbJveCmjRavJ_n4PC6oKJdXlo4
+                                                                        - Name:
+                                                                            - DEFAULT_LABEL
+                                                                  - Symbol:
+                                                                      - - ASTNodeContainer:
+                                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:12:21-12:27
+                                                                              sourcehash: DEq-ZLgfwpxt2Ge3j24aJUIsbaEUCckMPC6oKJdXlo4
+                                                                        - Name:
+                                                                            - upcase
+                                                                  - Arguments: []
+                                                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:17:1-21:4
+                        sourcehash: NuM5Hjc8umLUm9kx3QpFOS0-lsjXsZeL_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:17:7-17:16
+                              sourcehash: noRMKEmmTdjCsn6e26P9GzSGhm5WuZo1JPtXwuwVmPk
+                        - Name:
+                            - Formatter
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:18:3-20:6
+                              sourcehash: noRMKEmmTdh4UsvO5Xu0-VwivRTQTBS0wIRKSDkkBsY
+                        - Virtual:
+                            - ASTTypeExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:17:30-17:34
+                                        sourcehash: BiVfMlwP4U5LsiySxLzJzxMJW5O0s7Ddb2m3027tWZA
+                                  - Name:
+                                      - Base
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:17:19-17:28
+                                              sourcehash: bcZyPG55dMTOJIYAXxNnGnmYBJrEiF9WlQRG9x_4P68
+                                        - Name:
+                                            - Reporting
+                                  - Arguments: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:18:3-20:6
+                                        sourcehash: BiVfMlwP4U4cCb5r7e0kuYsG42DI5pHdoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:18:12-18:17
+                                              sourcehash: bcZyPG55dMSK4mdPuOMPnjT7z4Bqu8Pcxc29gfmbjtw
+                                        - Name:
+                                            - build
+                                  - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:19:5-19:8
+                                              sourcehash: bcZyPG55dMTZ7xJMc8454AoGKJ7fD4i2YVawB0ap_Kk
+                                        - Virtual: []
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:1-23:47
+                        sourcehash: NuM5Hjc8umLDhxmXBIyG3I63c2NXgSh3BQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:1-23:15
+                              sourcehash: noRMKEmmTdide-uomFE-T1Nv2ad5-bYwKpz7fLovK7w
+                        - Name:
+                            - make_formatter
+                  - Virtual:
+                      - ASTFuncExpression:
+                          - - ASTNodeContainer:
+                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:18-23:47
+                                  sourcehash: noRMKEmmTdjQMtp-XAJlGCOsKNTWm5am5LFQbxiQ55Q
+                            - Arguments:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:21-23:26
+                                        sourcehash: BiVfMlwP4U7AgIesgPIbV1D_OkaezJd3rSqk-w6c5d0
+                                  - Identifier:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:21-23:26
+                                              sourcehash: bcZyPG55dMSwzjTapeHRln5SS7hm_ZhI0sU0Hr-ny_w
+                                        - Name:
+                                            - label
+                            - Block:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:28-23:47
+                                        sourcehash: BiVfMlwP4U7xMbZ-SwSZfxOo5v8UKo1mpdTSGBaqO4A
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:30-23:45
+                                                  sourcehash: bcZyPG55dMSB8WfUoHmammaxBwSR2QAAuj_VVqjG-WM
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:30-23:39
+                                                        sourcehash: 1WeFRoDjCDpwCA1BnxNSfIAig0jpZVf839pkelnR34I
+                                                  - Name:
+                                                      - Formatter
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/baseproj/types.rb:23:40-23:45
+                                                        sourcehash: 1WeFRoDjCDrwyhC4a2-Ff6Q7DBwlxVry39pkelnR34I
+                                                  - Name:
+                                                      - build
+                                            - Arguments: []
+                                            - Virtual: []
+
+---
+
+[TestParserRubyMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:1:1-9:1
+        sourcehash: eQu1CRBnfGNxp8wXeLOgPKAnM4n7vkuJXo5i4C2EvPc
+  - Name:
+      - main
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:1:1-9:1
+              sourcehash: 8hdqEiDO-MbjT5gu8WdAeEBOZxP3fJcSH7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:1:10-1:14
+                        sourcehash: ayMfGzE2dSk-pOc8-oHcL4PXLWhBvILOPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:1:10-1:14
+                              sourcehash: 5C7UJEGd8YyZ-jZLA5x35sdf87yL_G6KZLxLjrI6pks
+                        - Name:
+                            - json
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:2:19-2:23
+                        sourcehash: ayMfGzE2dSlcpoCENndHjdHOitykDMPtPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:2:19-2:23
+                              sourcehash: 5C7UJEGd8YzV_WjZe4dOomNOrqVQnPDIZLxLjrI6pks
+                        - Name:
+                            - dep1
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:4:1-6:4
+                        sourcehash: ayMfGzE2dSk0XFFh-ZHVK1WFoCKmD9nl_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:4:5-4:8
+                              sourcehash: 5C7UJEGd8YyKVUXf7pXmThw6V6VhbpnNJPtXwuwVmPk
+                        - Name:
+                            - run
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:3-5:40
+                              sourcehash: 5C7UJEGd8YyckgB5-FUn-oE9G8HYtUpkwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:3-5:40
+                                        sourcehash: XTqJLVIFbe8Ex6-R9xh6yaz0l2ELWrrj1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:3-5:7
+                                              sourcehash: 1kY-NmJs6lImza2zLIktVlmW-Xgvx_Ec-oncqnxLqsg
+                                        - Name:
+                                            - puts
+                                  - Arguments: []
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:8-5:40
+                                                  sourcehash: 1kY-NmJs6lJ7tsqTL5rhD_8o-I7Pyrvu6VpQxV1dgow
+                                            - Namespace:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:8-5:12
+                                                        sourcehash: T1HzP3LUZrXaaU9wKHPfKKoA_gFxgydEDvTf6Q5oaKs
+                                                  - Name:
+                                                      - JSON
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:13-5:21
+                                                        sourcehash: T1HzP3LUZrU3FAmeXNvloHHlLxB4JzIPDvTf6Q5oaKs
+                                                  - Name:
+                                                      - generate
+                                            - Arguments: []
+                                            - Virtual:
+                                                - ASTCallExpression:
+                                                    - - ASTNodeContainer:
+                                                          - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:22-5:39
+                                                            sourcehash: T1HzP3LUZrWH0r_rLEC5chL6Lk7966le_cVUA-96QG8
+                                                      - Namespace:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:22-5:26
+                                                                  sourcehash: yF2oSIM74xjfS8xFAzlp_AHI_mGCkruyI1_jJ6CFJo4
+                                                            - Name:
+                                                                - Dep1
+                                                      - Symbol:
+                                                          - - ASTNodeContainer:
+                                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/ruby/multidep/main.rb:5:27-5:39
+                                                                  sourcehash: yF2oSIM74xjMKCUxw8Yrup-U3M1GLHTrI1_jJ6CFJo4
+                                                            - Name:
+                                                                - example_text
+                                                      - Arguments: []
+                                                      - Virtual: []
+
+---
+
+[TestParserPHPSimpleParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:1:1-7:1
+        sourcehash: 5VkVjJSwN_M3Z0tjD1W_uzHpY_suUw0jXo5i4C2EvPc
+  - Name:
+      - simple
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:1:1-7:1
+              sourcehash: yrIrGSlgb-ZuzpbGHqt_dmPSx_ZcphpGH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:1-6:2
+                        sourcehash: sAtApb4Qp9mZh30cTf2b25_PqIYsnyjP_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:10-3:11
+                              sourcehash: lWRWMlLA38z2CD2y0QGs_j6dlOz0lOZdJPtXwuwVmPk
+                        - Name:
+                            - x
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:12-3:18
+                              sourcehash: lWRWMlLA38w7XkMO0cZJcCuj3S0Zbc1Lx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:16-3:18
+                                    sourcehash: er1rvudxF787laJ5YkBdWQ-UFEpSgaP27XSsTuIhl0I
+                              - Name:
+                                  - $v
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:12-3:15
+                                    sourcehash: er1rvudxF7-cUIalyTahM4EQxILvhI1Sdr-KtmbgA-0
+                              - Name:
+                                  - int
+                              - Arguments: []
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:3:21-3:27
+                              sourcehash: lWRWMlLA38zuqMwjzgM33zw0Rc1hv22vrkY2KnDUBaQ
+                        - Name:
+                            - string
+                        - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:4:1-6:2
+                              sourcehash: lWRWMlLA38wCElt_qVgG8zO8ZzFap3rWwIRKSDkkBsY
+                        - Virtual:
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:5:12-5:22
+                                        sourcehash: er1rvudxF785vlFlDsMlXUwSzYxa2J6I1O9NhstAxKk
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/simple.php:5:12-5:18
+                                              sourcehash: YBaBS3whT7JoWoh_pIkYCshCRGUyGA3o-oncqnxLqsg
+                                        - Name:
+                                            - strval
+                                  - Arguments: []
+                                  - Virtual: []
+
+---
+
+[TestParserPHPTypesParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:1:1-28:1
+        sourcehash: aY5ELST8rVPfgPpzKSQUZ0GLejfxg_2xXo5i4C2EvPc
+  - Name:
+      - types
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:1:1-28:1
+              sourcehash: 0xyIWkn5Wqa_AfTmUkgozoMW9G_jB_tiH7HkiSueEOM
+        - Virtual:
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:3:1-6:2
+                        sourcehash: PKrMh272B_l2ra3RpyIURC-FsW_pxfSN_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:3:11-3:19
+                              sourcehash: pjkQtJPytUwavS4NMvrqmTa5zbrO1PYJJPtXwuwVmPk
+                        - Name:
+                            - Renderer
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:4:1-6:2
+                              sourcehash: pjkQtJPytUwnJR44Dy-TSYWoHfipWk9_wIRKSDkkBsY
+                        - Virtual:
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:5:5-5:38
+                                        sourcehash: D8dU4bjvYp_TMp3CUfLBKobNozIM59KsoDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:5:21-5:27
+                                              sourcehash: eVWZDt3sD_Kdf7oBMxpThSJMKGGQY57Hxc29gfmbjtw
+                                        - Name:
+                                            - render
+                                  - Arguments: []
+                                  - ReturnType:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:5:31-5:37
+                                              sourcehash: eVWZDt3sD_IoU-zJ0fhdLp7f1ywwqoHtTxib6X5Z-4c
+                                        - Name:
+                                            - string
+                                        - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:5:5-5:38
+                                              sourcehash: eVWZDt3sD_J_QB1MlLXvC4fzKGtwdVXZYVawB0ap_Kk
+                                        - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:8:1-11:2
+                        sourcehash: PKrMh272B_nyER3Y2s_98lx_kIKsBeZz_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:8:16-8:20
+                              sourcehash: pjkQtJPytUzFcH6cuhESyESXT1Wut2epJPtXwuwVmPk
+                        - Name:
+                            - Base
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:9:1-11:2
+                              sourcehash: pjkQtJPytUzmErPX0Q7avZzAXY3QwcIEwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:10:5-10:44
+                                        sourcehash: D8dU4bjvYp9vz1VwoaAI0E-eYmgBVKRdpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:10:18-10:31
+                                              sourcehash: eVWZDt3sD_KBLRyPVd3R8OcuhSIOCS94y29hO8e1IZ8
+                                        - Name:
+                                            - DEFAULT_LABEL
+                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:13:1-19:2
+                        sourcehash: PKrMh272B_mtRaeSA4GT_8oz_PJC8Wbd_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:13:7-13:11
+                              sourcehash: pjkQtJPytUx9mH-hZTooabD62rzUKutEJPtXwuwVmPk
+                        - Name:
+                            - Card
+                  - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:14:1-19:2
+                              sourcehash: pjkQtJPytUxNychpv0v65EepcjoH4HjJwIRKSDkkBsY
+                        - Virtual:
+                            - ASTTypeExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:13:20-13:24
+                                        sourcehash: D8dU4bjvYp8hKSktno0Puu3jTG9-8V4Hb2m3027tWZA
+                                  - Name:
+                                      - Base
+                                  - Arguments: []
+                            - ASTTypeExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:13:36-13:44
+                                        sourcehash: D8dU4bjvYp_x2UilSyTRORXxLOW9XJTbb2m3027tWZA
+                                  - Name:
+                                      - Renderer
+                                  - Arguments: []
+                            - ASTFuncExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:15:5-18:6
+                                        sourcehash: D8dU4bjvYp-T2I5_0CEjmI6ij2OoFUQboDMuXkiQqL0
+                                  - Name:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:15:21-15:27
+                                              sourcehash: eVWZDt3sD_JeJaq-sUi185Chg-1KN4bQxc29gfmbjtw
+                                        - Name:
+                                            - render
+                                  - Arguments: []
+                                  - ReturnType:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:15:31-15:37
+                                              sourcehash: eVWZDt3sD_Lo-d2HUCa_nIMl5P2jd-dCTxib6X5Z-4c
+                                        - Name:
+                                            - string
+                                        - Arguments: []
+                                  - Block:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:16:5-18:6
+                                              sourcehash: eVWZDt3sD_LPaxYV_m11YCh7Vj43nyKYYVawB0ap_Kk
+                                        - Virtual:
+                                            - ASTCallExpression:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:17:16-17:47
+                                                        sourcehash: 4uPdPALovUUgV3D-ZtrD4vgw-l8POrZsdcGzRdjGuow
+                                                  - Symbol:
+                                                      - - ASTNodeContainer:
+                                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:17:16-17:26
+                                                              sourcehash: THIhaSflapgaVLP_HhHD2uVx6JFW1gc2m1xCaYnRoKs
+                                                        - Name:
+                                                            - strtoupper
+                                                  - Arguments: []
+                                                  - Virtual: []
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:1-25:2
+                        sourcehash: PKrMh272B_lf1R1vNUmwqEM3Z11Zzb1c_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:10-21:14
+                              sourcehash: pjkQtJPytUw0pTnDKwH9IxxHYB76a3y0JPtXwuwVmPk
+                        - Name:
+                            - pick
+                  - Arguments:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:15-21:26
+                              sourcehash: pjkQtJPytUzq_nL5evDEXFNgpMSsGJnRx9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:21-21:26
+                                    sourcehash: D8dU4bjvYp8ofqJG7BLcRsIpK3szidyR7XSsTuIhl0I
+                              - Name:
+                                  - $card
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:16-21:20
+                                    sourcehash: D8dU4bjvYp-7UUsI3KlYxmZgjGZAdABkdr-KtmbgA-0
+                              - Name:
+                                  - Card
+                              - Arguments: []
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:28-21:51
+                              sourcehash: pjkQtJPytUzU2_6gBcNa7d4a38q83O_-x9odKzEWsSM
+                        - Identifier:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:42-21:51
+                                    sourcehash: D8dU4bjvYp-vUvVo_SmXvvAvlJkdnWEq7XSsTuIhl0I
+                              - Name:
+                                  - $fallback
+                        - Type:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:28-21:32
+                                    sourcehash: D8dU4bjvYp-oO19j5QRvwxVvQOEf7BTTdr-KtmbgA-0
+                              - Name:
+                                  - Base
+                              - Arguments:
+                                  - - ASTNodeContainer:
+                                        - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:33-21:41
+                                          sourcehash: eVWZDt3sD_JMSt-fcN1GGB5eZjaodxnZJaT4QZypVrc
+                                    - Name:
+                                        - Renderer
+                                    - Arguments: []
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:54-21:58
+                              sourcehash: pjkQtJPytUwwJ_V-lwJFEm9UiADYRsdJrkY2KnDUBaQ
+                        - Name:
+                            - Card
+                        - Arguments:
+                            - - ASTNodeContainer:
+                                  - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:21:59-21:63
+                                    sourcehash: D8dU4bjvYp9u8dZ--hnkTPogwmbRfpzqXSujtaadWG4
+                              - Name:
+                                  - "null"
+                              - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:22:1-25:2
+                              sourcehash: pjkQtJPytUx-62YNenPOArwdEJ3yqRiRwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:23:5-23:20
+                                        sourcehash: D8dU4bjvYp-IESDg_n6GIq5yK5ZIAzsUpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:23:5-23:12
+                                              sourcehash: eVWZDt3sD_JoF7Kz0aNkQcVlmgoTWbEdy29hO8e1IZ8
+                                        - Name:
+                                            - $chosen
+                                  - Virtual: []
+            - ASTDeclaration:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:1-27:51
+                        sourcehash: PKrMh272B_n4LJWw3-2afCNLSXJ4UxpPBQJsWQkkRZ0
+                  - Names:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:1-27:11
+                              sourcehash: pjkQtJPytUyQMNMTPBuL71Ri-PQFswqcKpz7fLovK7w
+                        - Name:
+                            - $make_card
+                  - Virtual:
+                      - ASTFuncExpression:
+                          - - ASTNodeContainer:
+                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:14-27:51
+                                  sourcehash: pjkQtJPytUyL4x0XXdzgrcIsqNrcVWq_5LFQbxiQ55Q
+                            - Arguments:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:17-27:30
+                                        sourcehash: D8dU4bjvYp-dcHPGBzxvo9-d3CD6cXM1rSqk-w6c5d0
+                                  - Identifier:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:24-27:30
+                                              sourcehash: eVWZDt3sD_KNh4Z-yUH7D2MQoTI_0CVM0sU0Hr-ny_w
+                                        - Name:
+                                            - $label
+                                  - Type:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:17-27:23
+                                              sourcehash: eVWZDt3sD_LykcLNh0ILp7jcFeM6_O3NXBAShkRmOKc
+                                        - Name:
+                                            - string
+                                        - Arguments: []
+                            - ReturnType:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:33-27:37
+                                        sourcehash: D8dU4bjvYp9cNfUmv5V1F8IvnwWg6MvNk5a9-k5aOl4
+                                  - Name:
+                                      - Card
+                                  - Arguments: []
+                            - Block:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:41-27:51
+                                        sourcehash: D8dU4bjvYp8gt2SYhqtuFhrwwpwRsR0_pdTSGBaqO4A
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:41-27:51
+                                                  sourcehash: eVWZDt3sD_K1i6wZr3n7f3O03F1HDM-_uj_VVqjG-WM
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/baseproj/types.php:27:45-27:49
+                                                        sourcehash: 4uPdPALovUWF3oQpETKP6WeXrxhZsq4H39pkelnR34I
+                                                  - Name:
+                                                      - Card
+                                            - Arguments: []
+                                            - Virtual: []
+
+---
+
+[TestParserPHPMultiDepParse - 1]
+  - ASTNodeContainer:
+      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:1:1-17:1
+        sourcehash: EwAcAQxHrK3OBZFjvI65dzzSorPCeokeXo5i4C2EvPc
+  - Name:
+      - App
+  - Block:
+      - - ASTNodeContainer:
+            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:1:1-17:1
+              sourcehash: JgA4AhiPWVqcCyLHeR1y7nmlRWeE9RI8H7HkiSueEOM
+        - Virtual:
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:5:5-5:13
+                        sourcehash: OQBUAyTXBgdTfhqQv9Nh_7ognH1RS11qPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:5:5-5:13
+                              sourcehash: TABwBDEesrQK8RJaBolREPqb85MdoaiYZLxLjrI6pks
+                        - Name:
+                            - DateTime
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:6:5-6:13
+                        sourcehash: OQBUAyTXBgcO9LjahOyYezEj2J0uxuhqPyG8awEvwCw
+                  - Namespace:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:6:17-6:28
+                              sourcehash: TABwBDEesrR0yLTmry4wiutU04V-GjCFZLxLjrI6pks
+                        - Name:
+                            - FixtureDep1
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:6:5-6:13
+                              sourcehash: TABwBDEesrSB3k7tkLu-COiia9LYmL6YZLxLjrI6pks
+                        - Name:
+                            - "App\\Dep1"
+            - ASTImportStatement:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:8:15-8:23
+                        sourcehash: OQBUAyTXBgeLwLXYvhTHutWEDcvTniYhPyG8awEvwCw
+                  - Reference:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:8:15-8:23
+                              sourcehash: TABwBDEesrR7dkjqAwwchjFi1jAiRzoGZLxLjrI6pks
+                        - Name:
+                            - dep1.php
+            - ASTFuncExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:10:1-14:2
+                        sourcehash: OQBUAyTXBgdXzHTlSZRYro4OgBELphwG_2DInzsKsto
+                  - Name:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:10:10-10:13
+                              sourcehash: TABwBDEesrStxWljPphp0ctsn4teGjXvJPtXwuwVmPk
+                        - Name:
+                            - run
+                  - Arguments: []
+                  - ReturnType:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:10:17-10:23
+                              sourcehash: TABwBDEesrSs7cPsyZn0slP-wfDhMtP0rkY2KnDUBaQ
+                        - Name:
+                            - string
+                        - Arguments: []
+                  - Block:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:11:1-14:2
+                              sourcehash: TABwBDEesrQ1FkgC_geCJg-X2_J21PjmwIRKSDkkBsY
+                        - Virtual:
+                            - ASTDeclaration:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:12:5-12:26
+                                        sourcehash: XwCMBT1mX2EzeJYGkPI_fazyEvzTYLSPpdTSGBaqO4A
+                                  - Names:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:12:5-12:9
+                                              sourcehash: cgCoBkmuDA7a-frKp7UhztWscDl4eAWry29hO8e1IZ8
+                                        - Name:
+                                            - $now
+                                  - Virtual:
+                                      - ASTCallExpression:
+                                          - - ASTNodeContainer:
+                                                - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:12:12-12:26
+                                                  sourcehash: cgCoBkmuDA6ohvfEsEX25bEkM2-wIUrTuj_VVqjG-WM
+                                            - Symbol:
+                                                - - ASTNodeContainer:
+                                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:12:16-12:24
+                                                        sourcehash: hQDEB1X1uLtf-e-N9vvl9my7M-ZHfvkY39pkelnR34I
+                                                  - Name:
+                                                      - DateTime
+                                            - Arguments: []
+                                            - Virtual: []
+                            - ASTCallExpression:
+                                - - ASTNodeContainer:
+                                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:13:12-13:42
+                                        sourcehash: XwCMBT1mX2F4I5Pcxp1S0CSqHBzACHs-1O9NhstAxKk
+                                  - Namespace:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:13:12-13:23
+                                              sourcehash: cgCoBkmuDA7d94_o8N7q328KGxeo5TOY-oncqnxLqsg
+                                        - Name:
+                                            - FixtureDep1
+                                  - Symbol:
+                                      - - ASTNodeContainer:
+                                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:13:25-13:36
+                                              sourcehash: cgCoBkmuDA4mNMVgkKjOAk8fMxdwSRjH-oncqnxLqsg
+                                        - Name:
+                                            - exampleText
+                                  - Arguments: []
+                                  - Virtual: []
+            - ASTCallExpression:
+                - - ASTNodeContainer:
+                      - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:16:6-16:11
+                        sourcehash: OQBUAyTXBgc6gK8AB1YzU5xVrAr6PSGwNBznx726zsY
+                  - Symbol:
+                      - - ASTNodeContainer:
+                            - position: /Users/shawnsaffarshargh/Workspace/captn/tests/fixtures/php/multidep/main.php:16:6-16:9
+                              sourcehash: TABwBDEesrSQeaN9_FpEdjZO_UrSd-1LWbd2627FtOU
+                        - Name:
+                            - run
+                  - Arguments: []
+                  - Virtual: []
+
+---
